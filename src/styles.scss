@@ -1,4 +1,8 @@
 @use '@angular/material' as mat;
+@use './styles/theme-colors' as theme;
+
+// Seeds: primary #1F4E4A (deep teal), tertiary #C77B3A (soft amber), neutral #F5F1EA (warm off-white).
+// Palettes are generated in styles/_theme-colors.scss via `ng generate @angular/material:theme-color`.
 
 html {
   color-scheme: light;
@@ -9,14 +13,28 @@ html {
   --ma-sidenav-width: 240px;
   --ma-content-padding: 24px;
 
-  @include mat.theme((
-    color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
+  @include mat.theme(
+    (
+      color: (
+        primary: theme.$primary-palette,
+        tertiary: theme.$tertiary-palette,
+      ),
+      typography: Roboto,
+      density: 0,
     ),
-    typography: Roboto,
-    density: 0,
-  ));
+    (
+      // M3 maps light-mode primary to tone 40 (#396662); pin it to the exact seed (tone 30).
+      primary: #1f4e4a,
+      // Slightly tighter tracking on display/headline/title styles (M3 default is ~0).
+      display-large-tracking: -0.02em,
+      display-medium-tracking: -0.02em,
+      display-small-tracking: -0.015em,
+      headline-large-tracking: -0.015em,
+      headline-medium-tracking: -0.01em,
+      headline-small-tracking: -0.01em,
+      title-large-tracking: -0.005em,
+    )
+  );
 }
 
 html, body { height: 100%; }
@@ -24,6 +42,19 @@ html, body { height: 100%; }
 body {
   margin: 0;
   font: var(--mat-sys-body-medium);
+  letter-spacing: var(--mat-sys-body-medium-tracking);
+  // Neutral tone 98: the lightest warm off-white in the generated palette.
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
+
+// M3 themes no longer style bare headings via .mat-typography; map them to the type scale.
+h1, h2, h3, h4 {
+  margin: 0 0 0.5em;
+  color: var(--mat-sys-on-surface);
+}
+
+h1 { font: var(--mat-sys-headline-large); letter-spacing: var(--mat-sys-headline-large-tracking); }
+h2 { font: var(--mat-sys-headline-medium); letter-spacing: var(--mat-sys-headline-medium-tracking); }
+h3 { font: var(--mat-sys-headline-small); letter-spacing: var(--mat-sys-headline-small-tracking); }
+h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large-tracking); }

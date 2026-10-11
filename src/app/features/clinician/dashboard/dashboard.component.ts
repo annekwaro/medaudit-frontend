@@ -91,15 +91,54 @@ interface NavItem {
       height: 100%;
     }
 
+    // Dark teal sidebar. Applies in both docked (side) and mobile overlay (over) modes.
     .shell__sidenav {
-      width: var(--ma-sidenav-width, 240px);
+      --ma-sidenav-fg: rgb(253 249 242 / 0.85);
+      --ma-sidenav-fg-strong: var(--mat-sys-surface);
+      --ma-sidenav-state-layer: rgb(253 249 242);
+
+      --mat-sidenav-container-width: var(--ma-sidenav-width, 240px);
+      --mat-sidenav-container-background-color: var(--mat-sys-primary);
+      --mat-sidenav-container-text-color: var(--ma-sidenav-fg);
+      // The solid fill separates it from the content; a light hairline would read as a seam.
+      --mat-sidenav-container-divider-color: transparent;
+
+      // Inactive links: warm white text/icons, warm-white state layers for hover and focus.
+      --mdc-list-list-item-label-text-color: var(--ma-sidenav-fg);
+      --mdc-list-list-item-leading-icon-color: var(--ma-sidenav-fg);
+      --mdc-list-list-item-hover-label-text-color: var(--ma-sidenav-fg);
+      --mdc-list-list-item-hover-leading-icon-color: var(--ma-sidenav-fg);
+      --mdc-list-list-item-focus-label-text-color: var(--ma-sidenav-fg);
+      --mdc-list-list-item-hover-state-layer-color: var(--ma-sidenav-state-layer);
+      --mdc-list-list-item-hover-state-layer-opacity: 0.08;
+      --mdc-list-list-item-focus-state-layer-color: var(--ma-sidenav-state-layer);
+
+      // Active link: primary-container pill (shape stays the M3 default, corner-full).
+      --mat-list-active-indicator-color: var(--mat-sys-primary-container);
+    }
+
+    // M3 has no token for the activated item's text, so scope the label/icon tokens to it.
+    .shell__sidenav .mdc-list-item--activated {
+      --mdc-list-list-item-label-text-color: var(--mat-sys-on-primary-container);
+      --mdc-list-list-item-leading-icon-color: var(--mat-sys-on-primary-container);
+      --mdc-list-list-item-hover-label-text-color: var(--mat-sys-on-primary-container);
+      --mdc-list-list-item-hover-leading-icon-color: var(--mat-sys-on-primary-container);
+      --mdc-list-list-item-focus-label-text-color: var(--mat-sys-on-primary-container);
+      --mdc-list-list-item-hover-state-layer-color: var(--mat-sys-on-primary-container);
+      --mdc-list-list-item-focus-state-layer-color: var(--mat-sys-on-primary-container);
+    }
+
+    // M3 rounds the drawer's trailing corners; square them when docked full-height.
+    .shell__sidenav.mat-drawer-side {
+      --mat-sidenav-container-shape: 0;
     }
 
     .shell__brand {
       padding: 20px 16px 12px;
-      font-size: 1.25rem;
+      font: var(--mat-sys-title-large);
       font-weight: 500;
-      color: var(--ma-color-brand);
+      letter-spacing: 0.02em;
+      color: var(--ma-sidenav-fg-strong);
     }
 
     .shell__main {
@@ -108,9 +147,9 @@ interface NavItem {
     }
 
     .shell__toolbar {
-      // M3 ignores color="primary"; theme the toolbar via its tokens instead.
-      --mat-toolbar-container-background-color: var(--mat-sys-primary);
-      --mat-toolbar-container-text-color: var(--mat-sys-on-primary);
+      --mat-toolbar-container-background-color: var(--mat-sys-surface);
+      --mat-toolbar-container-text-color: var(--mat-sys-on-surface);
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
       position: sticky;
       top: 0;
       z-index: 2;
@@ -118,7 +157,8 @@ interface NavItem {
     }
 
     .shell__title {
-      font-size: 1.1rem;
+      font: var(--mat-sys-title-medium);
+      letter-spacing: var(--mat-sys-title-medium-tracking);
     }
 
     .shell__spacer {
@@ -132,8 +172,8 @@ interface NavItem {
       font-weight: 600;
       letter-spacing: 0.08em;
       line-height: 1.5;
-      background: var(--mat-sys-on-primary);
-      color: var(--mat-sys-primary);
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
     }
 
     .shell__content {
