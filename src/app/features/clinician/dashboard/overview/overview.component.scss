@@ -30,23 +30,6 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-// Compact select so it sits in line with body-small text.
-.time-anchor__select {
-  --mat-form-field-container-height: 36px;
-  --mat-form-field-container-vertical-padding: 6px;
-  --mat-form-field-container-text-size: 0.8125rem;
-  --mat-select-trigger-text-size: 0.8125rem;
-
-  width: 140px;
-}
-
-.time-anchor__divider {
-  align-self: stretch;
-  width: 1px;
-  margin: 6px 4px;
-  background: var(--mat-sys-outline-variant);
-}
-
 .time-anchor__refresh {
   --mdc-icon-button-state-layer-size: 32px;
   --mdc-icon-button-icon-size: 18px;

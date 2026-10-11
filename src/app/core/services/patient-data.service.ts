@@ -2,12 +2,24 @@ import { Injectable, signal } from '@angular/core';
 import { AuditEntry } from '../../shared/models/audit.model';
 import { PatientProfile } from '../../shared/models/patient.model';
 
+/** Dashboard figures at a point in time; today's are derived from `patients`. */
+export interface DashboardFigures {
+  /** Sum of pendingSubmissions. */
+  unreviewed: number;
+  /** Sum of open alerts. */
+  alerts: number;
+  activePatients: number;
+  /** Pooled 30-day submission rate across all patients, rounded. */
+  compliancePercent: number;
+  /** Patients in the Missing compliance band. */
+  flaggedPatients: number;
+}
+
 /** Mock patient and audit data until the backend API exists. */
 @Injectable({ providedIn: 'root' })
 export class PatientDataService {
   // submissions30d is chosen so each patient's rate lands in their compliance band
   // (On Track >= 90%, Late 70-89%, Missing < 70%). All patients are at Dr. Martin's site.
-  // pendingSubmissions sums to the dashboard's Unreviewed count (12).
   readonly patients = signal<PatientProfile[]>([
     {
       id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-11T08:14:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
@@ -245,6 +257,15 @@ export class PatientDataService {
       reason: 'Flag reviewed. AE form opened and sponsor notified.',
     },
   ]);
+
+  /** Mock snapshot from yesterday, for the dashboard's day-over-day deltas. */
+  readonly yesterdayFigures: DashboardFigures = {
+    unreviewed: 9,
+    alerts: 4,
+    activePatients: 6,
+    compliancePercent: 78,
+    flaggedPatients: 0,
+  };
 
   getPatient(id: string): PatientProfile | undefined {
     return this.patients().find((patient) => patient.id === id);

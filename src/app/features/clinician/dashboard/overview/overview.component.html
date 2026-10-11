@@ -2,18 +2,8 @@
   <h1 class="overview__title">Dashboard</h1>
 
   <div class="time-anchor">
-    <span id="date-range-label" class="time-anchor__text">Showing</span>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="time-anchor__select">
-      <mat-select aria-labelledby="date-range-label" [value]="dateRange()" (selectionChange)="dateRange.set($event.value)">
-        @for (option of dateRangeOptions; track option.value) {
-          <mat-option [value]="option.value">{{ option.label }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <span class="time-anchor__divider" aria-hidden="true"></span>
-
-    <span class="time-anchor__text">
+    <!-- Date range select hidden until the data can actually be filtered by it. -->
+    <span class="time-anchor__text" aria-live="polite">
       Updated <time [attr.datetime]="updatedAt().toISOString()">{{ updatedAt() | date: 'HH:mm' }}</time>
     </span>
     <button mat-icon-button type="button" class="time-anchor__refresh" aria-label="Refresh" (click)="refresh()">
@@ -25,7 +15,7 @@
   </div>
 </header>
 
-<app-visit-banner class="overview__banner" [summary]="sinceLastVisit" />
+<app-visit-banner class="overview__banner" [summary]="sinceLastVisit()" />
 
 <section class="stats-grid" aria-label="Summary statistics">
   @for (stat of stats(); track stat.label) {
