@@ -31,8 +31,7 @@
     <section class="audit" aria-labelledby="audit-heading">
       <div class="audit__heading-row">
         <h2 id="audit-heading" class="audit__heading">Audit trail</h2>
-        <!-- Export is not implemented yet; disabled so it can't be mistaken for a working export. -->
-        <button mat-stroked-button type="button" disabled>
+        <button mat-stroked-button type="button" (click)="exportCsv()">
           <mat-icon>download</mat-icon>
           Export CSV
         </button>
@@ -55,7 +54,7 @@
               [checked]="selectedActions().has(action)"
               (change)="toggleAction(action, $event.checked)"
             >
-              {{ actionDisplay[action].label }}
+              {{ actionLabels[action] }}
             </mat-checkbox>
           }
         </fieldset>
@@ -68,43 +67,7 @@
       @if (filteredEntries().length) {
         <ol class="timeline">
           @for (entry of filteredEntries(); track entry.id) {
-            <li class="timeline__entry" [attr.data-action]="entry.action">
-              <div class="timeline__meta">
-                <app-badge [tone]="actionDisplay[entry.action].tone">{{ actionDisplay[entry.action].label }}</app-badge>
-                <time
-                  class="timeline__time"
-                  [attr.datetime]="entry.timestamp"
-                  [title]="entry.timestamp | date: 'MMM d, y, HH:mm:ss zzzz'"
-                >
-                  {{ entry.timestamp | date: 'MMM d, HH:mm' }}
-                </time>
-                <span class="timeline__user">{{ entry.user }}</span>
-              </div>
-
-              @if (entry.field) {
-                <div class="timeline__field">
-                  {{ entry.field }}
-                  @if (entry.oldValue !== undefined && entry.newValue !== undefined) {
-                    <span class="timeline__change">
-                      <span class="sr-only">changed from</span>
-                      <span class="timeline__old">{{ entry.oldValue }}</span>
-                      <span aria-hidden="true">→</span>
-                      <span class="sr-only">to</span>
-                      <span class="timeline__new">{{ entry.newValue }}</span>
-                    </span>
-                  } @else if (entry.newValue !== undefined) {
-                    <span class="timeline__change">
-                      <span class="sr-only">value</span>
-                      <span class="timeline__new">{{ entry.newValue }}</span>
-                    </span>
-                  }
-                </div>
-              }
-
-              @if (entry.reason) {
-                <p class="timeline__reason">{{ entry.reason }}</p>
-              }
-            </li>
+            <li app-audit-entry [entry]="entry"></li>
           }
         </ol>
       } @else {

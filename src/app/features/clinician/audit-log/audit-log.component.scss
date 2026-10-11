@@ -1,0 +1,78 @@
+:host {
+  display: block;
+}
+
+// Readable measure on wide screens; outer 24px padding comes from the shell.
+.audit-log {
+  max-width: 960px;
+}
+
+.audit-log__title {
+  margin: 0;
+}
+
+.audit-log__subtitle {
+  margin: 4px 0 0;
+  font: var(--mat-sys-body-large);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.filters {
+  --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
+  --mdc-outlined-card-outline-color: var(--mat-sys-outline-variant);
+
+  margin-top: 24px;
+}
+
+.filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  // mat-card-content pads 16px; keep the top edge even with the sides.
+  padding: 16px;
+}
+
+.filters__search {
+  flex: 2 1 240px;
+}
+
+.filters__select {
+  flex: 1 1 160px;
+}
+
+.filters__clear {
+  flex: 0 0 auto;
+}
+
+.audit-log__summary {
+  margin: 16px 0 8px;
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.audit-log__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.audit-log__empty {
+  margin: 0;
+  padding: 32px 16px;
+  text-align: center;
+  border: 1px dashed var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.audit-log__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}

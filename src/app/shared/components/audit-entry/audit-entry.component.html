@@ -1,0 +1,37 @@
+@let e = entry();
+<div class="audit-entry__meta">
+  <app-badge [tone]="actionTone()">{{ actionLabel() }}</app-badge>
+  <time class="audit-entry__time" [attr.datetime]="e.timestamp" [title]="e.timestamp | date: 'MMM d, y, HH:mm:ss zzzz'">
+    {{ e.timestamp | date: 'MMM d, HH:mm' }}
+  </time>
+  <span class="audit-entry__user">{{ e.user }}</span>
+  @if (patient(); as p) {
+    <a class="audit-entry__patient" [routerLink]="['/clinician/patient', p.id]">
+      {{ p.name }} <span class="audit-entry__patient-id">{{ p.id }}</span>
+    </a>
+  }
+</div>
+
+@if (e.field) {
+  <div class="audit-entry__field">
+    {{ e.field }}
+    @if (e.oldValue !== undefined && e.newValue !== undefined) {
+      <span class="audit-entry__change">
+        <span class="sr-only">changed from</span>
+        <span class="audit-entry__old">{{ e.oldValue }}</span>
+        <span aria-hidden="true">→</span>
+        <span class="sr-only">to</span>
+        <span class="audit-entry__new">{{ e.newValue }}</span>
+      </span>
+    } @else if (e.newValue !== undefined) {
+      <span class="audit-entry__change">
+        <span class="sr-only">value</span>
+        <span class="audit-entry__new">{{ e.newValue }}</span>
+      </span>
+    }
+  </div>
+}
+
+@if (e.reason) {
+  <p class="audit-entry__reason">{{ e.reason }}</p>
+}

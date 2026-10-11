@@ -1,0 +1,86 @@
+:host {
+  --audit-entry-accent: var(--mat-sys-outline-variant);
+
+  display: block;
+  padding: 12px 16px;
+  background: var(--mat-sys-surface-container-lowest);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-left: 4px solid var(--audit-entry-accent);
+  border-radius: var(--mat-sys-corner-small);
+}
+
+:host([data-action='submitted']) { --audit-entry-accent: var(--mat-sys-primary); }
+:host([data-action='modified'])  { --audit-entry-accent: var(--mat-sys-tertiary); }
+:host([data-action='reviewed'])  { --audit-entry-accent: var(--mat-sys-secondary); }
+:host([data-action='flagged'])   { --audit-entry-accent: var(--mat-sys-error); }
+
+.audit-entry__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.audit-entry__time {
+  font: var(--mat-sys-label-large);
+  letter-spacing: var(--mat-sys-label-large-tracking);
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface);
+}
+
+.audit-entry__user {
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.audit-entry__patient {
+  margin-left: auto;
+  font: var(--mat-sys-label-large);
+  letter-spacing: var(--mat-sys-label-large-tracking);
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+.audit-entry__patient-id {
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.audit-entry__field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-top: 8px;
+  font: var(--mat-sys-title-small);
+  letter-spacing: var(--mat-sys-title-small-tracking);
+}
+
+.audit-entry__change {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font: var(--mat-sys-body-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.audit-entry__old {
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: line-through;
+}
+
+.audit-entry__new {
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.audit-entry__reason {
+  margin: 6px 0 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}

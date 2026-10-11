@@ -15,3 +15,10 @@ export interface AuditEntry {
   newValue?: string;
   reason?: string;
 }
+
+export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
+  submitted: 'Submitted',
+  modified: 'Modified',
+  reviewed: 'Reviewed',
+  flagged: 'Flagged',
+};
