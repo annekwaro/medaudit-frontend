@@ -1,0 +1,95 @@
+:host {
+  display: block;
+}
+
+.patient-list {
+  --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
+  --mdc-outlined-card-outline-color: var(--mat-sys-outline-variant);
+  --mat-table-background-color: var(--mat-sys-surface-container-lowest);
+  --mat-table-row-item-container-height: 56px;
+  --mat-table-row-item-outline-color: var(--mat-sys-outline-variant);
+
+  overflow: hidden;
+}
+
+.patient-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 8px 4px 16px;
+}
+
+.patient-list__title {
+  margin: 0;
+  font: var(--mat-sys-title-medium);
+  letter-spacing: var(--mat-sys-title-medium-tracking);
+}
+
+// Narrow screens scroll the table horizontally instead of squashing columns.
+.patient-list__scroll {
+  overflow-x: auto;
+}
+
+.patient-list__table {
+  width: 100%;
+  min-width: 640px;
+}
+
+.patient-list__id {
+  font-variant-numeric: tabular-nums;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.patient-list__numeric {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.patient-list__alerts {
+  font-weight: 500;
+  color: var(--mat-sys-error);
+}
+
+.patient-list__muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.patient-list__actions {
+  width: 1%;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.compliance-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--mat-sys-corner-full);
+  font: var(--mat-sys-label-medium);
+  letter-spacing: var(--mat-sys-label-medium-tracking);
+  white-space: nowrap;
+
+  &--on-track {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &--late {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+  }
+
+  &--missing {
+    background: var(--mat-sys-error-container);
+    color: var(--mat-sys-error);
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

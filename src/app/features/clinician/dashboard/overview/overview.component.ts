@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { StatsCardComponent, StatsSeverity } from '../../../../shared/components/stats-card/stats-card.component';
+import { PatientListTableComponent } from '../../_components/patient-list/patient-list.component';
 
 interface StatSummary {
   label: string;
@@ -12,7 +13,7 @@ interface StatSummary {
 @Component({
   selector: 'app-clinician-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [StatsCardComponent],
+  imports: [StatsCardComponent, PatientListTableComponent],
   template: `
     <h1>Dashboard</h1>
 
@@ -27,12 +28,18 @@ interface StatSummary {
         />
       }
     </section>
+
+    <app-patient-list-table class="patient-list" />
   `,
   styles: `
     :host {
       display: block;
       // Size the grid by the content area, not the viewport: the docked sidenav takes 240px.
       container-type: inline-size;
+    }
+
+    .patient-list {
+      margin-top: 24px;
     }
 
     .stats-grid {

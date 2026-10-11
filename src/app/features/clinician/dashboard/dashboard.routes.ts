@@ -18,6 +18,12 @@ export const CLINICIAN_ROUTES: Routes = [
           import('../patient-list/patient-list.component').then((m) => m.PatientListComponent),
       },
       {
+        path: 'patient/:id',
+        title: 'Patient · MedAudit',
+        loadComponent: () =>
+          import('../patient-detail/patient-detail.component').then((m) => m.PatientDetailComponent),
+      },
+      {
         path: 'audit-log',
         title: 'Audit Log · MedAudit',
         loadComponent: () =>

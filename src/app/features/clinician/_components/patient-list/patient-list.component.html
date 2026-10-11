@@ -1,0 +1,64 @@
+<mat-card appearance="outlined" class="patient-list">
+  <header class="patient-list__header">
+    <h2 class="patient-list__title">Recent Submissions</h2>
+    <a mat-button routerLink="/clinician/patients">View all</a>
+  </header>
+
+  <div class="patient-list__scroll">
+    <table mat-table [dataSource]="rows()" class="patient-list__table">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>Patient ID</th>
+        <td mat-cell *matCellDef="let patient" class="patient-list__id">{{ patient.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let patient">{{ patient.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="lastSubmission">
+        <th mat-header-cell *matHeaderCellDef>Last Submission</th>
+        <td mat-cell *matCellDef="let patient">
+          @if (patient.lastSubmission) {
+            <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: 'MMM d, HH:mm' }}</time>
+          } @else {
+            <span class="patient-list__muted">No submissions</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="compliance">
+        <th mat-header-cell *matHeaderCellDef>Compliance</th>
+        <td mat-cell *matCellDef="let patient">
+          <span class="compliance-badge" [class]="'compliance-badge--' + patient.compliance">
+            {{ patient.complianceLabel }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="alerts">
+        <th mat-header-cell *matHeaderCellDef class="patient-list__numeric">Alerts</th>
+        <td mat-cell *matCellDef="let patient" class="patient-list__numeric">
+          @if (patient.alerts > 0) {
+            <span class="patient-list__alerts">{{ patient.alerts }}</span>
+          } @else {
+            <span aria-hidden="true" class="patient-list__muted">—</span>
+            <span class="sr-only">No alerts</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="patient-list__actions"><span class="sr-only">Actions</span></th>
+        <td mat-cell *matCellDef="let patient" class="patient-list__actions">
+          <a mat-button [routerLink]="['/clinician/patient', patient.id]" [attr.aria-label]="'Review ' + patient.name">
+            Review
+          </a>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+</mat-card>
