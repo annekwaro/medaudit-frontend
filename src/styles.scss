@@ -21,7 +21,7 @@ html {
   // Custom type roles (font shorthand; pair with the matching letter-spacing where noted).
   --ma-type-page-title: 500 2.5rem / 1.1 var(--ma-font-display); // letter-spacing: -0.02em
   --ma-type-section: 500 1.125rem / 1.5rem var(--ma-font-display);
-  --ma-type-stat: 500 2rem / 2.5rem var(--ma-font-display); // letter-spacing: -0.01em
+  --ma-type-stat: 600 2.25rem / 2.75rem var(--ma-font-display); // letter-spacing: -0.02em
   --ma-type-logo: 600 1.25rem / 1.75rem var(--ma-font-display); // letter-spacing: -0.01em
 
   @include mat.theme(

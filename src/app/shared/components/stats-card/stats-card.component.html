@@ -1,10 +1,15 @@
-<mat-card appearance="outlined" class="stats-card" [class]="'stats-card--' + severity()">
+<mat-card class="stats-card" [class]="'stats-card--' + severity()">
   <mat-card-content class="stats-card__body">
     <div class="stats-card__header">
-      <span class="stats-card__label">{{ label() }}</span>
-      @if (severityIcon(); as icon) {
-        <mat-icon class="stats-card__severity-icon" [attr.aria-label]="severity() + ' severity'">{{ icon }}</mat-icon>
-      }
+      <span class="stats-card__icon" aria-hidden="true">
+        <mat-icon>{{ iconName() }}</mat-icon>
+      </span>
+      <span class="stats-card__label">
+        {{ label() }}
+        @if (severityText(); as text) {
+          <span class="sr-only">({{ text }})</span>
+        }
+      </span>
     </div>
 
     <div class="stats-card__value">{{ value() }}</div>

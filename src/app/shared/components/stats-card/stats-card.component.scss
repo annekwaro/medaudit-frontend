@@ -17,13 +17,12 @@
 
   .stats-card {
     transition:
-      transform 150ms ease,
-      box-shadow 150ms ease,
-      border-color 150ms ease;
+      transform 180ms ease,
+      box-shadow 180ms ease;
   }
 
   .stats-card:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 }
 
@@ -40,98 +39,109 @@
   }
 }
 
+// Per-severity identity: pastel gradient background + darker accent for the icon and good-news arrow.
 .stats-card {
-  --stats-card-accent: var(--mat-sys-outline-variant);
-  --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
-  --mdc-outlined-card-outline-color: var(--mat-sys-outline-variant);
+  --stats-card-ink: var(--mat-sys-on-surface); // #1C1C18
+  --stats-card-ink-soft: color-mix(in srgb, var(--stats-card-ink) 72%, transparent);
+  --stats-card-gradient: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+  --stats-card-accent: #0f766e;
 
-  position: relative;
+  // Borderless, 20px corners; the gradient replaces Material's container color and elevation.
   height: 100%;
-  overflow: hidden;
+  border: 0;
+  border-radius: 20px;
+  background: var(--stats-card-gradient);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
-  // Not clickable yet: no pointer. Shadow and border are not motion, so they apply regardless.
+  // Not clickable yet: no pointer. The shadow is not motion, so it applies regardless.
   &:hover {
-    --mdc-outlined-card-outline-color: var(--mat-sys-outline);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+    box-shadow: 0 8px 16px color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
   }
 
-  // Severity accent bar along the left edge.
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 4px;
-    background: var(--stats-card-accent);
+  &--info {
+    --stats-card-gradient: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+    --stats-card-accent: #0f766e; // teal-700
+  }
+
+  &--success {
+    --stats-card-gradient: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    --stats-card-accent: #047857; // emerald-700
   }
 
   &--warning {
-    --stats-card-accent: var(--mat-sys-tertiary);
+    --stats-card-gradient: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    --stats-card-accent: #b45309; // amber-700
   }
 
   &--critical {
-    --stats-card-accent: var(--mat-sys-error);
+    --stats-card-gradient: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
+    --stats-card-accent: #be123c; // rose-700
   }
 }
 
 .stats-card__body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  // Card content already pads 16px; nudge left to clear the accent bar.
-  padding: 16px 16px 16px 20px;
+  gap: 16px;
+  padding: 24px;
 }
 
 .stats-card__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 12px;
+}
+
+.stats-card__icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--stats-card-accent);
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
 }
 
 .stats-card__label {
-  font: var(--mat-sys-label-medium);
-  font-family: var(--ma-font-display);
-  letter-spacing: var(--mat-sys-label-medium-tracking);
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.stats-card__severity-icon {
-  width: 20px;
-  height: 20px;
-  font-size: 20px;
-  color: var(--stats-card-accent);
+  font: 500 0.875rem / 1.25rem var(--ma-font-display);
+  color: var(--stats-card-ink-soft);
 }
 
 .stats-card__value {
   // Shrink to the number so the pulse scales around its own center.
   align-self: flex-start;
   font: var(--ma-type-stat);
-  letter-spacing: -0.01em;
-  color: var(--mat-sys-on-surface);
+  letter-spacing: -0.02em;
+  color: var(--stats-card-ink);
 }
 
+// Text stays muted (the background carries the mood); only the arrow is colored.
 .stats-card__delta {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font: var(--mat-sys-body-small);
-  letter-spacing: var(--mat-sys-body-small-tracking);
-
-  &--positive {
-    color: var(--mat-sys-primary);
-  }
-
-  &--negative {
-    color: var(--mat-sys-error);
-  }
-
-  &--neutral {
-    color: var(--mat-sys-on-surface-variant);
-  }
+  font: 500 0.8125rem / 1.25rem var(--ma-font-body);
+  color: var(--stats-card-ink-soft);
 }
 
 .stats-card__delta-icon {
   width: 16px;
   height: 16px;
   font-size: 16px;
+
+  .stats-card__delta--positive & {
+    color: var(--stats-card-accent);
+  }
+
+  .stats-card__delta--negative & {
+    color: var(--mat-sys-error);
+  }
 }

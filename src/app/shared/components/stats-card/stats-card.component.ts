@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
-export type StatsSeverity = 'info' | 'warning' | 'critical';
+export type StatsSeverity = 'info' | 'success' | 'warning' | 'critical';
 
 type DeltaDirection = 'up' | 'down' | 'flat';
 
@@ -12,10 +12,20 @@ const DIRECTION_ICONS: Record<DeltaDirection, string> = {
   flat: 'trending_flat',
 };
 
-const SEVERITY_ICONS: Record<StatsSeverity, string | null> = {
+/** Fallback icon per severity when no `icon` is given. */
+const DEFAULT_ICONS: Record<StatsSeverity, string> = {
+  info: 'insights',
+  success: 'task_alt',
+  warning: 'pending_actions',
+  critical: 'notifications_active',
+};
+
+/** Screen-reader text for severities that the card's color alone would otherwise convey. */
+const SEVERITY_TEXT: Record<StatsSeverity, string | null> = {
   info: null,
-  warning: 'warning',
-  critical: 'error',
+  success: null,
+  warning: 'needs attention',
+  critical: 'critical',
 };
 
 @Component({
@@ -36,12 +46,15 @@ export class StatsCardComponent {
   /** Signed change, e.g. "+3 from yesterday", "-2%", "0". Direction is read from the leading sign. */
   readonly delta = input<string>();
   readonly severity = input<StatsSeverity>('info');
+  /** Material icon name for the card's identity; defaults by severity. */
+  readonly icon = input<string>();
   /** Whether an increase is good news. Set false for counts like alerts or unreviewed items. */
   readonly higherIsBetter = input(true);
   /** Pulse the value once after the entrance, to draw the eye to a critical metric. */
   readonly pulse = input(false);
 
-  readonly severityIcon = computed(() => SEVERITY_ICONS[this.severity()]);
+  readonly iconName = computed(() => this.icon() ?? DEFAULT_ICONS[this.severity()]);
+  readonly severityText = computed(() => SEVERITY_TEXT[this.severity()]);
 
   readonly direction = computed<DeltaDirection | null>(() => {
     const delta = this.delta()?.trim();
