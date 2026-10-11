@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientDataService } from '../../../core/services/patient-data.service';
+import { BackLinkComponent } from '../../../shared/components/back-link/back-link.component';
 import { COMPLIANCE_LABELS, COMPLIANCE_STATUSES, ComplianceStatus, PatientProfile } from '../../../shared/models/patient.model';
 import { PatientListTableComponent } from '../_components/patient-list/patient-list.component';
 
@@ -46,6 +47,7 @@ function submissionRate({ submissions30d: { submitted, missed } }: PatientProfil
     MatInputModule,
     MatSelectModule,
     PatientListTableComponent,
+    BackLinkComponent,
   ],
   templateUrl: './patients.component.html',
   styleUrl: './patients.component.scss',
@@ -63,6 +65,9 @@ export class PatientsComponent {
 
   readonly searchTerm = signal('');
   readonly showFilter = signal<ShowFilter>('all');
+
+  /** Arrived from a dashboard stats card. Captured once, so clearing ?filter= later keeps the link. */
+  readonly arrivedWithFilter = this.route.snapshot.queryParamMap.has('filter');
 
   constructor() {
     // Apply ?filter= from the dashboard cards. An absent param leaves the current choice alone,

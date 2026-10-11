@@ -1,0 +1,37 @@
+:host {
+  display: block;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  font: 500 14px / 20px var(--ma-font-body);
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ma-color-brand);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .back-link {
+    transition: color 150ms ease;
+  }
+}
+
+.back-link__icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}

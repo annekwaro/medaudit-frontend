@@ -1,8 +1,5 @@
 <div class="patient-detail">
-  <a mat-button routerLink="/clinician/dashboard" class="patient-detail__back">
-    <mat-icon>arrow_back</mat-icon>
-    Dashboard
-  </a>
+  <app-back-link class="patient-detail__back" [label]="backLabel" />
 
   @if (patient(); as patient) {
     <div class="patient-detail__layout">

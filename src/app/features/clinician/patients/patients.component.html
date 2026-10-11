@@ -1,5 +1,8 @@
 <div class="patients">
   <header>
+    @if (arrivedWithFilter) {
+      <app-back-link class="patients__back" label="Dashboard" />
+    }
     <h1 class="patients__title">Patients</h1>
     <p class="patients__subtitle">All enrolled patients in the trial</p>
   </header>

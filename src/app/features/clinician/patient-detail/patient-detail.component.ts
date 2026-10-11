@@ -7,8 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { PatientDataService } from '../../../core/services/patient-data.service';
+import { BackLinkComponent, previousAppUrl } from '../../../shared/components/back-link/back-link.component';
 import { AuditEntryComponent } from '../../../shared/components/audit-entry/audit-entry.component';
 import { ComplianceBadgeComponent } from '../../../shared/components/compliance-badge/compliance-badge.component';
 import { AUDIT_ACTION_LABELS, AUDIT_ACTIONS, AuditAction } from '../../../shared/models/audit.model';
@@ -19,12 +20,17 @@ const DATE_RANGE_DAYS: Record<DateRange, number | null> = { '7d': 7, '30d': 30, 
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+function backLabelFor(url: string | null): string {
+  if (url?.startsWith('/clinician/patients')) return 'Patients';
+  if (url?.startsWith('/clinician/audit-log')) return 'Audit Log';
+  return 'Dashboard';
+}
+
 @Component({
   selector: 'app-patient-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
-    RouterLink,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
@@ -32,6 +38,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
     MatIconModule,
     MatSelectModule,
     AuditEntryComponent,
+    BackLinkComponent,
     ComplianceBadgeComponent,
   ],
   templateUrl: './patient-detail.component.html',
@@ -40,6 +47,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export class PatientDetailComponent {
   private readonly patientData = inject(PatientDataService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly previousUrl = previousAppUrl(inject(Router));
 
   /** Bound from the :id route param (withComponentInputBinding). */
   readonly id = input.required<string>();
@@ -51,6 +59,9 @@ export class PatientDetailComponent {
     { value: '30d', label: 'Last 30 days' },
     { value: 'all', label: 'All time' },
   ];
+
+  /** Names the page Location.back() returns to; direct loads fall back to the dashboard. */
+  readonly backLabel = backLabelFor(this.previousUrl);
 
   readonly dateRange = signal<DateRange>('all');
   readonly selectedActions = signal<ReadonlySet<AuditAction>>(new Set(AUDIT_ACTIONS));
