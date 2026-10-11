@@ -24,7 +24,7 @@ src/app/
 ├── core/                     (singleton services, interceptors)
 │   └── services/             (patient-data.service: mock patients + audit entries)
 ├── shared/
-│   ├── components/           (badge, compliance-badge, stats-card)
+│   ├── components/           (audit-entry, compliance-badge, stats-card)
 │   └── models/               (patient.model, audit.model)
 └── features/clinician/
     ├── dashboard/            (app shell: sidenav + toolbar, clinician routes, overview/ page)
