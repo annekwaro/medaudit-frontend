@@ -59,7 +59,7 @@ function niceStep(max: number): number {
             <text class="trend-chart__label" [attr.x]="point.x" [attr.y]="height - 8" text-anchor="middle">
               {{ point.date | date: 'EEE' }}
             </text>
-            <circle class="trend-chart__dot" [class.trend-chart__dot--active]="hovered() === i" [attr.cx]="point.x" [attr.cy]="point.y" [attr.r]="hovered() === i ? 5 : 3" />
+            <circle class="trend-chart__dot" [attr.cx]="point.x" [attr.cy]="point.y" [attr.r]="hovered() === i ? 5 : 3" />
             <!-- Full-height hit column so hovering anywhere near a day selects it. -->
             <rect
               class="trend-chart__hit"
@@ -165,13 +165,9 @@ function niceStep(max: number): number {
     }
 
     .trend-chart__dot {
-      fill: var(--mat-sys-surface-container-lowest);
-      stroke: var(--mat-sys-primary);
-      stroke-width: 2;
-    }
-
-    .trend-chart__dot--active {
       fill: var(--mat-sys-primary);
+      stroke: #ffffff;
+      stroke-width: 1;
     }
 
     .trend-chart__guide {
