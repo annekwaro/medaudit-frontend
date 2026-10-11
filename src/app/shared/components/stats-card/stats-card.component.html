@@ -1,0 +1,19 @@
+<mat-card appearance="outlined" class="stats-card" [class]="'stats-card--' + severity()">
+  <mat-card-content class="stats-card__body">
+    <div class="stats-card__header">
+      <span class="stats-card__label">{{ label() }}</span>
+      @if (severityIcon(); as icon) {
+        <mat-icon class="stats-card__severity-icon" [attr.aria-label]="severity() + ' severity'">{{ icon }}</mat-icon>
+      }
+    </div>
+
+    <div class="stats-card__value">{{ value() }}</div>
+
+    @if (delta(); as deltaText) {
+      <div class="stats-card__delta" [class]="'stats-card__delta--' + sentiment()">
+        <mat-icon class="stats-card__delta-icon" aria-hidden="true">{{ directionIcon() }}</mat-icon>
+        <span>{{ deltaText }}</span>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
