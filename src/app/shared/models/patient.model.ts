@@ -16,3 +16,18 @@ export interface PatientSummary {
   compliance: ComplianceStatus;
   alerts: number;
 }
+
+/** Full patient record for the detail page (superset of the table summary). */
+export interface PatientProfile extends PatientSummary {
+  age: number;
+  sex: 'Female' | 'Male';
+  /** ISO 8601 date. */
+  enrolledOn: string;
+  site: string;
+  /** Kept blinded for site staff in a blinded trial. */
+  treatmentArm: string;
+  /** ISO 8601 date, or null if none scheduled. */
+  nextVisit: string | null;
+  /** Expected diary submissions over the last 30 days (or since enrollment, if shorter). */
+  submissions30d: { submitted: number; missed: number };
+}

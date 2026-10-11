@@ -5,75 +5,139 @@
   </a>
 
   @if (patient(); as patient) {
-    <header class="patient-header">
-      <div class="patient-header__identity">
-        <h1 class="patient-header__name">{{ patient.name }}</h1>
-        <app-compliance-badge [status]="patient.compliance" />
-      </div>
-      <dl class="patient-header__meta">
-        <div>
-          <dt>Patient ID</dt>
-          <dd class="patient-header__id">{{ patient.id }}</dd>
-        </div>
-        <div>
-          <dt>Last submission</dt>
-          <dd>
-            @if (patient.lastSubmission) {
-              <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: 'MMM d, HH:mm' }}</time>
-            } @else {
-              No submissions
-            }
-          </dd>
-        </div>
-      </dl>
-    </header>
+    <div class="patient-detail__layout">
+      <div class="patient-detail__main">
+        <header class="patient-header">
+          <div class="patient-header__identity">
+            <h1 class="patient-header__name">{{ patient.name }}</h1>
+            <app-compliance-badge [status]="patient.compliance" />
+          </div>
+          <dl class="patient-header__meta">
+            <div>
+              <dt>Patient ID</dt>
+              <dd class="patient-header__id">{{ patient.id }}</dd>
+            </div>
+            <div>
+              <dt>Last submission</dt>
+              <dd>
+                @if (patient.lastSubmission) {
+                  <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: 'MMM d, HH:mm' }}</time>
+                } @else {
+                  No submissions
+                }
+              </dd>
+            </div>
+          </dl>
+        </header>
 
-    <section class="audit" aria-labelledby="audit-heading">
-      <div class="audit__heading-row">
-        <h2 id="audit-heading" class="audit__heading">Audit trail</h2>
-        <button mat-stroked-button type="button" (click)="exportCsv()">
-          <mat-icon>download</mat-icon>
-          Export CSV
-        </button>
-      </div>
+        <section class="audit" aria-labelledby="audit-heading">
+          <div class="audit__heading-row">
+            <h2 id="audit-heading" class="audit__heading">Audit trail</h2>
+            <button mat-stroked-button type="button" (click)="exportCsv()">
+              <mat-icon>download</mat-icon>
+              Export CSV
+            </button>
+          </div>
 
-      <div class="audit__filters" role="group" aria-label="Filter audit entries">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="audit__range">
-          <mat-label>Date range</mat-label>
-          <mat-select [value]="dateRange()" (selectionChange)="dateRange.set($event.value)">
-            @for (option of dateRangeOptions; track option.value) {
-              <mat-option [value]="option.value">{{ option.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+          <div class="audit__filters" role="group" aria-label="Filter audit entries">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="audit__range">
+              <mat-label>Date range</mat-label>
+              <mat-select [value]="dateRange()" (selectionChange)="dateRange.set($event.value)">
+                @for (option of dateRangeOptions; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
 
-        <fieldset class="audit__actions">
-          <legend class="sr-only">Action types</legend>
-          @for (action of actions; track action) {
-            <mat-checkbox
-              [checked]="selectedActions().has(action)"
-              (change)="toggleAction(action, $event.checked)"
-            >
-              {{ actionLabels[action] }}
-            </mat-checkbox>
+            <fieldset class="audit__actions">
+              <legend class="sr-only">Action types</legend>
+              @for (action of actions; track action) {
+                <mat-checkbox
+                  [checked]="selectedActions().has(action)"
+                  (change)="toggleAction(action, $event.checked)"
+                >
+                  {{ actionLabels[action] }}
+                </mat-checkbox>
+              }
+            </fieldset>
+          </div>
+
+          <p class="audit__count" aria-live="polite">
+            Showing {{ filteredEntries().length }} of {{ totalEntries() }} entries
+          </p>
+
+          @if (filteredEntries().length) {
+            <ol class="timeline">
+              @for (entry of filteredEntries(); track entry.id) {
+                <li app-audit-entry [entry]="entry"></li>
+              }
+            </ol>
+          } @else {
+            <p class="audit__empty">No audit entries match these filters.</p>
           }
-        </fieldset>
+        </section>
       </div>
 
-      <p class="audit__count" aria-live="polite">
-        Showing {{ filteredEntries().length }} of {{ totalEntries() }} entries
-      </p>
+      <aside class="patient-detail__aside" aria-label="Patient information">
+        <mat-card class="info-card">
+          <h2 class="info-card__title">Patient Info</h2>
+          <dl class="info-rows">
+            <div class="info-rows__row"><dt>Full name</dt><dd>{{ patient.name }}</dd></div>
+            <div class="info-rows__row"><dt>Patient ID</dt><dd class="info-rows__mono">{{ patient.id }}</dd></div>
+            <div class="info-rows__row"><dt>Age</dt><dd>{{ patient.age }}</dd></div>
+            <div class="info-rows__row"><dt>Sex</dt><dd>{{ patient.sex }}</dd></div>
+            <div class="info-rows__row">
+              <dt>Enrolled</dt>
+              <dd><time [attr.datetime]="patient.enrolledOn">{{ patient.enrolledOn | date: 'MMM d, y' }}</time></dd>
+            </div>
+            <div class="info-rows__row"><dt>Site</dt><dd>{{ patient.site }}</dd></div>
+            <div class="info-rows__row"><dt>Treatment arm</dt><dd>{{ patient.treatmentArm }}</dd></div>
+            <div class="info-rows__row">
+              <dt>Next visit</dt>
+              <dd>
+                @if (patient.nextVisit) {
+                  <time [attr.datetime]="patient.nextVisit">{{ patient.nextVisit | date: 'MMM d, y' }}</time>
+                } @else {
+                  Not scheduled
+                }
+              </dd>
+            </div>
+          </dl>
+        </mat-card>
 
-      @if (filteredEntries().length) {
-        <ol class="timeline">
-          @for (entry of filteredEntries(); track entry.id) {
-            <li app-audit-entry [entry]="entry"></li>
-          }
-        </ol>
-      } @else {
-        <p class="audit__empty">No audit entries match these filters.</p>
-      }
-    </section>
+        <mat-card class="info-card">
+          <h2 class="info-card__title">Compliance</h2>
+          <p class="compliance-summary">
+            <span class="compliance-summary__value" [attr.data-band]="complianceBand()">
+              {{ compliancePercent() ?? '—' }}{{ compliancePercent() !== null ? '%' : '' }}
+            </span>
+            <span class="compliance-summary__window">{{ complianceWindow() }}</span>
+          </p>
+          <dl class="info-rows info-rows--compact">
+            <div class="info-rows__row"><dt>Submissions</dt><dd>{{ patient.submissions30d.submitted }}</dd></div>
+            <div class="info-rows__row"><dt>Missed</dt><dd>{{ patient.submissions30d.missed }}</dd></div>
+          </dl>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <h2 class="info-card__title">Quick Actions</h2>
+          <div class="quick-actions">
+            <button mat-stroked-button type="button" (click)="comingSoon()">
+              <mat-icon>mail</mat-icon>
+              Send message
+            </button>
+            <button mat-stroked-button type="button" (click)="comingSoon()">
+              <mat-icon>edit_note</mat-icon>
+              Add note
+            </button>
+            <button mat-stroked-button type="button" (click)="comingSoon()">
+              <mat-icon>event</mat-icon>
+              Schedule visit
+            </button>
+          </div>
+        </mat-card>
+      </aside>
+    </div>
   } @else {
     <h1>Patient not found</h1>
     <p>No patient with ID <strong>{{ id() }}</strong> exists in this study.</p>

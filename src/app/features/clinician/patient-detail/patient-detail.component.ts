@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,6 +26,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
     DatePipe,
     RouterLink,
     MatButtonModule,
+    MatCardModule,
     MatCheckboxModule,
     MatFormFieldModule,
     MatIconModule,
@@ -73,6 +75,30 @@ export class PatientDetailComponent {
   });
 
   readonly totalEntries = computed(() => this.auditTrail().length);
+
+  readonly compliancePercent = computed(() => {
+    const totals = this.patient()?.submissions30d;
+    if (!totals) return null;
+    const expected = totals.submitted + totals.missed;
+    return expected ? Math.round((totals.submitted / expected) * 100) : null;
+  });
+
+  /** >= 90% emerald, 70-89% amber, < 70% rose. */
+  readonly complianceBand = computed(() => {
+    const percent = this.compliancePercent() ?? 0;
+    return percent >= 90 ? 'high' : percent >= 70 ? 'mid' : 'low';
+  });
+
+  /** "Last 30 days", or the shorter window for patients enrolled less than 30 days ago. */
+  readonly complianceWindow = computed(() => {
+    const totals = this.patient()?.submissions30d;
+    const days = totals ? totals.submitted + totals.missed : 0;
+    return days < 30 ? `Since enrollment (${days} days)` : 'Last 30 days';
+  });
+
+  comingSoon(): void {
+    this.snackBar.open('Feature coming soon', undefined, { duration: 3000 });
+  }
 
   exportCsv(): void {
     this.snackBar.open('Export coming soon', undefined, { duration: 3000 });

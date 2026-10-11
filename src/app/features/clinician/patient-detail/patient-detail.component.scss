@@ -1,10 +1,126 @@
 :host {
   display: block;
+  // Size the two-column layout by the content area (the docked sidenav takes 240px).
+  container-type: inline-size;
 }
 
-// Readable measure on wide screens; outer 24px padding comes from the shell.
+// Outer 24px padding comes from the shell.
 .patient-detail {
-  max-width: 880px;
+  max-width: 1200px;
+}
+
+// Timeline 60% | patient info 40%; stacked below ~900px of content width.
+.patient-detail__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 24px;
+}
+
+@container (max-width: 900px) {
+  .patient-detail__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.patient-detail__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// Same card language as Settings: white, 20px radius, soft shadow, no gradients.
+.info-card {
+  --info-ink: var(--mat-sys-on-surface);
+  // 62%: 60% ink is 4.49:1 on white, just under AA.
+  --info-ink-soft: color-mix(in srgb, var(--info-ink) 62%, transparent);
+
+  padding: 24px;
+  border: 0;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.info-card__title {
+  margin: 0;
+  font: var(--ma-type-section);
+  letter-spacing: -0.01em;
+  color: var(--info-ink);
+}
+
+// Label left, value right (Settings Profile row style).
+.info-rows {
+  margin: 8px 0 0;
+}
+
+.info-rows__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 48px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  dt {
+    font: 500 0.875rem / 1.25rem var(--ma-font-body);
+    color: var(--info-ink-soft);
+  }
+
+  dd {
+    margin: 0;
+    font: 500 0.9375rem / 1.375rem var(--ma-font-body);
+    color: var(--info-ink);
+    text-align: end;
+    overflow-wrap: anywhere;
+  }
+}
+
+.info-rows--compact .info-rows__row {
+  min-height: 40px;
+}
+
+.info-rows__mono {
+  font-variant-numeric: tabular-nums;
+}
+
+.compliance-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 12px 0 4px;
+}
+
+// Threshold colors (700 shades; >= 5:1 on white, so they also pass as normal text).
+.compliance-summary__value {
+  font: 600 2rem / 2.5rem var(--ma-font-display);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+
+  &[data-band='high'] { color: #047857; } // emerald-700
+  &[data-band='mid']  { color: #b45309; } // amber-700
+  &[data-band='low']  { color: #be123c; } // rose-700
+}
+
+.compliance-summary__window {
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  color: var(--info-ink-soft);
+}
+
+.quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+
+  button {
+    width: 100%;
+  }
 }
 
 .patient-detail__back {
