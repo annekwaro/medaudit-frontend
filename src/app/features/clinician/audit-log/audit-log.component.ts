@@ -49,6 +49,12 @@ export class AuditLogComponent {
   readonly actionFilter = signal<AuditAction | 'all'>('all');
   readonly dateFilter = signal<DateFilter>('all');
 
+  /**
+   * Changes when a dropdown filter changes, so the list replays its entrance.
+   * Search is excluded: re-fading everything per keystroke flickers; newly matching entries still animate.
+   */
+  readonly listKey = computed(() => `${this.patientFilter()}|${this.actionFilter()}|${this.dateFilter()}`);
+
   readonly hasActiveFilters = computed(
     () =>
       this.searchTerm().trim() !== '' ||

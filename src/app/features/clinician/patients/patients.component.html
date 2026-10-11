@@ -43,7 +43,7 @@
   </p>
 
   @if (filteredPatients().length) {
-    <app-patient-list-table [patients]="filteredPatients()" />
+    <app-patient-list-table [patients]="filteredPatients()" [staggerRows]="true" />
   } @else {
     <div class="patients__empty">
       <p>No patients match your filters</p>

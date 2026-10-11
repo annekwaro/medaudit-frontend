@@ -34,10 +34,12 @@ interface StatSummary {
     </section>
 
     <app-patient-list-table
-      class="patient-list"
+      class="patient-list rise-in"
+      [style.--rise-index]="stats().length"
       heading="Recent Submissions"
       viewAllLink="/clinician/patients"
       [patients]="patients()"
+      [staggerRows]="true"
     />
   `,
   styles: `
@@ -49,6 +51,23 @@ interface StatSummary {
 
     .patient-list {
       margin-top: 24px;
+      // Rows start staggering as the card itself begins its entrance (index 4 × 60ms).
+      --rows-enter-delay: 240ms;
+    }
+
+    // Page-load entrance: fade in + rise 8px, staggered 60ms per item.
+    @media (prefers-reduced-motion: no-preference) {
+      .rise-in {
+        animation: rise-in 250ms ease-out both;
+        animation-delay: calc(var(--rise-index, 0) * 60ms);
+      }
+    }
+
+    @keyframes rise-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
     }
 
     // Stats card entrance stagger: 0 / 60 / 120 / 180ms.

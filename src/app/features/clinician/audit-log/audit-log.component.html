@@ -60,8 +60,9 @@
 
   @if (filteredEntries().length) {
     <ol class="audit-log__list">
-      @for (item of filteredEntries(); track item.entry.id) {
-        <li app-audit-entry [entry]="item.entry" [patient]="item.patient"></li>
+      <!-- Keying on the dropdown filters re-creates (and re-animates) the list when they change. -->
+      @for (item of filteredEntries(); track item.entry.id + '|' + listKey(); let i = $index) {
+        <li app-audit-entry class="audit-log__entry" [style.--entry-index]="i" [entry]="item.entry" [patient]="item.patient"></li>
       }
     </ol>
   } @else {

@@ -22,6 +22,8 @@ export class PatientListTableComponent {
   readonly heading = input<string>();
   /** Router link for a "View all" button in the header. */
   readonly viewAllLink = input<string>();
+  /** Fade + slide rows in on first render, 40ms apart. Offset the start with --rows-enter-delay. */
+  readonly staggerRows = input(false);
 
   readonly displayedColumns = ['id', 'name', 'lastSubmission', 'compliance', 'alerts', 'actions'];
 

@@ -66,7 +66,14 @@
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <!-- Row click is a mouse shortcut; the Review link is the keyboard/screen-reader path. -->
-      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="patient-list__row" (click)="openPatient(row, $event)"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns; let i = index"
+        class="patient-list__row"
+        [class.patient-list__row--enter]="staggerRows()"
+        [style.--row-index]="i"
+        (click)="openPatient(row, $event)"
+      ></tr>
     </table>
   </div>
 </mat-card>
