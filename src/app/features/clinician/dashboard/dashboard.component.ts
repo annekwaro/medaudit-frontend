@@ -18,8 +18,6 @@ interface NavItem {
 
 @Component({
   selector: 'app-clinician-dashboard',
-  // Required on Angular 17; remove once the project is on Angular 19+.
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterOutlet,
@@ -59,7 +57,7 @@ interface NavItem {
       </mat-sidenav>
 
       <mat-sidenav-content class="shell__main">
-        <mat-toolbar color="primary" class="shell__toolbar">
+        <mat-toolbar class="shell__toolbar">
           <button
             mat-icon-button
             type="button"
@@ -101,7 +99,7 @@ interface NavItem {
       padding: 20px 16px 12px;
       font-size: 1.25rem;
       font-weight: 500;
-      color: var(--ma-color-brand, #3f51b5);
+      color: var(--ma-color-brand);
     }
 
     .shell__main {
@@ -110,6 +108,9 @@ interface NavItem {
     }
 
     .shell__toolbar {
+      // M3 ignores color="primary"; theme the toolbar via its tokens instead.
+      --mat-toolbar-container-background-color: var(--mat-sys-primary);
+      --mat-toolbar-container-text-color: var(--mat-sys-on-primary);
       position: sticky;
       top: 0;
       z-index: 2;
@@ -131,8 +132,8 @@ interface NavItem {
       font-weight: 600;
       letter-spacing: 0.08em;
       line-height: 1.5;
-      background: var(--ma-role-badge-bg, rgba(255, 255, 255, 0.2));
-      color: inherit;
+      background: var(--mat-sys-on-primary);
+      color: var(--mat-sys-primary);
     }
 
     .shell__content {
