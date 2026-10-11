@@ -1,0 +1,105 @@
+:host {
+  display: block;
+}
+
+// Outer 24px padding comes from the shell.
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 720px;
+}
+
+.settings__title {
+  margin: 0 0 8px;
+}
+
+.section {
+  --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
+  --mdc-outlined-card-outline-color: var(--mat-sys-outline-variant);
+}
+
+.section__title {
+  margin: 0;
+  font: var(--mat-sys-title-medium);
+  letter-spacing: var(--mat-sys-title-medium-tracking);
+}
+
+.section__note {
+  margin: 12px 0 0;
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.profile {
+  margin: 8px 0 0;
+}
+
+.profile__row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  dt {
+    font: var(--mat-sys-label-large);
+    letter-spacing: var(--mat-sys-label-large-tracking);
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  dd {
+    margin: 0;
+    font: var(--mat-sys-body-large);
+    overflow-wrap: anywhere;
+  }
+}
+
+.toggle-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 8px 0;
+  }
+
+  li + li {
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  // Label left, switch right, full row width.
+  mat-slide-toggle {
+    display: block;
+  }
+
+  ::ng-deep .mdc-form-field {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.display__selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+
+  mat-form-field {
+    flex: 1 1 200px;
+  }
+}
+
+// In normal flow after the last card, so it never overlaps content.
+.settings__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+}

@@ -1,0 +1,77 @@
+<div class="settings">
+  <h1 class="settings__title">Settings</h1>
+
+  <mat-card appearance="outlined" class="section">
+    <mat-card-header>
+      <mat-card-title><h2 class="section__title">Profile</h2></mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <dl class="profile">
+        @for (row of profile; track row.label) {
+          <div class="profile__row">
+            <dt>{{ row.label }}</dt>
+            <dd>{{ row.value }}</dd>
+          </div>
+        }
+      </dl>
+      <p class="section__note">Profile is managed by your site administrator</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined" class="section">
+    <mat-card-header>
+      <mat-card-title><h2 class="section__title">Notifications</h2></mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ul class="toggle-list">
+        @for (item of notifications; track item.label) {
+          <li>
+            <mat-slide-toggle labelPosition="before" [checked]="item.state()" (change)="item.state.set($event.checked)">
+              {{ item.label }}
+            </mat-slide-toggle>
+          </li>
+        }
+      </ul>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined" class="section">
+    <mat-card-header>
+      <mat-card-title><h2 class="section__title">Display Preferences</h2></mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="display">
+      <div class="display__selects">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Language</mat-label>
+          <mat-select [value]="language()" (selectionChange)="language.set($event.value)">
+            @for (option of languageOptions; track option.value) {
+              <mat-option [value]="option.value" [attr.lang]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Date format</mat-label>
+          <mat-select [value]="dateFormat()" (selectionChange)="dateFormat.set($event.value)">
+            @for (option of dateFormatOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <ul class="toggle-list">
+        <li>
+          <mat-slide-toggle labelPosition="before" [checked]="compactRows()" (change)="compactRows.set($event.checked)">
+            Compact table rows
+          </mat-slide-toggle>
+        </li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+
+  <footer class="settings__footer">
+    <button mat-button type="button" (click)="resetToDefaults()">Reset to defaults</button>
+    <button mat-flat-button type="button" (click)="save()">Save changes</button>
+  </footer>
+</div>
