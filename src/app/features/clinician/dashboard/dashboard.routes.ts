@@ -15,7 +15,7 @@ export const CLINICIAN_ROUTES: Routes = [
         path: 'patients',
         title: 'Patients · MedAudit',
         loadComponent: () =>
-          import('../patient-list/patient-list.component').then((m) => m.PatientListComponent),
+          import('../patients/patients.component').then((m) => m.PatientsComponent),
       },
       {
         path: 'patient/:id',
@@ -26,7 +26,7 @@ export const CLINICIAN_ROUTES: Routes = [
         path: 'audit-log',
         title: 'Audit Log · MedAudit',
         loadComponent: () =>
-          import('../audit-viewer/audit-viewer.component').then((m) => m.AuditViewerComponent),
+          import('../audit-log/audit-log.component').then((m) => m.AuditLogComponent),
       },
       {
         path: 'settings',

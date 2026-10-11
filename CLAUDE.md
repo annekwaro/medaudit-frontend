@@ -19,10 +19,21 @@
 
 ## Project Structure
 
+```
 src/app/
-├── core/ (singleton services, interceptors)
-├── shared/ (reusable components, models)
-└── features/clinician/ (dashboard, patient-list, audit-viewer)
+├── core/                     (singleton services, interceptors)
+│   └── services/             (patient-data.service: mock patients + audit entries)
+├── shared/
+│   ├── components/           (badge, compliance-badge, stats-card)
+│   └── models/               (patient.model, audit.model)
+└── features/clinician/
+    ├── dashboard/            (app shell: sidenav + toolbar, clinician routes, overview/ page)
+    ├── patients/             (Patients page — /clinician/patients)
+    ├── patient-detail/       (single-patient audit trail — /clinician/patient/:id)
+    ├── audit-log/            (global audit search — /clinician/audit-log)
+    ├── settings/
+    └── _components/          (feature-local components, e.g. patient-list table)
+```
 
 ## Current Task
 
