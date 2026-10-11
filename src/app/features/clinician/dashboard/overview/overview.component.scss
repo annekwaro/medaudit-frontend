@@ -1,0 +1,125 @@
+:host {
+  display: block;
+  // Size the grid by the content area, not the viewport: the docked sidenav takes 240px.
+  container-type: inline-size;
+}
+
+// h1 on the left, time anchor on the right; the anchor wraps below on narrow widths.
+.overview__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 16px;
+}
+
+.overview__title {
+  margin: 0;
+}
+
+.time-anchor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-anchor__text {
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Compact select so it sits in line with body-small text.
+.time-anchor__select {
+  --mat-form-field-container-height: 36px;
+  --mat-form-field-container-vertical-padding: 6px;
+  --mat-form-field-container-text-size: 0.8125rem;
+  --mat-select-trigger-text-size: 0.8125rem;
+
+  width: 140px;
+}
+
+.time-anchor__divider {
+  align-self: stretch;
+  width: 1px;
+  margin: 6px 4px;
+  background: var(--mat-sys-outline-variant);
+}
+
+.time-anchor__refresh {
+  --mdc-icon-button-state-layer-size: 32px;
+  --mdc-icon-button-icon-size: 18px;
+
+  margin-left: -4px;
+  padding: 7px;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .time-anchor__refresh-icon--spinning {
+    animation: spin 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// The banner animates this margin to 0 as it collapses on dismiss.
+.overview__banner {
+  margin-bottom: 16px;
+}
+
+.trend-chart,
+.patient-list {
+  margin-top: 24px;
+}
+
+// Rows start staggering as the card itself begins its entrance (index 5 × 60ms).
+.patient-list {
+  --rows-enter-delay: 300ms;
+}
+
+// Page-load entrance: fade in + rise 8px, staggered 60ms per item.
+@media (prefers-reduced-motion: no-preference) {
+  .rise-in {
+    animation: rise-in 250ms ease-out both;
+    animation-delay: calc(var(--rise-index, 0) * 60ms);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+// Tablet: 2 columns.
+@container (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+// Mobile: 1 column.
+@container (max-width: 520px) {
+  .stats-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,8 +1,15 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { PatientDataService } from '../../../../core/services/patient-data.service';
 import { StatsCardComponent, StatsSeverity } from '../../../../shared/components/stats-card/stats-card.component';
 import { PatientListTableComponent } from '../../_components/patient-list/patient-list.component';
 import { PatientQuickView } from '../../patients/patients.component';
+import { TrendChartComponent, TrendPoint } from '../_components/trend-chart/trend-chart.component';
+import { VisitBannerComponent } from '../_components/visit-banner/visit-banner.component';
 
 interface StatSummary {
   label: string;
@@ -18,97 +25,38 @@ interface StatSummary {
   valueUnit: string;
 }
 
+type DateRange = 'today' | '7d' | '30d';
+
 @Component({
   selector: 'app-clinician-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [StatsCardComponent, PatientListTableComponent],
-  template: `
-    <h1>Dashboard</h1>
-
-    <section class="stats-grid" aria-label="Summary statistics">
-      @for (stat of stats(); track stat.label; let i = $index) {
-        <app-stats-card
-          [style.--stagger-index]="i"
-          [label]="stat.label"
-          [value]="stat.value"
-          [delta]="stat.delta"
-          [severity]="stat.severity"
-          [icon]="stat.icon"
-          [higherIsBetter]="stat.higherIsBetter"
-          [pulse]="stat.pulse ?? false"
-          link="/clinician/patients"
-          [queryParams]="stat.filter ? { filter: stat.filter } : undefined"
-          [linkLabel]="stat.linkLabel"
-          [valueUnit]="stat.valueUnit"
-        />
-      }
-    </section>
-
-    <app-patient-list-table
-      class="patient-list rise-in"
-      [style.--rise-index]="stats().length"
-      heading="Recent Submissions"
-      viewAllLink="/clinician/patients"
-      [patients]="patients()"
-      [staggerRows]="true"
-    />
-  `,
-  styles: `
-    :host {
-      display: block;
-      // Size the grid by the content area, not the viewport: the docked sidenav takes 240px.
-      container-type: inline-size;
-    }
-
-    .patient-list {
-      margin-top: 24px;
-      // Rows start staggering as the card itself begins its entrance (index 4 × 60ms).
-      --rows-enter-delay: 240ms;
-    }
-
-    // Page-load entrance: fade in + rise 8px, staggered 60ms per item.
-    @media (prefers-reduced-motion: no-preference) {
-      .rise-in {
-        animation: rise-in 250ms ease-out both;
-        animation-delay: calc(var(--rise-index, 0) * 60ms);
-      }
-    }
-
-    @keyframes rise-in {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-    }
-
-    // Stats card entrance stagger: 0 / 60 / 120 / 180ms.
-    .stats-grid > app-stats-card {
-      --stats-card-enter-delay: calc(var(--stagger-index, 0) * 60ms);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    // Tablet: 2 columns.
-    @container (max-width: 900px) {
-      .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    // Mobile: 1 column.
-    @container (max-width: 520px) {
-      .stats-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-  `,
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
+    StatsCardComponent,
+    PatientListTableComponent,
+    TrendChartComponent,
+    VisitBannerComponent,
+  ],
+  templateUrl: './overview.component.html',
+  styleUrl: './overview.component.scss',
 })
 export class OverviewComponent {
   readonly patients = inject(PatientDataService).patients;
+
+  readonly dateRangeOptions: { value: DateRange; label: string }[] = [
+    { value: 'today', label: 'Today' },
+    { value: '7d', label: 'Last 7 days' },
+    { value: '30d', label: 'Last 30 days' },
+  ];
+  /** Cosmetic for now: the mock data below doesn't filter by it yet. */
+  readonly dateRange = signal<DateRange>('7d');
+
+  readonly updatedAt = signal(new Date());
+  readonly refreshing = signal(false);
 
   // Mock data until the stats API exists.
   readonly stats = signal<StatSummary[]>([
@@ -129,4 +77,23 @@ export class OverviewComponent {
       filter: 'compliance', linkLabel: 'View patients by lowest compliance', valueUnit: 'compliance',
     },
   ]);
+
+  // Mock: Mon Oct 5 – Sun Oct 11, 2026.
+  readonly submissionsTrend = signal<TrendPoint[]>([
+    { date: '2026-10-05', value: 8 },
+    { date: '2026-10-06', value: 12 },
+    { date: '2026-10-07', value: 10 },
+    { date: '2026-10-08', value: 14 },
+    { date: '2026-10-09', value: 18 },
+    { date: '2026-10-10', value: 6 },
+    { date: '2026-10-11', value: 9 },
+  ]);
+
+  readonly sinceLastVisit = '3 new submissions, 2 new alerts, 2 patients flagged';
+
+  /** Visual only: spins the icon once. With reduced motion there's nothing to show. */
+  refresh(): void {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this.refreshing.set(true);
+  }
 }
