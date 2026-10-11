@@ -4,24 +4,41 @@
 
 // Outer 24px padding comes from the shell.
 .settings {
+  --settings-divider: 1px solid rgba(0, 0, 0, 0.06);
+  --settings-ink: var(--mat-sys-on-surface); // #1C1C18
+  // 62% (not 60%): 60% ink is 4.49:1 on white, just under AA.
+  --settings-ink-soft: color-mix(in srgb, var(--settings-ink) 62%, transparent);
+
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
   max-width: 720px;
 }
 
 .settings__title {
-  margin: 0 0 8px;
+  margin: 0;
 }
 
+// White cards (separate from the cream page), borderless, soft shadow. No gradients: form page.
 .section {
-  --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
-  --mdc-outlined-card-outline-color: var(--mat-sys-outline-variant);
+  padding: 24px;
+  border: 0;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  // The card's own 24px padding replaces Material's header/content padding.
+  mat-card-header,
+  mat-card-content {
+    padding: 0;
+  }
 }
 
 .section__title {
   margin: 0;
-  font: var(--ma-type-section);
+  font: var(--ma-type-section); // General Sans 500 1.125rem
+  letter-spacing: -0.01em;
+  color: var(--settings-ink);
 }
 
 .section__note {
@@ -38,23 +55,24 @@
 .profile__row {
   display: grid;
   grid-template-columns: 120px minmax(0, 1fr);
+  align-items: center;
   gap: 16px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  min-height: 48px;
+  border-bottom: var(--settings-divider);
 
   &:last-child {
     border-bottom: 0;
   }
 
   dt {
-    font: var(--mat-sys-label-large);
-    letter-spacing: var(--mat-sys-label-large-tracking);
-    color: var(--mat-sys-on-surface-variant);
+    font: 500 0.875rem / 1.25rem var(--ma-font-body);
+    color: var(--settings-ink-soft);
   }
 
   dd {
     margin: 0;
-    font: var(--mat-sys-body-large);
+    font: 500 0.9375rem / 1.375rem var(--ma-font-body);
+    color: var(--settings-ink);
     overflow-wrap: anywhere;
   }
 }
@@ -65,18 +83,27 @@
   list-style: none;
 
   li {
-    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    min-height: 56px;
   }
 
   li + li {
-    border-top: 1px solid var(--mat-sys-outline-variant);
+    border-top: var(--settings-divider);
   }
 
-  // Label left, switch right, full row width.
   mat-slide-toggle {
+    --mat-switch-label-text-font: var(--ma-font-body);
+    --mat-switch-label-text-size: 0.9375rem;
+    --mat-switch-label-text-weight: 500;
+    --mat-switch-label-text-line-height: 1.375rem;
+    --mat-switch-label-text-color: var(--settings-ink);
+
     display: block;
+    width: 100%;
   }
 
+  // Label left, switch right, full row width (Material has no option for this layout).
   ::ng-deep .mdc-form-field {
     display: flex;
     justify-content: space-between;
@@ -84,21 +111,30 @@
   }
 }
 
-.display__selects {
+.display {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 8px;
-
-  mat-form-field {
-    flex: 1 1 200px;
-  }
+  flex-direction: column;
+  gap: 8px;
 }
 
-// In normal flow after the last card, so it never overlaps content.
+// Two columns on desktop, stacked when the card is narrower than ~2 × 240px.
+.display__selects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+// Sticky frosted bar: content scrolls beneath it mid-scroll; at the end of the page nothing is covered.
 .settings__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  padding-top: 8px;
+  padding: 16px 24px;
+  border-top: var(--settings-divider);
+  background: rgba(253, 249, 242, 0.95); // surface #FDF9F2 at 95%
+  backdrop-filter: blur(8px);
 }
