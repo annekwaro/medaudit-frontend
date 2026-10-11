@@ -1,5 +1,8 @@
 <header class="overview__header">
-  <h1 class="overview__title">Dashboard</h1>
+  <div>
+    <h1 class="overview__title">Welcome back, Dr. Martin</h1>
+    <p class="overview__subtitle">Here's what's happening with your patients today.</p>
+  </div>
 
   <div class="time-anchor">
     <!-- Date range select hidden until the data can actually be filtered by it. -->
@@ -15,7 +18,7 @@
   </div>
 </header>
 
-<app-visit-banner class="overview__banner" [summary]="sinceLastVisit()" />
+<app-visit-banner class="overview__banner" [message]="sinceLastVisit()" actionLink="/clinician/audit-log" />
 
 <section class="stats-grid" aria-label="Summary statistics">
   @for (stat of stats(); track stat.label) {
@@ -38,9 +41,17 @@
 <app-trend-chart
   class="trend-chart rise-in"
   [style.--rise-index]="stats().length"
-  heading="Submissions this week"
-  [points]="submissionsTrend()"
-/>
+  [heading]="submissionsTrend().heading"
+  [points]="submissionsTrend().points"
+>
+  <mat-form-field trendChartControls appearance="outline" subscriptSizing="dynamic" class="trend-period">
+    <mat-select aria-label="Chart period" [value]="trendPeriod()" (selectionChange)="trendPeriod.set($event.value)">
+      @for (option of trendPeriodOptions; track option.value) {
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</app-trend-chart>
 
 <app-patient-list-table
   class="patient-list rise-in"

@@ -1,0 +1,87 @@
+<mat-card class="trend-chart">
+  <header class="trend-chart__header">
+    <h2 class="trend-chart__title">{{ heading() }}</h2>
+    <div class="trend-chart__controls">
+      <ng-content select="[trendChartControls]" />
+      <span class="trend-chart__total">Total: {{ total() }}</span>
+    </div>
+  </header>
+
+  <div #plot class="trend-chart__plot" (mouseleave)="hovered.set(null)">
+    @if (layout(); as l) {
+      <svg
+        class="trend-chart__svg"
+        [attr.viewBox]="'0 0 ' + l.width + ' ' + height"
+        [attr.width]="l.width"
+        [attr.height]="height"
+        aria-hidden="true"
+      >
+        @for (tick of l.ticks; track tick.value) {
+          <!-- Gridlines above the baseline only. -->
+          @if (tick.value > 0) {
+            <line class="trend-chart__grid" [attr.x1]="pad.left" [attr.x2]="l.width - pad.right" [attr.y1]="tick.y" [attr.y2]="tick.y" />
+          }
+          <text class="trend-chart__label" [attr.x]="pad.left - 8" [attr.y]="tick.y" text-anchor="end" dominant-baseline="middle">
+            {{ tick.value }}
+          </text>
+        }
+
+        <path class="trend-chart__area" [attr.d]="l.area" />
+        <!-- pathLength="1" normalizes the dash so the draw-in works at any width. -->
+        <path class="trend-chart__line" [attr.d]="l.line" pathLength="1" />
+
+        @if (hoveredPoint(); as point) {
+          <line class="trend-chart__guide" [attr.x1]="point.x" [attr.x2]="point.x" [attr.y1]="pad.top" [attr.y2]="height - pad.bottom" />
+        }
+
+        @for (point of l.points; track $index; let i = $index) {
+          <text class="trend-chart__label" [attr.x]="point.x" [attr.y]="height - 8" text-anchor="middle">
+            {{ point.label }}
+          </text>
+          <circle
+            class="trend-chart__dot"
+            [class.trend-chart__dot--active]="hovered() === i"
+            [style.--dot-progress]="point.progress"
+            [attr.cx]="point.x"
+            [attr.cy]="point.y"
+            r="3"
+          />
+          <!-- Full-height hit column so hovering anywhere near a point selects it. -->
+          <rect
+            class="trend-chart__hit"
+            [attr.x]="point.x - l.columnWidth / 2"
+            y="0"
+            [attr.width]="l.columnWidth"
+            [attr.height]="height"
+            (mouseenter)="hovered.set(i)"
+          />
+        }
+      </svg>
+
+      @if (hoveredPoint(); as point) {
+        <div
+          class="trend-chart__tooltip"
+          [class.trend-chart__tooltip--start]="hovered() === 0"
+          [class.trend-chart__tooltip--end]="hovered() === l.points.length - 1"
+          [style.left.px]="point.x"
+          [style.top.px]="point.y"
+        >
+          <span class="trend-chart__tooltip-detail">{{ point.detail }}</span>
+          <strong>{{ point.value }}</strong> {{ unit() }}
+        </div>
+      }
+    }
+  </div>
+
+  <table class="sr-only">
+    <caption>{{ heading() }}</caption>
+    <thead>
+      <tr><th scope="col">Period</th><th scope="col">{{ unit() }}</th></tr>
+    </thead>
+    <tbody>
+      @for (point of points(); track $index) {
+        <tr><td>{{ point.detail }}</td><td>{{ point.value }}</td></tr>
+      }
+    </tbody>
+  </table>
+</mat-card>

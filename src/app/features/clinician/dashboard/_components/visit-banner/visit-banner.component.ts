@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 type BannerState = 'shown' | 'leaving' | 'dismissed';
 
 /**
- * Dismissible "Since yesterday: …" summary. Dismissal lasts for this session only (component state).
+ * Dismissible summary banner with an optional action link. Dismissal lasts for this session only (component state).
  * On dismiss it fades and collapses over 200ms, then is removed from layout.
  */
 @Component({
   selector: 'app-visit-banner',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule],
   host: {
     '[class.visit-banner-host--leaving]': 'state() === "leaving"',
     '[class.visit-banner-host--dismissed]': 'state() === "dismissed"',
@@ -22,7 +23,10 @@ type BannerState = 'shown' | 'leaving' | 'dismissed';
       <div class="visit-banner__clip">
         <aside class="visit-banner" aria-label="Since your last visit">
           <mat-icon class="visit-banner__icon" aria-hidden="true">notifications_active</mat-icon>
-          <p class="visit-banner__text">Since {{ since() }}: {{ summary() }}</p>
+          <p class="visit-banner__text">{{ message() }}</p>
+          @if (actionLink(); as link) {
+            <a class="visit-banner__action" [routerLink]="link">{{ actionLabel() }}</a>
+          }
           <button mat-icon-button type="button" class="visit-banner__dismiss" aria-label="Dismiss summary" (click)="dismiss()">
             <mat-icon>close</mat-icon>
           </button>
@@ -65,9 +69,9 @@ type BannerState = 'shown' | 'leaving' | 'dismissed';
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 20px;
-      border-radius: 16px;
-      background: linear-gradient(90deg, rgba(188, 236, 230, 0.35), rgba(188, 236, 230, 0.15));
+      padding: 14px 20px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(188, 236, 230, 0.45), rgba(188, 236, 230, 0.15));
     }
 
     .visit-banner__icon {
@@ -84,6 +88,23 @@ type BannerState = 'shown' | 'leaving' | 'dismissed';
       font: var(--mat-sys-body-medium);
       letter-spacing: var(--mat-sys-body-medium-tracking);
       color: var(--mat-sys-on-surface);
+    }
+
+    .visit-banner__action {
+      flex: 0 0 auto;
+      border-radius: 4px;
+      font: 500 0.875rem / 1.25rem var(--ma-font-body);
+      color: #0f766e;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:focus-visible {
+        outline: 2px solid #0f766e;
+        outline-offset: 2px;
+      }
     }
 
     // Ghost and compact so the banner stays one slim line.
@@ -107,10 +128,11 @@ type BannerState = 'shown' | 'leaving' | 'dismissed';
 export class VisitBannerComponent {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  /** e.g. "yesterday" → "Since yesterday: …". */
-  readonly since = input('yesterday');
-  /** e.g. "3 new submissions, 1 new alert, 2 patients flagged". */
-  readonly summary = input.required<string>();
+  /** e.g. "3 new submissions since yesterday. 2 patients flagged." */
+  readonly message = input.required<string>();
+  /** Optional text link shown before the dismiss button. */
+  readonly actionLabel = input('Review');
+  readonly actionLink = input<string>();
 
   readonly state = signal<BannerState>('shown');
 

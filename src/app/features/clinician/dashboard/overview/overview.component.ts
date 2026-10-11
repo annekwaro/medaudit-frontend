@@ -1,7 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { DashboardFigures, PatientDataService } from '../../../../core/services/patient-data.service';
 import { PatientProfile } from '../../../../shared/models/patient.model';
 import { StatsCardComponent, StatsSeverity } from '../../../../shared/components/stats-card/stats-card.component';
@@ -34,6 +36,43 @@ function complianceSeverity(percent: number): StatsSeverity {
   return percent >= 90 ? 'success' : percent >= 70 ? 'warning' : 'critical';
 }
 
+type TrendPeriod = 'daily' | 'weekly' | 'monthly';
+
+// Mock series, consistent with each other: today (Sun Oct 11) totals 9, matching Sunday in the
+// weekly series, and the latest week totals 77, matching the weekly total.
+const SUBMISSION_TRENDS: Record<TrendPeriod, { heading: string; points: TrendPoint[] }> = {
+  daily: {
+    heading: 'Submissions today',
+    points: [
+      { label: '00:00', detail: 'Sun, Oct 11 · 00:00–04:00', value: 0 },
+      { label: '04:00', detail: 'Sun, Oct 11 · 04:00–08:00', value: 1 },
+      { label: '08:00', detail: 'Sun, Oct 11 · 08:00–12:00', value: 5 },
+      { label: '12:00', detail: 'Sun, Oct 11 · 12:00–16:00', value: 3 },
+    ],
+  },
+  weekly: {
+    heading: 'Submissions this week',
+    points: [
+      { label: 'Mon', detail: 'Mon, Oct 5', value: 8 },
+      { label: 'Tue', detail: 'Tue, Oct 6', value: 12 },
+      { label: 'Wed', detail: 'Wed, Oct 7', value: 10 },
+      { label: 'Thu', detail: 'Thu, Oct 8', value: 14 },
+      { label: 'Fri', detail: 'Fri, Oct 9', value: 18 },
+      { label: 'Sat', detail: 'Sat, Oct 10', value: 6 },
+      { label: 'Sun', detail: 'Sun, Oct 11', value: 9 },
+    ],
+  },
+  monthly: {
+    heading: 'Submissions, last 4 weeks',
+    points: [
+      { label: 'Sep 14', detail: 'Week of Sep 14', value: 64 },
+      { label: 'Sep 21', detail: 'Week of Sep 21', value: 71 },
+      { label: 'Sep 28', detail: 'Week of Sep 28', value: 69 },
+      { label: 'Oct 5', detail: 'Week of Oct 5', value: 77 },
+    ],
+  },
+};
+
 function plural(count: number, noun: string): string {
   return `${count} ${noun}${count === 1 ? '' : 's'}`;
 }
@@ -44,7 +83,9 @@ function plural(count: number, noun: string): string {
   imports: [
     DatePipe,
     MatButtonModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatSelectModule,
     StatsCardComponent,
     PatientListTableComponent,
     TrendChartComponent,
@@ -111,25 +152,20 @@ export class OverviewComponent {
     ];
   });
 
-  // Mock: Mon Oct 5 – Sun Oct 11, 2026.
-  readonly submissionsTrend = signal<TrendPoint[]>([
-    { date: '2026-10-05', value: 8 },
-    { date: '2026-10-06', value: 12 },
-    { date: '2026-10-07', value: 10 },
-    { date: '2026-10-08', value: 14 },
-    { date: '2026-10-09', value: 18 },
-    { date: '2026-10-10', value: 6 },
-    { date: '2026-10-11', value: 9 },
-  ]);
+  readonly trendPeriodOptions: { value: TrendPeriod; label: string }[] = [
+    { value: 'daily', label: 'Daily' },
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'monthly', label: 'Monthly' },
+  ];
+  readonly trendPeriod = signal<TrendPeriod>('weekly');
+  readonly submissionsTrend = computed(() => SUBMISSION_TRENDS[this.trendPeriod()]);
 
-  /** Increases only: e.g. "3 new submissions, 2 new alerts, 2 patients flagged". */
+  /** Increases only: e.g. "3 new submissions since yesterday. 2 patients flagged." */
   readonly sinceLastVisit = computed(() => {
     const change = this.changes();
-    return [
-      plural(Math.max(change.unreviewed, 0), 'new submission'),
-      plural(Math.max(change.alerts, 0), 'new alert'),
-      `${plural(Math.max(change.flaggedPatients, 0), 'patient')} flagged`,
-    ].join(', ');
+    const submissions = plural(Math.max(change.unreviewed, 0), 'new submission');
+    const flagged = plural(Math.max(change.flaggedPatients, 0), 'patient');
+    return `${submissions} since yesterday. ${flagged} flagged.`;
   });
 
   /**

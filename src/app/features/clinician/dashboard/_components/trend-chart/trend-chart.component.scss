@@ -1,0 +1,158 @@
+$draw-duration: 600ms;
+
+:host {
+  display: block;
+}
+
+.trend-chart {
+  --mdc-elevated-card-container-color: #ffffff;
+
+  padding: 16px 20px 12px;
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.trend-chart__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.trend-chart__title {
+  margin: 0;
+  font: var(--ma-type-section);
+}
+
+.trend-chart__controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.trend-chart__total {
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  color: var(--mat-sys-on-surface-variant);
+  text-align: right;
+}
+
+// Fixed height so the card doesn't jump while the width is first measured.
+.trend-chart__plot {
+  position: relative;
+  height: 180px;
+}
+
+.trend-chart__svg {
+  display: block;
+  overflow: visible;
+}
+
+.trend-chart__grid {
+  stroke: rgba(0, 0, 0, 0.04);
+  stroke-width: 1;
+}
+
+.trend-chart__label {
+  font: 400 0.75rem var(--ma-font-body);
+  fill: var(--mat-sys-on-surface-variant);
+}
+
+.trend-chart__area {
+  fill: rgba(31, 78, 74, 0.08);
+}
+
+.trend-chart__line {
+  fill: none;
+  stroke: var(--mat-sys-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.trend-chart__dot {
+  fill: var(--mat-sys-primary);
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  // Scale around the dot's own center (r 3 → 5 on hover).
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.trend-chart__dot--active {
+  transform: scale(calc(5 / 3));
+}
+
+.trend-chart__guide {
+  stroke: rgba(31, 78, 74, 0.2);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+
+.trend-chart__hit {
+  fill: transparent;
+}
+
+// Mount: the line draws left to right; the area fades in alongside and each dot appears as the
+// line reaches it. Delay the whole sequence with --trend-chart-draw-delay.
+@media (prefers-reduced-motion: no-preference) {
+  .trend-chart__line {
+    stroke-dasharray: 1;
+    animation: trend-chart-draw $draw-duration ease-out var(--trend-chart-draw-delay, 0ms) backwards;
+  }
+
+  .trend-chart__area {
+    animation: trend-chart-fade $draw-duration ease-out var(--trend-chart-draw-delay, 0ms) backwards;
+  }
+
+  .trend-chart__dot {
+    transition: transform 150ms ease;
+    animation: trend-chart-fade 150ms ease-out
+      calc(var(--trend-chart-draw-delay, 0ms) + var(--dot-progress, 0) * #{$draw-duration}) backwards;
+  }
+}
+
+@keyframes trend-chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes trend-chart-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+// Small dark chip above the hovered point; first/last points anchor to their edge to stay inside the card.
+.trend-chart__tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--mat-sys-inverse-surface);
+  color: var(--mat-sys-inverse-on-surface);
+  font: var(--mat-sys-body-small);
+  white-space: nowrap;
+  pointer-events: none;
+
+  &--start {
+    transform: translate(-12px, calc(-100% - 12px));
+  }
+
+  &--end {
+    transform: translate(calc(-100% + 12px), calc(-100% - 12px));
+  }
+}
+
+.trend-chart__tooltip-detail {
+  display: block;
+  opacity: 0.8;
+}
