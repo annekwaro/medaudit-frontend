@@ -163,6 +163,8 @@ interface NavItem {
     }
 
     .shell__toolbar {
+      // Own view-transition layer, so the fading content can't paint over it.
+      view-transition-name: shell-toolbar;
       --mat-toolbar-container-background-color: var(--mat-sys-surface);
       --mat-toolbar-container-text-color: var(--mat-sys-on-surface);
       border-bottom: 1px solid var(--mat-sys-outline-variant);
@@ -193,6 +195,8 @@ interface NavItem {
     }
 
     .shell__content {
+      // Route fade target (see withClinicianRouteTransitions + styles.scss).
+      view-transition-name: shell-content;
       flex: 1 1 auto;
       padding: var(--ma-content-padding, 24px);
     }

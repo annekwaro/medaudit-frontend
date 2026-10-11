@@ -85,3 +85,19 @@ h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large
     transition: box-shadow 150ms ease;
   }
 }
+
+// Route fade between main clinician pages (router View Transitions, see core/navigation).
+// Only the content area fades; the root and toolbar snapshots are identical, so don't animate them.
+::view-transition-old(root),
+::view-transition-new(root),
+::view-transition-old(shell-toolbar),
+::view-transition-new(shell-toolbar) {
+  animation: none;
+}
+
+::view-transition-group(shell-content),
+::view-transition-old(shell-content),
+::view-transition-new(shell-content) {
+  animation-duration: 150ms;
+  animation-timing-function: ease;
+}
