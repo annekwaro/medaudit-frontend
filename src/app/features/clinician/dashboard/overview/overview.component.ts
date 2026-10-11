@@ -9,6 +9,7 @@ interface StatSummary {
   delta?: string;
   severity: StatsSeverity;
   higherIsBetter: boolean;
+  pulse?: boolean;
 }
 
 @Component({
@@ -19,13 +20,15 @@ interface StatSummary {
     <h1>Dashboard</h1>
 
     <section class="stats-grid" aria-label="Summary statistics">
-      @for (stat of stats(); track stat.label) {
+      @for (stat of stats(); track stat.label; let i = $index) {
         <app-stats-card
+          [style.--stagger-index]="i"
           [label]="stat.label"
           [value]="stat.value"
           [delta]="stat.delta"
           [severity]="stat.severity"
           [higherIsBetter]="stat.higherIsBetter"
+          [pulse]="stat.pulse ?? false"
         />
       }
     </section>
@@ -46,6 +49,11 @@ interface StatSummary {
 
     .patient-list {
       margin-top: 24px;
+    }
+
+    // Stats card entrance stagger: 0 / 60 / 120 / 180ms.
+    .stats-grid > app-stats-card {
+      --stats-card-enter-delay: calc(var(--stagger-index, 0) * 60ms);
     }
 
     .stats-grid {
@@ -75,7 +83,7 @@ export class OverviewComponent {
   // Mock data until the stats API exists.
   readonly stats = signal<StatSummary[]>([
     { label: 'Unreviewed', value: 12, delta: '+3 from yesterday', severity: 'warning', higherIsBetter: false },
-    { label: 'Alerts', value: 4, delta: '+2 from yesterday', severity: 'critical', higherIsBetter: false },
+    { label: 'Alerts', value: 4, delta: '+2 from yesterday', severity: 'critical', higherIsBetter: false, pulse: true },
     { label: 'Active Patients', value: 87, delta: '0 from yesterday', severity: 'info', higherIsBetter: true },
     { label: 'Compliance', value: '94%', delta: '-2% from yesterday', severity: 'info', higherIsBetter: true },
   ]);

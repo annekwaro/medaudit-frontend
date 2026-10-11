@@ -2,6 +2,44 @@
   display: block;
 }
 
+// Motion: entrance (on the host) and hover lift (on the card) use separate elements, so the
+// entrance's transform never blocks the hover transform. Set --stats-card-enter-delay to stagger.
+@media (prefers-reduced-motion: no-preference) {
+  :host(.stats-card-host--enter) {
+    // `backwards` applies the start frame during the delay but releases it once finished.
+    animation: stats-card-enter 250ms cubic-bezier(0.16, 1, 0.3, 1) var(--stats-card-enter-delay, 0ms) backwards;
+  }
+
+  // Starts once this card's entrance has finished.
+  :host(.stats-card-host--pulse) .stats-card__value {
+    animation: stats-card-pulse 400ms ease-in-out calc(var(--stats-card-enter-delay, 0ms) + 250ms);
+  }
+
+  .stats-card {
+    transition:
+      transform 150ms ease,
+      box-shadow 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes stats-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes stats-card-pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
 .stats-card {
   --stats-card-accent: var(--mat-sys-outline-variant);
   --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
@@ -10,6 +48,12 @@
   position: relative;
   height: 100%;
   overflow: hidden;
+
+  // Not clickable yet: no pointer. Shadow and border are not motion, so they apply regardless.
+  &:hover {
+    --mdc-outlined-card-outline-color: var(--mat-sys-outline);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+  }
 
   // Severity accent bar along the left edge.
   &::before {
@@ -58,6 +102,8 @@
 }
 
 .stats-card__value {
+  // Shrink to the number so the pulse scales around its own center.
+  align-self: flex-start;
   font: var(--mat-sys-headline-medium);
   letter-spacing: var(--mat-sys-headline-medium-tracking);
   color: var(--mat-sys-on-surface);

@@ -22,6 +22,11 @@ const SEVERITY_ICONS: Record<StatsSeverity, string | null> = {
   selector: 'app-stats-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatCardModule, MatIconModule],
+  // Entrance animation class is present from creation, so it plays on first render.
+  host: {
+    class: 'stats-card-host--enter',
+    '[class.stats-card-host--pulse]': 'pulse()',
+  },
   templateUrl: './stats-card.component.html',
   styleUrl: './stats-card.component.scss',
 })
@@ -33,6 +38,8 @@ export class StatsCardComponent {
   readonly severity = input<StatsSeverity>('info');
   /** Whether an increase is good news. Set false for counts like alerts or unreviewed items. */
   readonly higherIsBetter = input(true);
+  /** Pulse the value once after the entrance, to draw the eye to a critical metric. */
+  readonly pulse = input(false);
 
   readonly severityIcon = computed(() => SEVERITY_ICONS[this.severity()]);
 
