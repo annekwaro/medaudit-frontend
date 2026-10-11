@@ -8,6 +8,7 @@ interface StatSummary {
   value: string | number;
   delta?: string;
   severity: StatsSeverity;
+  icon: string;
   higherIsBetter: boolean;
   pulse?: boolean;
 }
@@ -27,6 +28,7 @@ interface StatSummary {
           [value]="stat.value"
           [delta]="stat.delta"
           [severity]="stat.severity"
+          [icon]="stat.icon"
           [higherIsBetter]="stat.higherIsBetter"
           [pulse]="stat.pulse ?? false"
         />
@@ -101,9 +103,9 @@ export class OverviewComponent {
 
   // Mock data until the stats API exists.
   readonly stats = signal<StatSummary[]>([
-    { label: 'Unreviewed', value: 12, delta: '+3 from yesterday', severity: 'warning', higherIsBetter: false },
-    { label: 'Alerts', value: 4, delta: '+2 from yesterday', severity: 'critical', higherIsBetter: false, pulse: true },
-    { label: 'Active Patients', value: 87, delta: '0 from yesterday', severity: 'info', higherIsBetter: true },
-    { label: 'Compliance', value: '94%', delta: '-2% from yesterday', severity: 'info', higherIsBetter: true },
+    { label: 'Unreviewed', value: 12, delta: '+3 from yesterday', severity: 'warning', icon: 'pending_actions', higherIsBetter: false },
+    { label: 'Alerts', value: 4, delta: '+2 from yesterday', severity: 'critical', icon: 'notifications_active', higherIsBetter: false, pulse: true },
+    { label: 'Active Patients', value: 87, delta: '0 from yesterday', severity: 'info', icon: 'groups', higherIsBetter: true },
+    { label: 'Compliance', value: '94%', delta: '-2% from yesterday', severity: 'success', icon: 'task_alt', higherIsBetter: true },
   ]);
 }
