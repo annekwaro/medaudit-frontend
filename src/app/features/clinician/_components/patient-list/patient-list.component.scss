@@ -60,36 +60,3 @@
   text-align: end;
   white-space: nowrap;
 }
-
-.compliance-badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: var(--mat-sys-corner-full);
-  font: var(--mat-sys-label-medium);
-  letter-spacing: var(--mat-sys-label-medium-tracking);
-  white-space: nowrap;
-
-  &--on-track {
-    background: var(--mat-sys-primary-container);
-    color: var(--mat-sys-on-primary-container);
-  }
-
-  &--late {
-    background: var(--mat-sys-tertiary-container);
-    color: var(--mat-sys-on-tertiary-container);
-  }
-
-  &--missing {
-    background: var(--mat-sys-error-container);
-    color: var(--mat-sys-error);
-  }
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}

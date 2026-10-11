@@ -58,3 +58,13 @@ h1 { font: var(--mat-sys-headline-large); letter-spacing: var(--mat-sys-headline
 h2 { font: var(--mat-sys-headline-medium); letter-spacing: var(--mat-sys-headline-medium-tracking); }
 h3 { font: var(--mat-sys-headline-small); letter-spacing: var(--mat-sys-headline-small-tracking); }
 h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large-tracking); }
+
+// Visually hidden but available to screen readers.
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
