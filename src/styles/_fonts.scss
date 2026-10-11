@@ -1,0 +1,47 @@
+// Self-hosted fonts (offline-first, no third-party requests). Files live in src/assets/fonts,
+// each folder alongside its license: Inter (SIL OFL 1.1), General Sans (ITF Free Font License;
+// self-hosting for our own apps only, files must not be modified or redistributed),
+// Material Icons (Apache 2.0).
+
+@mixin font-face($family, $file, $weight, $display: swap) {
+  @font-face {
+    font-family: $family;
+    src: url('/assets/fonts/#{$file}') format('woff2');
+    font-weight: $weight;
+    font-style: normal;
+    font-display: $display;
+  }
+}
+
+// Inter: body text, tables, UI.
+@include font-face('Inter', 'inter/Inter-Regular.woff2', 400);
+@include font-face('Inter', 'inter/Inter-Medium.woff2', 500);
+@include font-face('Inter', 'inter/Inter-SemiBold.woff2', 600);
+
+// General Sans: display and headings.
+@include font-face('General Sans', 'general-sans/GeneralSans-Regular.woff2', 400);
+@include font-face('General Sans', 'general-sans/GeneralSans-Medium.woff2', 500);
+@include font-face('General Sans', 'general-sans/GeneralSans-Semibold.woff2', 600);
+
+// Material Icons (the classic set <mat-icon> uses by default). `block`, not `swap`: swapping would
+// flash the ligature names ("dashboard", "logout") as text until the font loads.
+@include font-face('Material Icons', 'material-icons/MaterialIcons-Regular.woff2', 400, block);
+
+// Class <mat-icon> applies by default (fontSet 'material-icons'); previously came from Google's CSS.
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}

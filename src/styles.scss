@@ -1,3 +1,4 @@
+@use './styles/fonts';
 @use '@angular/material' as mat;
 @use './styles/theme-colors' as theme;
 
@@ -13,13 +14,28 @@ html {
   --ma-sidenav-width: 240px;
   --ma-content-padding: 24px;
 
+  // Typography: General Sans for display/headings, Inter for body, tables and UI text.
+  --ma-font-display: 'General Sans', sans-serif;
+  --ma-font-body: 'Inter', sans-serif;
+
+  // Custom type roles (font shorthand; pair with the matching letter-spacing where noted).
+  --ma-type-page-title: 500 2.5rem / 1.1 var(--ma-font-display); // letter-spacing: -0.02em
+  --ma-type-section: 500 1.125rem / 1.5rem var(--ma-font-display);
+  --ma-type-stat: 500 2rem / 2.5rem var(--ma-font-display); // letter-spacing: -0.01em
+  --ma-type-logo: 600 1.25rem / 1.75rem var(--ma-font-display); // letter-spacing: -0.01em
+
   @include mat.theme(
     (
       color: (
         primary: theme.$primary-palette,
         tertiary: theme.$tertiary-palette,
       ),
-      typography: Roboto,
+      // M3 maps brand -> display/headline/title-large, plain -> title-medium/small, body, label.
+      // So every --mat-sys-* type token (and every Material component) picks up the right font.
+      typography: (
+        brand-family: var(--ma-font-display),
+        plain-family: var(--ma-font-body),
+      ),
       density: 0,
     ),
     (
@@ -54,7 +70,8 @@ h1, h2, h3, h4 {
   color: var(--mat-sys-on-surface);
 }
 
-h1 { font: var(--mat-sys-headline-large); letter-spacing: var(--mat-sys-headline-large-tracking); }
+// Page titles ("Dashboard", "Patients", "Audit Log", ...).
+h1 { font: var(--ma-type-page-title); letter-spacing: -0.02em; }
 h2 { font: var(--mat-sys-headline-medium); letter-spacing: var(--mat-sys-headline-medium-tracking); }
 h3 { font: var(--mat-sys-headline-small); letter-spacing: var(--mat-sys-headline-small-tracking); }
 h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large-tracking); }

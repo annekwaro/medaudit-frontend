@@ -151,9 +151,8 @@ interface NavItem {
 
     .shell__brand {
       padding: 20px 16px 12px;
-      font: var(--mat-sys-title-large);
-      font-weight: 500;
-      letter-spacing: 0.02em;
+      font: var(--ma-type-logo);
+      letter-spacing: -0.01em;
       color: var(--ma-sidenav-fg-strong);
     }
 

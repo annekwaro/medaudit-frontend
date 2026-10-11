@@ -90,6 +90,7 @@
 
 .stats-card__label {
   font: var(--mat-sys-label-medium);
+  font-family: var(--ma-font-display);
   letter-spacing: var(--mat-sys-label-medium-tracking);
   color: var(--mat-sys-on-surface-variant);
 }
@@ -104,8 +105,8 @@
 .stats-card__value {
   // Shrink to the number so the pulse scales around its own center.
   align-self: flex-start;
-  font: var(--mat-sys-headline-medium);
-  letter-spacing: var(--mat-sys-headline-medium-tracking);
+  font: var(--ma-type-stat);
+  letter-spacing: -0.01em;
   color: var(--mat-sys-on-surface);
 }
 
