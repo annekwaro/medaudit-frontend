@@ -1,0 +1,53 @@
+<div class="patients">
+  <header>
+    <h1 class="patients__title">Patients</h1>
+    <p class="patients__subtitle">All enrolled patients in the trial</p>
+  </header>
+
+  <mat-card appearance="outlined" class="toolbar">
+    <mat-card-content class="toolbar__row">
+      <div class="toolbar__filters" role="search" aria-label="Filter patients">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__search">
+          <mat-label>Search</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            #search
+            type="search"
+            placeholder="Name or patient ID"
+            [value]="searchTerm()"
+            (input)="searchTerm.set(search.value)"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__status">
+          <mat-label>Status</mat-label>
+          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
+            <mat-option value="all">All</mat-option>
+            @for (status of statuses; track status) {
+              <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <button mat-stroked-button type="button" class="toolbar__add" (click)="addPatient()">
+        <mat-icon>person_add</mat-icon>
+        Add Patient
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <p class="patients__count" aria-live="polite">
+    Showing {{ filteredPatients().length }} of {{ totalCount() }} patients
+  </p>
+
+  @if (filteredPatients().length) {
+    <app-patient-list-table [patients]="filteredPatients()" />
+  } @else {
+    <div class="patients__empty">
+      <p>No patients match your filters</p>
+      <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+    </div>
+  }
+</div>

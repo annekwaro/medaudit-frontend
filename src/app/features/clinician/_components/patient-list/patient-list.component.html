@@ -1,8 +1,12 @@
 <mat-card appearance="outlined" class="patient-list">
-  <header class="patient-list__header">
-    <h2 class="patient-list__title">Recent Submissions</h2>
-    <a mat-button routerLink="/clinician/patients">View all</a>
-  </header>
+  @if (heading(); as headingText) {
+    <header class="patient-list__header">
+      <h2 class="patient-list__title">{{ headingText }}</h2>
+      @if (viewAllLink(); as link) {
+        <a mat-button [routerLink]="link">View all</a>
+      }
+    </header>
+  }
 
   <div class="patient-list__scroll">
     <table mat-table [dataSource]="patients()" class="patient-list__table">

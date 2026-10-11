@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { PatientDataService } from '../../../../core/services/patient-data.service';
 import { StatsCardComponent, StatsSeverity } from '../../../../shared/components/stats-card/stats-card.component';
 import { PatientListTableComponent } from '../../_components/patient-list/patient-list.component';
 
@@ -29,7 +30,12 @@ interface StatSummary {
       }
     </section>
 
-    <app-patient-list-table class="patient-list" />
+    <app-patient-list-table
+      class="patient-list"
+      heading="Recent Submissions"
+      viewAllLink="/clinician/patients"
+      [patients]="patients()"
+    />
   `,
   styles: `
     :host {
@@ -64,6 +70,8 @@ interface StatSummary {
   `,
 })
 export class OverviewComponent {
+  readonly patients = inject(PatientDataService).patients;
+
   // Mock data until the stats API exists.
   readonly stats = signal<StatSummary[]>([
     { label: 'Unreviewed', value: 12, delta: '+3 from yesterday', severity: 'warning', higherIsBetter: false },

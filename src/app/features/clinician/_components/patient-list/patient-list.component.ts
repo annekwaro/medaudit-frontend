@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
-import { PatientDataService } from '../../../../core/services/patient-data.service';
 import { ComplianceBadgeComponent } from '../../../../shared/components/compliance-badge/compliance-badge.component';
+import { PatientSummary } from '../../../../shared/models/patient.model';
 
+/** Patient table in an outlined card. The header row only renders when `heading` is set. */
 @Component({
   selector: 'app-patient-list-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,8 +16,10 @@ import { ComplianceBadgeComponent } from '../../../../shared/components/complian
   styleUrl: './patient-list.component.scss',
 })
 export class PatientListTableComponent {
-  private readonly patientData = inject(PatientDataService);
+  readonly patients = input.required<PatientSummary[]>();
+  readonly heading = input<string>();
+  /** Router link for a "View all" button in the header. */
+  readonly viewAllLink = input<string>();
 
   readonly displayedColumns = ['id', 'name', 'lastSubmission', 'compliance', 'alerts', 'actions'];
-  readonly patients = this.patientData.patients;
 }
