@@ -1,4 +1,4 @@
-<mat-card appearance="outlined" class="patient-list">
+<mat-card class="patient-list">
   @if (heading(); as headingText) {
     <header class="patient-list__header">
       <h2 class="patient-list__title">{{ headingText }}</h2>
@@ -12,21 +12,21 @@
     <table mat-table [dataSource]="patients()" class="patient-list__table">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>Patient ID</th>
-        <td mat-cell *matCellDef="let patient" class="patient-list__id">{{ patient.id }}</td>
+        <td mat-cell *matCellDef="let patient" class="patient-list__id patient-list__meta">{{ patient.id }}</td>
       </ng-container>
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let patient">{{ patient.name }}</td>
+        <td mat-cell *matCellDef="let patient" class="patient-list__name">{{ patient.name }}</td>
       </ng-container>
 
       <ng-container matColumnDef="lastSubmission">
         <th mat-header-cell *matHeaderCellDef>Last Submission</th>
-        <td mat-cell *matCellDef="let patient">
+        <td mat-cell *matCellDef="let patient" class="patient-list__meta">
           @if (patient.lastSubmission) {
             <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: 'MMM d, HH:mm' }}</time>
           } @else {
-            <span class="patient-list__muted">No submissions</span>
+            No submissions
           }
         </td>
       </ng-container>
@@ -42,9 +42,11 @@
         <th mat-header-cell *matHeaderCellDef class="patient-list__numeric">Alerts</th>
         <td mat-cell *matCellDef="let patient" class="patient-list__numeric">
           @if (patient.alerts > 0) {
-            <span class="patient-list__alerts">{{ patient.alerts }}</span>
+            <span class="patient-list__alerts" [class.patient-list__alerts--high]="patient.alerts >= 3">
+              {{ patient.alerts }}
+            </span>
           } @else {
-            <span aria-hidden="true" class="patient-list__muted">—</span>
+            <span aria-hidden="true" class="patient-list__none">—</span>
             <span class="sr-only">No alerts</span>
           }
         </td>
@@ -54,12 +56,12 @@
         <th mat-header-cell *matHeaderCellDef class="patient-list__actions"><span class="sr-only">Actions</span></th>
         <td mat-cell *matCellDef="let patient" class="patient-list__actions">
           <a
-            mat-button
+            mat-stroked-button
             class="patient-list__review"
             [routerLink]="['/clinician/patient', patient.id]"
             [attr.aria-label]="'Review ' + patient.name"
           >
-            <span class="patient-list__review-text">Review</span>
+            Review
           </a>
         </td>
       </ng-container>

@@ -2,14 +2,20 @@
   display: block;
 }
 
+// Borderless 20px card with a soft shadow (matches the stats cards).
 .patient-list {
-  --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
-  --mdc-outlined-card-outline-color: var(--mat-sys-outline-variant);
+  --mdc-elevated-card-container-color: var(--mat-sys-surface-container-lowest);
   --mat-table-background-color: var(--mat-sys-surface-container-lowest);
   --mat-table-row-item-container-height: 56px;
-  --mat-table-row-item-outline-color: var(--mat-sys-outline-variant);
+  // Header and row dividers share one very light hairline.
+  --mat-table-row-item-outline-color: rgba(0, 0, 0, 0.06);
+
+  --patient-list-ink-soft: color-mix(in srgb, var(--mat-sys-on-surface) 64%, transparent);
 
   overflow: hidden;
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .patient-list__header {
@@ -35,9 +41,15 @@
   min-width: 640px;
 }
 
-.patient-list__id {
+.patient-list__name {
+  font: 500 0.9375rem / 1.375rem var(--ma-font-display);
+}
+
+// Patient ID and timestamp. 64% ink (not 60%) keeps >= 4.5:1 on the row hover tint too.
+.patient-list__meta {
+  font: 400 0.8125rem / 1.25rem var(--ma-font-body);
   font-variant-numeric: tabular-nums;
-  color: var(--mat-sys-on-surface-variant);
+  color: var(--patient-list-ink-soft);
 }
 
 .patient-list__numeric {
@@ -45,13 +57,26 @@
   font-variant-numeric: tabular-nums;
 }
 
-.patient-list__alerts {
-  font-weight: 500;
-  color: var(--mat-sys-error);
+.patient-list__none {
+  color: color-mix(in srgb, var(--mat-sys-on-surface) 40%, transparent);
 }
 
-.patient-list__muted {
-  color: var(--mat-sys-on-surface-variant);
+// Alert count circle: amber for 1-2, rose for 3+ (text one shade darker for >= 4.5:1 contrast).
+.patient-list__alerts {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fde68a;
+  color: #92400e; // amber-800
+  font: 600 0.75rem / 1 var(--ma-font-body);
+
+  &--high {
+    background: #fda4af;
+    color: #881337; // rose-900
+  }
 }
 
 .patient-list__actions {
@@ -60,22 +85,34 @@
   white-space: nowrap;
 }
 
+// Compact outlined "Review" pill; tints when its row is hovered.
+.patient-list__review {
+  --mdc-outlined-button-container-height: 32px;
+  --mdc-outlined-button-container-shape: 16px;
+  --mdc-outlined-button-outline-color: var(--mat-sys-outline-variant);
+  --mdc-outlined-button-label-text-color: var(--mat-sys-primary);
+  --mdc-outlined-button-label-text-font: var(--ma-font-body);
+  --mdc-outlined-button-label-text-weight: 500;
+  --mat-outlined-button-horizontal-padding: 16px;
+
+  background-color: transparent;
+}
+
 .patient-list__row {
   cursor: pointer;
 
   &:hover {
     background: var(--mat-sys-surface-container-low);
   }
-}
 
-.patient-list__row:hover .patient-list__review-text,
-.patient-list__review:hover .patient-list__review-text,
-.patient-list__review:focus-visible .patient-list__review-text {
-  text-decoration: underline;
+  &:hover .patient-list__review {
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .patient-list__row {
+  .patient-list__row,
+  .patient-list__review {
     transition: background-color 120ms ease;
   }
 

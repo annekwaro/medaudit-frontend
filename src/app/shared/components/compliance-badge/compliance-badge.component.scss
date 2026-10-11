@@ -1,0 +1,25 @@
+// Text colors are one shade darker than the stats card accents so small text keeps >= 4.5:1
+// contrast on both gradient stops (emerald-800 6.0:1, amber-800 5.7:1, rose-900 5.1:1).
+:host {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--mat-sys-corner-full);
+  font: var(--mat-sys-label-medium);
+  letter-spacing: var(--mat-sys-label-medium-tracking);
+  white-space: nowrap;
+}
+
+:host([data-status='on-track']) {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46; // emerald-800
+}
+
+:host([data-status='late']) {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e; // amber-800
+}
+
+:host([data-status='missing']) {
+  background: linear-gradient(135deg, #fecdd3, #fda4af);
+  color: #881337; // rose-900
+}
