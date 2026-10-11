@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { PatientDataService } from '../../../../core/services/patient-data.service';
 import { StatsCardComponent, StatsSeverity } from '../../../../shared/components/stats-card/stats-card.component';
 import { PatientListTableComponent } from '../../_components/patient-list/patient-list.component';
+import { PatientQuickView } from '../../patients/patients.component';
 
 interface StatSummary {
   label: string;
@@ -11,6 +12,10 @@ interface StatSummary {
   icon: string;
   higherIsBetter: boolean;
   pulse?: boolean;
+  /** Patients page quick view; omitted for an unfiltered list. */
+  filter?: PatientQuickView;
+  linkLabel: string;
+  valueUnit: string;
 }
 
 @Component({
@@ -31,6 +36,10 @@ interface StatSummary {
           [icon]="stat.icon"
           [higherIsBetter]="stat.higherIsBetter"
           [pulse]="stat.pulse ?? false"
+          link="/clinician/patients"
+          [queryParams]="stat.filter ? { filter: stat.filter } : undefined"
+          [linkLabel]="stat.linkLabel"
+          [valueUnit]="stat.valueUnit"
         />
       }
     </section>
@@ -103,9 +112,21 @@ export class OverviewComponent {
 
   // Mock data until the stats API exists.
   readonly stats = signal<StatSummary[]>([
-    { label: 'Unreviewed', value: 12, delta: '+3 from yesterday', severity: 'warning', icon: 'pending_actions', higherIsBetter: false },
-    { label: 'Alerts', value: 4, delta: '+2 from yesterday', severity: 'critical', icon: 'notifications_active', higherIsBetter: false, pulse: true },
-    { label: 'Active Patients', value: 87, delta: '0 from yesterday', severity: 'info', icon: 'groups', higherIsBetter: true },
-    { label: 'Compliance', value: '94%', delta: '-2% from yesterday', severity: 'success', icon: 'task_alt', higherIsBetter: true },
+    {
+      label: 'Unreviewed', value: 12, delta: '+3 from yesterday', severity: 'warning', icon: 'pending_actions', higherIsBetter: false,
+      filter: 'unreviewed', linkLabel: 'View unreviewed submissions', valueUnit: 'items',
+    },
+    {
+      label: 'Alerts', value: 4, delta: '+2 from yesterday', severity: 'critical', icon: 'notifications_active', higherIsBetter: false, pulse: true,
+      filter: 'alerts', linkLabel: 'View patients with alerts', valueUnit: 'alerts',
+    },
+    {
+      label: 'Active Patients', value: 87, delta: '0 from yesterday', severity: 'info', icon: 'groups', higherIsBetter: true,
+      linkLabel: 'View all patients', valueUnit: 'patients',
+    },
+    {
+      label: 'Compliance', value: '94%', delta: '-2% from yesterday', severity: 'success', icon: 'task_alt', higherIsBetter: true,
+      filter: 'compliance', linkLabel: 'View patients by lowest compliance', valueUnit: 'compliance',
+    },
   ]);
 }

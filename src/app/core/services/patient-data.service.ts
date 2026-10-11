@@ -7,35 +7,36 @@ import { PatientProfile } from '../../shared/models/patient.model';
 export class PatientDataService {
   // submissions30d is chosen so each patient's rate lands in their compliance band
   // (On Track >= 90%, Late 70-89%, Missing < 70%). All patients are at Dr. Martin's site.
+  // pendingSubmissions sums to the dashboard's Unreviewed count (12).
   readonly patients = signal<PatientProfile[]>([
     {
-      id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-11T08:14:00', compliance: 'on-track', alerts: 0,
+      id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-11T08:14:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
       age: 34, sex: 'Female', enrolledOn: '2026-09-12', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-18', submissions30d: { submitted: 28, missed: 2 },
     },
     {
-      id: 'PT-1057', name: 'Daniel Mwangi', lastSubmission: '2026-10-10T19:42:00', compliance: 'late', alerts: 1,
+      id: 'PT-1057', name: 'Daniel Mwangi', lastSubmission: '2026-10-10T19:42:00', compliance: 'late', alerts: 1, pendingSubmissions: 3,
       age: 51, sex: 'Male', enrolledOn: '2026-09-01', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-14', submissions30d: { submitted: 24, missed: 6 },
     },
     {
-      id: 'PT-1063', name: 'Sofia Lindqvist', lastSubmission: '2026-10-07T09:05:00', compliance: 'missing', alerts: 3,
+      id: 'PT-1063', name: 'Sofia Lindqvist', lastSubmission: '2026-10-07T09:05:00', compliance: 'missing', alerts: 3, pendingSubmissions: 7,
       age: 46, sex: 'Female', enrolledOn: '2026-08-24', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-12', submissions30d: { submitted: 18, missed: 12 },
     },
     {
-      id: 'PT-1071', name: 'Hiroshi Tanaka', lastSubmission: '2026-10-11T07:30:00', compliance: 'on-track', alerts: 0,
+      id: 'PT-1071', name: 'Hiroshi Tanaka', lastSubmission: '2026-10-11T07:30:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
       age: 62, sex: 'Male', enrolledOn: '2026-08-20', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-25', submissions30d: { submitted: 29, missed: 1 },
     },
     {
-      id: 'PT-1088', name: 'Grace Achieng', lastSubmission: '2026-10-09T21:18:00', compliance: 'late', alerts: 0,
+      id: 'PT-1088', name: 'Grace Achieng', lastSubmission: '2026-10-09T21:18:00', compliance: 'late', alerts: 0, pendingSubmissions: 2,
       age: 29, sex: 'Female', enrolledOn: '2026-09-05', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-16', submissions30d: { submitted: 23, missed: 7 },
     },
     {
       // Enrolled Sep 30, device not yet set up (see audit trail); setup visit Oct 13.
-      id: 'PT-1094', name: 'Mateo Fernández', lastSubmission: null, compliance: 'missing', alerts: 2,
+      id: 'PT-1094', name: 'Mateo Fernández', lastSubmission: null, compliance: 'missing', alerts: 2, pendingSubmissions: 0,
       age: 38, sex: 'Male', enrolledOn: '2026-09-30', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-13', submissions30d: { submitted: 0, missed: 11 },
     },

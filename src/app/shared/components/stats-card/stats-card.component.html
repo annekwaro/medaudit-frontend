@@ -1,24 +1,38 @@
-<mat-card class="stats-card" [class]="'stats-card--' + severity()">
-  <mat-card-content class="stats-card__body">
-    <div class="stats-card__header">
-      <span class="stats-card__icon" aria-hidden="true">
-        <mat-icon>{{ iconName() }}</mat-icon>
-      </span>
-      <span class="stats-card__label">
-        {{ label() }}
-        @if (severityText(); as text) {
-          <span class="sr-only">({{ text }})</span>
-        }
-      </span>
-    </div>
+@if (link(); as target) {
+  <a class="stats-card__link" [routerLink]="target" [queryParams]="queryParams()" [attr.aria-label]="ariaLabel()">
+    <ng-container [ngTemplateOutlet]="card" />
+  </a>
+} @else {
+  <ng-container [ngTemplateOutlet]="card" />
+}
 
-    <div class="stats-card__value">{{ value() }}</div>
-
-    @if (delta(); as deltaText) {
-      <div class="stats-card__delta" [class]="'stats-card__delta--' + sentiment()">
-        <mat-icon class="stats-card__delta-icon" aria-hidden="true">{{ directionIcon() }}</mat-icon>
-        <span>{{ deltaText }}</span>
+<ng-template #card>
+  <mat-card class="stats-card" [class]="'stats-card--' + severity()">
+    <mat-card-content class="stats-card__body">
+      <div class="stats-card__header">
+        <span class="stats-card__icon" aria-hidden="true">
+          <mat-icon>{{ iconName() }}</mat-icon>
+        </span>
+        <span class="stats-card__label">
+          {{ label() }}
+          @if (severityText(); as text) {
+            <span class="sr-only">({{ text }})</span>
+          }
+        </span>
       </div>
+
+      <div class="stats-card__value">{{ value() }}</div>
+
+      @if (delta(); as deltaText) {
+        <div class="stats-card__delta" [class]="'stats-card__delta--' + sentiment()">
+          <mat-icon class="stats-card__delta-icon" aria-hidden="true">{{ directionIcon() }}</mat-icon>
+          <span>{{ deltaText }}</span>
+        </div>
+      }
+    </mat-card-content>
+
+    @if (link()) {
+      <mat-icon class="stats-card__arrow" aria-hidden="true">arrow_forward</mat-icon>
     }
-  </mat-card-content>
-</mat-card>
+  </mat-card>
+</ng-template>

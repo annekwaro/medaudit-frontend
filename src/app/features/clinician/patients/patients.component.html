@@ -16,17 +16,24 @@
             type="search"
             placeholder="Name or patient ID"
             [value]="searchTerm()"
-            (input)="searchTerm.set(search.value)"
+            (input)="setSearchTerm(search.value)"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__status">
-          <mat-label>Status</mat-label>
-          <mat-select [value]="statusFilter()" (selectionChange)="statusFilter.set($event.value)">
-            <mat-option value="all">All</mat-option>
-            @for (status of statuses; track status) {
-              <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
-            }
+          <mat-label>Show</mat-label>
+          <mat-select [value]="showFilter()" (selectionChange)="setShowFilter($event.value)">
+            <mat-option value="all">All patients</mat-option>
+            <mat-optgroup label="Quick views">
+              @for (view of quickViews; track view) {
+                <mat-option [value]="view">{{ quickViewLabels[view] }}</mat-option>
+              }
+            </mat-optgroup>
+            <mat-optgroup label="Compliance status">
+              @for (status of statuses; track status) {
+                <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+              }
+            </mat-optgroup>
           </mat-select>
         </mat-form-field>
       </div>

@@ -15,6 +15,8 @@ export interface PatientSummary {
   lastSubmission: string | null;
   compliance: ComplianceStatus;
   alerts: number;
+  /** Diary submissions awaiting clinician review. */
+  pendingSubmissions: number;
 }
 
 /** Full patient record for the detail page (superset of the table summary). */

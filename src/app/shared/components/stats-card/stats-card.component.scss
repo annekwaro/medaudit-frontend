@@ -24,6 +24,34 @@
   .stats-card:hover {
     transform: translateY(-2px);
   }
+
+  .stats-card__arrow {
+    transition: opacity 150ms ease;
+  }
+}
+
+// Linked card: the anchor is a plain block wrapper; the focus ring is drawn on the card so it
+// follows the 20px corners and the accent color.
+.stats-card__link {
+  display: block;
+  height: 100%;
+  border-radius: 20px;
+  color: inherit;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: none;
+
+    .stats-card {
+      outline: 2px solid var(--stats-card-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &:hover .stats-card__arrow,
+  &:focus-visible .stats-card__arrow {
+    opacity: 1;
+  }
 }
 
 @keyframes stats-card-enter {
@@ -47,13 +75,14 @@
   --stats-card-accent: #0f766e;
 
   // Borderless, 20px corners; the gradient replaces Material's container color and elevation.
+  position: relative;
   height: 100%;
   border: 0;
   border-radius: 20px;
   background: var(--stats-card-gradient);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
-  // Not clickable yet: no pointer. The shadow is not motion, so it applies regardless.
+  // The shadow is not motion, so it applies regardless of reduced-motion.
   &:hover {
     box-shadow: 0 8px 16px color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
   }
@@ -144,4 +173,16 @@
   .stats-card__delta--negative & {
     color: var(--mat-sys-error);
   }
+}
+
+// Hidden until hover/focus on a linked card; fades in only when motion is allowed (see above).
+.stats-card__arrow {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: var(--stats-card-accent);
+  opacity: 0;
 }
