@@ -1,33 +1,111 @@
+$spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+// Entrance stagger: slightly irregular (0 / 60 / 130 / 210ms) reads as less mechanical than a
+// uniform step. Owned here by grid position; later cards continue at +80ms.
 :host {
+  --_enter-delay: 0ms;
+
   display: block;
 }
 
+:host(:nth-child(2)) {
+  --_enter-delay: 60ms;
+}
+
+:host(:nth-child(3)) {
+  --_enter-delay: 130ms;
+}
+
+:host(:nth-child(n + 4)) {
+  --_enter-delay: 210ms;
+}
+
+// Hovered card, or keyboard focus on a linked card: both get the same lift and micro-motion.
+@mixin interactive {
+  .stats-card:hover,
+  .stats-card__link:focus-visible .stats-card {
+    @content;
+  }
+}
+
 // Motion: entrance (on the host) and hover lift (on the card) use separate elements, so the
-// entrance's transform never blocks the hover transform. Set --stats-card-enter-delay to stagger.
+// entrance's transform never blocks the hover transform. All durations stay under 400ms.
 @media (prefers-reduced-motion: no-preference) {
   :host(.stats-card-host--enter) {
     // `backwards` applies the start frame during the delay but releases it once finished.
-    animation: stats-card-enter 250ms cubic-bezier(0.16, 1, 0.3, 1) var(--stats-card-enter-delay, 0ms) backwards;
+    animation: stats-card-enter 380ms $spring var(--_enter-delay) backwards;
   }
 
   // Starts once this card's entrance has finished.
   :host(.stats-card-host--pulse) .stats-card__value {
-    animation: stats-card-pulse 400ms ease-in-out calc(var(--stats-card-enter-delay, 0ms) + 250ms);
+    animation: stats-card-pulse 360ms ease-in-out calc(var(--_enter-delay) + 380ms);
   }
 
   .stats-card {
     transition:
-      transform 180ms ease,
-      box-shadow 180ms ease;
+      transform 220ms $spring,
+      box-shadow 220ms $spring;
   }
 
-  .stats-card:hover {
-    transform: translateY(-2px);
+  .stats-card__icon {
+    transition:
+      transform 200ms $spring,
+      background-color 200ms $spring;
+
+    mat-icon {
+      transition: transform 200ms $spring;
+    }
   }
 
+  .stats-card__value {
+    transition: letter-spacing 200ms $spring;
+  }
+
+  // Leaving: a snappier 150ms ease. Entering (below): 200ms spring.
   .stats-card__arrow {
-    transition: opacity 150ms ease;
+    transform: translateX(-4px);
+    transition:
+      opacity 150ms ease,
+      transform 150ms ease;
   }
+
+  @include interactive {
+    transform: translateY(-3px) scale(1.01);
+
+    .stats-card__icon {
+      transform: scale(1.06);
+      background-color: var(--stats-card-icon-tint);
+
+      // Compounds with the container's 1.06 to read as ~1.08 on screen.
+      mat-icon {
+        transform: scale(1.02);
+      }
+    }
+
+    .stats-card__value {
+      letter-spacing: -0.005em;
+    }
+
+    .stats-card__arrow {
+      opacity: 1;
+      transform: translateX(0);
+      transition:
+        opacity 200ms $spring,
+        transform 200ms $spring;
+    }
+  }
+}
+
+// Reduced motion: no transforms; the arrow is always shown on linked cards, and hover only deepens the shadow.
+@media (prefers-reduced-motion: reduce) {
+  .stats-card .stats-card__arrow {
+    opacity: 1;
+  }
+}
+
+// The shadow is not motion, so it applies regardless of reduced-motion.
+@include interactive {
+  box-shadow: 0 12px 24px rgba(31, 78, 74, 0.1);
 }
 
 // Linked card: the anchor is a plain block wrapper; the focus ring is drawn on the card so it
@@ -47,17 +125,12 @@
       outline-offset: 2px;
     }
   }
-
-  &:hover .stats-card__arrow,
-  &:focus-visible .stats-card__arrow {
-    opacity: 1;
-  }
 }
 
 @keyframes stats-card-enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px) scale(0.96);
   }
 }
 
@@ -73,6 +146,7 @@
   --stats-card-ink-soft: color-mix(in srgb, var(--stats-card-ink) 72%, transparent);
   --stats-card-gradient: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
   --stats-card-accent: #0f766e;
+  --stats-card-icon-tint: #f0fdfa;
 
   // Borderless, 20px corners; the gradient replaces Material's container color and elevation.
   position: relative;
@@ -82,29 +156,28 @@
   background: var(--stats-card-gradient);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
-  // The shadow is not motion, so it applies regardless of reduced-motion.
-  &:hover {
-    box-shadow: 0 8px 16px color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
-  }
-
   &--info {
     --stats-card-gradient: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
     --stats-card-accent: #0f766e; // teal-700
+    --stats-card-icon-tint: #f0fdfa; // teal-50
   }
 
   &--success {
     --stats-card-gradient: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
     --stats-card-accent: #047857; // emerald-700
+    --stats-card-icon-tint: #ecfdf5; // emerald-50
   }
 
   &--warning {
     --stats-card-gradient: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
     --stats-card-accent: #b45309; // amber-700
+    --stats-card-icon-tint: #fffbeb; // amber-50
   }
 
   &--critical {
     --stats-card-gradient: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
     --stats-card-accent: #be123c; // rose-700
+    --stats-card-icon-tint: #fff1f2; // rose-50
   }
 }
 
@@ -175,7 +248,7 @@
   }
 }
 
-// Hidden until hover/focus on a linked card; fades in only when motion is allowed (see above).
+// Hidden until hover/focus on a linked card; slides in only when motion is allowed (see above).
 .stats-card__arrow {
   position: absolute;
   top: 24px;
