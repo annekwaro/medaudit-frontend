@@ -128,6 +128,22 @@ interface NavItem {
       --mdc-list-list-item-focus-state-layer-color: var(--mat-sys-on-primary-container);
     }
 
+    // Ease Material's hover state layer in/out, and nudge the icon on hover/focus.
+    @media (prefers-reduced-motion: no-preference) {
+      .shell__sidenav a[mat-list-item]::before {
+        transition: opacity 150ms ease;
+      }
+
+      .shell__sidenav a[mat-list-item] mat-icon {
+        transition: transform 150ms ease;
+      }
+
+      .shell__sidenav a[mat-list-item]:hover mat-icon,
+      .shell__sidenav a[mat-list-item]:focus-visible mat-icon {
+        transform: scale(1.05);
+      }
+    }
+
     // M3 rounds the drawer's trailing corners; square them when docked full-height.
     .shell__sidenav.mat-drawer-side {
       --mat-sidenav-container-shape: 0;

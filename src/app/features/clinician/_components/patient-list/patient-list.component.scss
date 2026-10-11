@@ -60,3 +60,24 @@
   text-align: end;
   white-space: nowrap;
 }
+
+.patient-list__row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-low);
+  }
+}
+
+.patient-list__row:hover .patient-list__review-text,
+.patient-list__review:hover .patient-list__review-text,
+.patient-list__review:focus-visible .patient-list__review-text {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .patient-list__row {
+    transition: background-color 120ms ease;
+  }
+
+}

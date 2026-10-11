@@ -68,3 +68,20 @@ h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+// Subtle lift on outlined and filled buttons (Add Patient, Export CSV, Save changes, ...).
+.mat-mdc-outlined-button:not(:disabled):hover,
+.mat-mdc-unelevated-button:not(:disabled):hover {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+}
+
+// Doubled class beats Material's own `transition` (its component styles load after this file).
+@media (prefers-reduced-motion: no-preference) {
+  .mat-mdc-button-base.mat-mdc-outlined-button {
+    transition: border 280ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms ease;
+  }
+
+  .mat-mdc-button-base.mat-mdc-unelevated-button {
+    transition: box-shadow 150ms ease;
+  }
+}
