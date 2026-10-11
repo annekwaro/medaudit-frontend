@@ -106,10 +106,23 @@
 }
 
 .timeline {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
+
+  // Connector: a 2px line behind the entries, centered on their 4px accent bars, so it shows in the
+  // gaps (and the rounded corners) and visually runs through each bar. Inset to avoid end stubs.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    bottom: 16px;
+    left: 1px;
+    width: 2px;
+    background: rgba(31, 78, 74, 0.08);
+  }
 }

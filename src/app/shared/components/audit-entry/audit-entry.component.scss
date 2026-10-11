@@ -1,24 +1,91 @@
+// Per-action identity: 4px accent bar, a soft background wash (22-25%), and a gradient badge.
+// All entry text keeps >= 8.8:1 contrast on the tinted backgrounds.
+// Badge text colors pass >= 4.5:1 on both gradient stops (Flagged uses rose-900, not rose-800).
 :host {
   --audit-entry-accent: var(--mat-sys-outline-variant);
+  --audit-entry-tint: transparent;
+  --audit-entry-badge-bg: var(--mat-sys-surface-container);
+  --audit-entry-badge-ink: var(--mat-sys-on-surface);
 
+  position: relative;
   display: block;
-  padding: 12px 16px;
-  background: var(--mat-sys-surface-container-lowest);
-  border: 1px solid var(--mat-sys-outline-variant);
-  border-left: 4px solid var(--audit-entry-accent);
-  border-radius: var(--mat-sys-corner-small);
+  overflow: hidden; // clips the accent bar to the rounded corners
+  padding: 20px 20px 20px 24px; // extra left space clears the 4px accent bar
+  border-radius: 16px;
+  background: linear-gradient(var(--audit-entry-tint), var(--audit-entry-tint)), #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--audit-entry-accent);
+  }
+
+  // The shadow is not motion, so it deepens regardless of reduced-motion.
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  }
 }
 
-:host([data-action='submitted']) { --audit-entry-accent: var(--mat-sys-primary); }
-:host([data-action='modified'])  { --audit-entry-accent: var(--mat-sys-tertiary); }
-:host([data-action='reviewed'])  { --audit-entry-accent: var(--mat-sys-secondary); }
-:host([data-action='flagged'])   { --audit-entry-accent: var(--mat-sys-error); }
+:host([data-action='submitted']) {
+  --audit-entry-accent: var(--mat-sys-primary); // #1F4E4A
+  --audit-entry-tint: rgba(188, 236, 230, 0.22); // mint is more saturated, so slightly lower
+  --audit-entry-badge-bg: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  --audit-entry-badge-ink: #065f46; // 6.0:1
+}
 
+:host([data-action='modified']) {
+  --audit-entry-accent: var(--mat-sys-tertiary); // #8F4E0E
+  --audit-entry-tint: rgba(255, 220, 196, 0.25);
+  --audit-entry-badge-bg: linear-gradient(135deg, #fef3c7, #fde68a);
+  --audit-entry-badge-ink: #92400e; // 5.7:1
+}
+
+:host([data-action='reviewed']) {
+  --audit-entry-accent: var(--mat-sys-secondary); // #50625F
+  --audit-entry-tint: rgba(211, 230, 227, 0.25);
+  --audit-entry-badge-bg: linear-gradient(135deg, #d3e6e3, #bcece6);
+  --audit-entry-badge-ink: #1f4e4a; // 7.2:1
+}
+
+:host([data-action='flagged']) {
+  --audit-entry-accent: var(--mat-sys-error); // #BA1A1A
+  --audit-entry-tint: rgba(255, 218, 214, 0.25);
+  --audit-entry-badge-bg: linear-gradient(135deg, #fecdd3, #fda4af);
+  --audit-entry-badge-ink: #881337; // rose-900, 5.1:1 (#9F1239 was 4.2:1)
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :host {
+    transition:
+      transform 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  :host(:hover) {
+    transform: translateY(-1px);
+  }
+}
+
+// Row 1: badge | timestamp | user (| patient link on the global log)
 .audit-entry__meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 12px;
+  gap: 6px 12px;
+}
+
+.audit-entry__badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--mat-sys-corner-full);
+  background: var(--audit-entry-badge-bg);
+  color: var(--audit-entry-badge-ink);
+  font: var(--mat-sys-label-medium);
+  letter-spacing: var(--mat-sys-label-medium-tracking);
+  white-space: nowrap;
 }
 
 .audit-entry__time {
@@ -51,21 +118,22 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+// Row 2: field name + value, General Sans, slightly bolder.
 .audit-entry__field {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 4px 12px;
-  margin-top: 8px;
-  font: var(--mat-sys-title-small);
-  letter-spacing: var(--mat-sys-title-small-tracking);
+  margin-top: 12px;
+  font: 600 0.9375rem / 1.375rem var(--ma-font-display);
+  color: var(--mat-sys-on-surface);
 }
 
 .audit-entry__change {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
-  font: var(--mat-sys-body-medium);
+  font: 500 0.9375rem / 1.375rem var(--ma-font-display);
   font-variant-numeric: tabular-nums;
 }
 
@@ -75,12 +143,13 @@
 }
 
 .audit-entry__new {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--mat-sys-on-surface);
 }
 
+// Row 3: reason note, Inter regular, muted.
 .audit-entry__reason {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font: var(--mat-sys-body-medium);
   color: var(--mat-sys-on-surface-variant);
 }

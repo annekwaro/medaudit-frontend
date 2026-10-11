@@ -1,6 +1,6 @@
 @let e = entry();
 <div class="audit-entry__meta">
-  <app-badge [tone]="actionTone()">{{ actionLabel() }}</app-badge>
+  <span class="audit-entry__badge">{{ actionLabel() }}</span>
   <time class="audit-entry__time" [attr.datetime]="e.timestamp" [title]="e.timestamp | date: 'MMM d, y, HH:mm:ss zzzz'">
     {{ e.timestamp | date: 'MMM d, HH:mm' }}
   </time>
