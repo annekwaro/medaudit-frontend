@@ -1,9 +1,14 @@
+import { A11yModule } from '@angular/cdk/a11y';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DashboardFigures, PatientDataService } from '../../../../core/services/patient-data.service';
 import { PatientProfile } from '../../../../shared/models/patient.model';
 import { StatsCardComponent, StatsSeverity } from '../../../../shared/components/stats-card/stats-card.component';
@@ -81,11 +86,15 @@ function plural(count: number, noun: string): string {
   selector: 'app-clinician-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    A11yModule,
+    OverlayModule,
     DatePipe,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatSelectModule,
+    MatSlideToggleModule,
+    MatTooltipModule,
     StatsCardComponent,
     PatientListTableComponent,
     TrendChartComponent,
@@ -98,8 +107,22 @@ export class OverviewComponent {
   private readonly patientData = inject(PatientDataService);
   readonly patients = this.patientData.patients;
 
+  private readonly snackBar = inject(MatSnackBar);
+
   readonly updatedAt = signal(new Date());
   readonly refreshing = signal(false);
+
+  // Header filter popover: narrows the Recent Submissions table.
+  readonly filterOpen = signal(false);
+  readonly onlyWithAlerts = signal(false);
+  readonly onlyLate = signal(false);
+  readonly filtersActive = computed(() => this.onlyWithAlerts() || this.onlyLate());
+
+  readonly recentPatients = computed(() =>
+    this.patients().filter(
+      (patient) => (!this.onlyWithAlerts() || patient.alerts > 0) && (!this.onlyLate() || patient.compliance === 'late'),
+    ),
+  );
 
   /** Today's figures, derived from the same patient records as the table and the quick views. */
   private readonly figures = computed<DashboardFigures>(() => {
@@ -177,5 +200,14 @@ export class OverviewComponent {
     if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       this.refreshing.set(true);
     }
+  }
+
+  resetFilters(): void {
+    this.onlyWithAlerts.set(false);
+    this.onlyLate.set(false);
+  }
+
+  exportData(): void {
+    this.snackBar.open('Export coming soon', undefined, { duration: 3000 });
   }
 }

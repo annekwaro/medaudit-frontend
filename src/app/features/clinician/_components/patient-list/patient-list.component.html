@@ -63,6 +63,15 @@
           >
             Review
           </a>
+          <button
+            type="button"
+            class="patient-list__more"
+            [matMenuTriggerFor]="rowMenu"
+            [matMenuTriggerData]="{ patient }"
+            [attr.aria-label]="'More actions for ' + patient.name"
+          >
+            <mat-icon>more_horiz</mat-icon>
+          </button>
         </td>
       </ng-container>
 
@@ -79,3 +88,27 @@
     </table>
   </div>
 </mat-card>
+
+<!-- One menu shared by every row; the row's patient is passed in as trigger data.
+     No "Delete": in an ICH-GCP trial, patients can only be withdrawn or archived. -->
+<mat-menu #rowMenu="matMenu" xPosition="before">
+  <ng-template matMenuContent let-patient="patient">
+    <a mat-menu-item [routerLink]="['/clinician/patient', patient.id]">
+      <mat-icon>history</mat-icon>
+      <span>View audit trail</span>
+    </a>
+    <button mat-menu-item type="button" (click)="notify('Message composer coming soon')">
+      <mat-icon>chat_bubble_outline</mat-icon>
+      <span>Send message</span>
+    </button>
+    <button mat-menu-item type="button" (click)="notify('Patient flagged')">
+      <mat-icon>outlined_flag</mat-icon>
+      <span>Flag for follow-up</span>
+    </button>
+    <mat-divider />
+    <button mat-menu-item type="button" class="patient-list__archive" (click)="notify('Patient archived')">
+      <mat-icon>archive</mat-icon>
+      <span>Archive patient</span>
+    </button>
+  </ng-template>
+</mat-menu>

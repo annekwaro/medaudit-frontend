@@ -9,13 +9,64 @@
     <span class="time-anchor__text" aria-live="polite">
       Updated <time [attr.datetime]="updatedAt().toISOString()">{{ updatedAt() | date: 'HH:mm' }}</time>
     </span>
-    <button mat-icon-button type="button" class="time-anchor__refresh" aria-label="Refresh" (click)="refresh()">
-      <mat-icon
-        [class.time-anchor__refresh-icon--spinning]="refreshing()"
-        (animationend)="refreshing.set(false)"
-      >refresh</mat-icon>
-    </button>
+
+    <div class="header-actions">
+      <button type="button" class="header-action" aria-label="Refresh" matTooltip="Refresh" (click)="refresh()">
+        <mat-icon
+          [class.header-action__icon--spinning]="refreshing()"
+          (animationend)="refreshing.set(false)"
+        >sync</mat-icon>
+      </button>
+
+      <button
+        type="button"
+        class="header-action"
+        [class.header-action--active]="filtersActive()"
+        cdkOverlayOrigin
+        #filterOrigin="cdkOverlayOrigin"
+        [attr.aria-label]="filtersActive() ? 'Filter recent submissions (filters on)' : 'Filter recent submissions'"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="filterOpen()"
+        matTooltip="Filter"
+        (click)="filterOpen.set(!filterOpen())"
+      >
+        <mat-icon>tune</mat-icon>
+      </button>
+
+      <button type="button" class="header-action" aria-label="Export" matTooltip="Export" (click)="exportData()">
+        <mat-icon>download</mat-icon>
+      </button>
+    </div>
   </div>
+
+  <!-- Popover: Tab moves between controls (focus trapped), Esc or an outside click closes it,
+       and focus returns to the filter button. -->
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="filterOrigin"
+    [cdkConnectedOverlayOpen]="filterOpen()"
+    [cdkConnectedOverlayPositions]="[
+      { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
+      { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 }
+    ]"
+    cdkConnectedOverlayHasBackdrop
+    cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+    (backdropClick)="filterOpen.set(false)"
+    (detach)="filterOpen.set(false)"
+    (overlayKeydown)="$event.key === 'Escape' && filterOpen.set(false)"
+  >
+    <div class="filter-popover" role="dialog" aria-label="Filter recent submissions" cdkTrapFocus cdkTrapFocusAutoCapture>
+      <mat-slide-toggle [checked]="onlyWithAlerts()" (change)="onlyWithAlerts.set($event.checked)">
+        Show only patients with alerts
+      </mat-slide-toggle>
+      <mat-slide-toggle [checked]="onlyLate()" (change)="onlyLate.set($event.checked)">
+        Show only late submissions
+      </mat-slide-toggle>
+      <button mat-button type="button" class="filter-popover__reset" [disabled]="!filtersActive()" (click)="resetFilters()">
+        Reset
+      </button>
+    </div>
+  </ng-template>
 </header>
 
 <app-visit-banner class="overview__banner" [message]="sinceLastVisit()" actionLink="/clinician/audit-log" />
@@ -58,6 +109,6 @@
   [style.--rise-index]="stats().length + 1"
   heading="Recent Submissions"
   viewAllLink="/clinician/patients"
-  [patients]="patients()"
+  [patients]="recentPatients()"
   [staggerRows]="true"
 />
