@@ -2,31 +2,122 @@
   <h1 class="settings__title">Settings</h1>
 
   <mat-card class="section">
-    <mat-card-header>
-      <mat-card-title><h2 class="section__title">Profile</h2></mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <dl class="profile">
-        @for (row of profile; track row.label) {
-          <div class="profile__row">
-            <dt>{{ row.label }}</dt>
-            <dd>{{ row.value }}</dd>
-          </div>
+    <header class="section__header">
+      <h2 class="section__title">Profile</h2>
+      @if (editingProfile()) {
+        <span class="section__pill fade-in">Editing</span>
+      }
+      <div class="section__actions">
+        @if (editingProfile()) {
+          <button mat-button type="button" class="section__cancel fade-in" (click)="cancelProfile()">Cancel</button>
+          <button mat-flat-button type="submit" form="profile-form" class="section__save fade-in" [disabled]="!canSaveProfile()">
+            Save
+          </button>
+        } @else {
+          <button #profileEdit type="button" class="section__edit fade-in" aria-label="Edit profile" (click)="editProfile()">
+            Edit
+            <mat-icon aria-hidden="true">edit</mat-icon>
+          </button>
         }
-      </dl>
-      <p class="section__note">Profile is managed by your site administrator</p>
+      </div>
+    </header>
+
+    <mat-card-content>
+      @if (editingProfile()) {
+        <!-- Enter saves, Esc cancels. Role and site stay locked: they drive access control. -->
+        <form
+          id="profile-form"
+          class="profile fade-in"
+          novalidate
+          (submit)="$event.preventDefault(); saveProfile()"
+          (keydown.escape)="cancelProfile()"
+        >
+          @for (field of profileFields; track field.key) {
+            <div class="profile__row">
+              @if (field.editable) {
+                <label class="profile__label" [for]="'profile-' + field.key">{{ field.label }}</label>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="profile__field">
+                  <input
+                    #profileInput
+                    matInput
+                    required
+                    [id]="'profile-' + field.key"
+                    [type]="field.inputType ?? 'text'"
+                    [attr.autocomplete]="field.autocomplete"
+                    [value]="profileDraft()[field.key]"
+                    (input)="updateDraft(field.key, profileInput.value)"
+                  />
+                  @if (field.key === 'name' && nameInvalid()) {
+                    <mat-hint class="profile__error">Name is required</mat-hint>
+                  }
+                  @if (field.key === 'email' && emailInvalid()) {
+                    <mat-hint class="profile__error">Enter a valid email address</mat-hint>
+                  }
+                </mat-form-field>
+              } @else {
+                <span class="profile__label">{{ field.label }}</span>
+                <span class="profile__value profile__value--locked">
+                  {{ profile()[field.key] }}
+                  <mat-icon class="profile__lock" aria-hidden="true">lock</mat-icon>
+                  <span class="sr-only">(managed by your site administrator)</span>
+                </span>
+              }
+            </div>
+          }
+        </form>
+      } @else {
+        <dl class="profile fade-in">
+          @for (field of profileFields; track field.key) {
+            <div class="profile__row">
+              <dt class="profile__label">{{ field.label }}</dt>
+              <dd class="profile__value">{{ profile()[field.key] }}</dd>
+            </div>
+          }
+        </dl>
+      }
+      <p class="section__note">Role and site are managed by your site administrator</p>
     </mat-card-content>
   </mat-card>
 
   <mat-card class="section">
-    <mat-card-header>
-      <mat-card-title><h2 class="section__title">Notifications</h2></mat-card-title>
-    </mat-card-header>
+    <header class="section__header">
+      <h2 class="section__title">Notifications</h2>
+      @if (editingNotifications()) {
+        <span class="section__pill fade-in">Editing</span>
+      }
+      <div class="section__actions">
+        @if (editingNotifications()) {
+          <button mat-button type="button" class="section__cancel fade-in" (click)="cancelNotifications()">Cancel</button>
+          <button
+            mat-flat-button
+            type="button"
+            class="section__save fade-in"
+            [disabled]="!notificationsChanged()"
+            (click)="saveNotifications()"
+          >
+            Save
+          </button>
+        } @else {
+          <button #notificationsEdit type="button" class="section__edit fade-in" aria-label="Edit notifications" (click)="editNotifications()">
+            Edit
+            <mat-icon aria-hidden="true">edit</mat-icon>
+          </button>
+        }
+      </div>
+    </header>
+
     <mat-card-content>
-      <ul class="toggle-list">
+      <!-- Read mode: toggles show their state but are disabled until Edit. -->
+      <ul class="toggle-list" (keydown.escape)="editingNotifications() && cancelNotifications()">
         @for (item of notifications; track item.label) {
           <li>
-            <mat-slide-toggle labelPosition="before" [checked]="item.state()" (change)="item.state.set($event.checked)">
+            <mat-slide-toggle
+              #notificationToggle
+              labelPosition="before"
+              [checked]="item.state()"
+              [disabled]="!editingNotifications()"
+              (change)="item.state.set($event.checked)"
+            >
               {{ item.label }}
             </mat-slide-toggle>
           </li>
