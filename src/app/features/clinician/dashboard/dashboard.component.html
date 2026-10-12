@@ -1,0 +1,66 @@
+<mat-sidenav-container class="shell">
+  <mat-sidenav
+    class="shell__sidenav"
+    [mode]="sidenavMode()"
+    [opened]="sidenavOpened()"
+    (openedChange)="sidenavOpened.set($event)"
+  >
+    <div class="shell__nav">
+      <div class="shell__brand">MedAudit</div>
+      <mat-nav-list aria-label="Clinician navigation">
+        @for (item of navItems; track item.path) {
+          <a
+            mat-list-item
+            [routerLink]="item.path"
+            routerLinkActive
+            #rla="routerLinkActive"
+            [activated]="rla.isActive"
+            (click)="onNavigate()"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+
+      <!-- Informational only (not interactive). Pinned to the bottom of the sidebar. -->
+      <section class="site-card" aria-label="Site status">
+        <p class="site-card__site">{{ site }}</p>
+        <p class="site-card__sync" aria-live="polite">
+          <span class="site-card__dot" [class.site-card__dot--offline]="!online()" aria-hidden="true"></span>
+          @if (online()) {
+            <!-- Mock until a sync service exists. -->
+            Synced 2 min ago
+          } @else {
+            Offline · not syncing
+          }
+        </p>
+        <p class="site-card__counts">{{ enrolledCount() }} enrolled · {{ activeCount() }} active</p>
+      </section>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell__main">
+    <mat-toolbar class="shell__toolbar">
+      <button
+        mat-icon-button
+        type="button"
+        (click)="toggleSidenav()"
+        [attr.aria-label]="sidenavOpened() ? 'Close navigation' : 'Open navigation'"
+        [attr.aria-expanded]="sidenavOpened()"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="shell__title">Clinician Portal</span>
+      <span class="shell__spacer"></span>
+      <span class="shell__role-badge" aria-label="Current role">{{ role() }}</span>
+      <button mat-icon-button type="button" matTooltip="Log out" aria-label="Log out" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <main class="shell__content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

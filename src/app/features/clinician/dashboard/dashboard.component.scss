@@ -1,0 +1,178 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.shell {
+  height: 100%;
+}
+
+// Dark teal sidebar. Applies in both docked (side) and mobile overlay (over) modes.
+.shell__sidenav {
+  --ma-sidenav-fg: rgb(253 249 242 / 0.85);
+  --ma-sidenav-fg-strong: var(--mat-sys-surface);
+  --ma-sidenav-state-layer: rgb(253 249 242);
+
+  --mat-sidenav-container-width: var(--ma-sidenav-width, 240px);
+  --mat-sidenav-container-background-color: var(--mat-sys-primary);
+  --mat-sidenav-container-text-color: var(--ma-sidenav-fg);
+  // The solid fill separates it from the content; a light hairline would read as a seam.
+  --mat-sidenav-container-divider-color: transparent;
+
+  // Inactive links: warm white text/icons, warm-white state layers for hover and focus.
+  --mdc-list-list-item-label-text-color: var(--ma-sidenav-fg);
+  --mdc-list-list-item-leading-icon-color: var(--ma-sidenav-fg);
+  --mdc-list-list-item-hover-label-text-color: var(--ma-sidenav-fg);
+  --mdc-list-list-item-hover-leading-icon-color: var(--ma-sidenav-fg);
+  --mdc-list-list-item-focus-label-text-color: var(--ma-sidenav-fg);
+  --mdc-list-list-item-hover-state-layer-color: var(--ma-sidenav-state-layer);
+  --mdc-list-list-item-hover-state-layer-opacity: 0.08;
+  --mdc-list-list-item-focus-state-layer-color: var(--ma-sidenav-state-layer);
+
+  // Active link: primary-container pill (shape stays the M3 default, corner-full).
+  --mat-list-active-indicator-color: var(--mat-sys-primary-container);
+}
+
+// M3 has no token for the activated item's text, so scope the label/icon tokens to it.
+.shell__sidenav .mdc-list-item--activated {
+  --mdc-list-list-item-label-text-color: var(--mat-sys-on-primary-container);
+  --mdc-list-list-item-leading-icon-color: var(--mat-sys-on-primary-container);
+  --mdc-list-list-item-hover-label-text-color: var(--mat-sys-on-primary-container);
+  --mdc-list-list-item-hover-leading-icon-color: var(--mat-sys-on-primary-container);
+  --mdc-list-list-item-focus-label-text-color: var(--mat-sys-on-primary-container);
+  --mdc-list-list-item-hover-state-layer-color: var(--mat-sys-on-primary-container);
+  --mdc-list-list-item-focus-state-layer-color: var(--mat-sys-on-primary-container);
+}
+
+// Ease Material's hover state layer in/out, and nudge the icon on hover/focus.
+@media (prefers-reduced-motion: no-preference) {
+  .shell__sidenav a[mat-list-item]::before {
+    transition: opacity 150ms ease;
+  }
+
+  .shell__sidenav a[mat-list-item] mat-icon {
+    transition: transform 150ms ease;
+  }
+
+  .shell__sidenav a[mat-list-item]:hover mat-icon,
+  .shell__sidenav a[mat-list-item]:focus-visible mat-icon {
+    transform: scale(1.05);
+  }
+}
+
+// M3 rounds the drawer's trailing corners; square them when docked full-height.
+.shell__sidenav.mat-drawer-side {
+  --mat-sidenav-container-shape: 0;
+}
+
+// Fills the drawer so the site card can sit at the bottom.
+.shell__nav {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.site-card {
+  margin: auto 8px 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(253, 249, 242, 0.06);
+}
+
+.site-card__site {
+  margin: 0;
+  font: 500 0.75rem / 1rem var(--ma-font-body);
+  color: rgba(253, 249, 242, 0.85);
+}
+
+.site-card__sync {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  font: 400 0.6875rem / 1rem var(--ma-font-body);
+  // 0.72 (not 0.6): 4.83:1 on the card, AA for small text.
+  color: rgba(253, 249, 242, 0.72);
+}
+
+.site-card__dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+
+  &--offline {
+    background: #f59e0b;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-card__dot:not(.site-card__dot--offline) {
+    animation: site-card-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes site-card-pulse {
+  50% {
+    transform: scale(1.4);
+  }
+}
+
+.site-card__counts {
+  margin: 2px 0 0;
+  font: 400 0.6875rem / 1rem var(--ma-font-body);
+  // 0.69 (not 0.45): 4.58:1 on the card, AA for small text.
+  color: rgba(253, 249, 242, 0.69);
+}
+
+.shell__brand {
+  padding: 20px 16px 12px;
+  font: var(--ma-type-logo);
+  letter-spacing: -0.01em;
+  color: var(--ma-sidenav-fg-strong);
+}
+
+.shell__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.shell__toolbar {
+  // Own view-transition layer, so the fading content can't paint over it.
+  view-transition-name: shell-toolbar;
+  --mat-toolbar-container-background-color: var(--mat-sys-surface);
+  --mat-toolbar-container-text-color: var(--mat-sys-on-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  gap: 8px;
+}
+
+.shell__title {
+  font: var(--mat-sys-title-medium);
+  letter-spacing: var(--mat-sys-title-medium-tracking);
+}
+
+.shell__spacer {
+  flex: 1 1 auto;
+}
+
+.shell__role-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.shell__content {
+  // Route fade target (see withClinicianRouteTransitions + styles.scss).
+  view-transition-name: shell-content;
+  flex: 1 1 auto;
+  padding: var(--ma-content-padding, 24px);
+}
