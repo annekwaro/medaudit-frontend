@@ -32,4 +32,4 @@ npm start
 \`\`\`
 
 ## Live demo
-[medaudit-frontend.vercel.app](https://medaudit-frontend.vercel.app)
+[https://medaudit-frontend-one.vercel.app/clinician/dashboard)
