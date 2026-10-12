@@ -46,8 +46,7 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
   .stats-card {
     transition:
       transform 220ms $hover-spring,
-      box-shadow 220ms $hover-spring,
-      border-color 220ms $hover-spring;
+      box-shadow 220ms $hover-spring;
   }
 
   .stats-card__icon {
@@ -87,19 +86,18 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
   }
 }
 
-// Reduced motion: no transforms; the arrow is always shown on linked cards, and hover only deepens the shadow and border.
+// Reduced motion: no transforms; the arrow is always shown on linked cards, and hover only deepens the shadow and hairline.
 @media (prefers-reduced-motion: reduce) {
   .stats-card .stats-card__arrow {
     opacity: 1;
   }
 }
 
-// Shadow and border are not motion, so they apply regardless of reduced-motion.
-// The top border is part of the accent strip and keeps its color.
+// Shadow and hairline are not motion, so they apply regardless of reduced-motion.
 @include interactive {
-  border-color: rgba(0, 0, 0, 0.1);
-  border-top-color: var(--stats-card-color);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 12px 24px rgba(0, 0, 0, 0.08);
 }
 
 // Linked card: the anchor is a plain block wrapper; the focus ring is drawn on the card so it
@@ -148,19 +146,22 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
   position: relative;
   height: 100%;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  // The 1px top border plus the 2px ::before strip form the 3px accent, flush with the top edge.
-  border-top-color: var(--stats-card-color);
+  // The 1px hairline is an inset shadow rather than a border, so nothing is painted outside the
+  // clipped area and the strip can sit at the true top edge, inside the 20px curve.
+  border: 0;
   border-radius: 20px;
   // e.g. warning ≈ #FFFCF8, critical ≈ #FEF8FA.
   background: color-mix(in srgb, var(--stats-card-color) 3%, #ffffff);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.03);
 
+  // Accent strip, clipped to the card's rounded corners by overflow: hidden.
   &::before {
     content: '';
     position: absolute;
     inset: 0 0 auto;
-    height: 2px;
+    height: 3px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     background: var(--stats-card-color);
