@@ -6,22 +6,30 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
+p on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+# MedAudit
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+A clinical eCOA (electronic Clinical Outcome Assessment) dashboard prototype
+built with Angular 19 and Material 3.
 
-## Build
+## What it demonstrates
+- Audit trail viewer for clinical trial compliance (ICH-GCP aware)
+- Patient compliance tracking with gradient status badges
+- Offline-first architecture with self-hosted fonts (no external CDNs)
+- Role-based views (Clinician portal)
+- Interactive stats cards with micro-visualizations
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Tech stack
+- Angular 19 + standalone components + signals
+- Angular Material 3 with custom teal/amber theme
+- Self-hosted General Sans + Inter + Material Symbols
+- Inline SVG charts (no chart library)
 
-## Running unit tests
+## Run locally
+\`\`\`
+npm install
+npm start
+\`\`\`
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Live demo
+[medaudit-frontend.vercel.app](https://medaudit-frontend.vercel.app)
