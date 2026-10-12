@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { Params, RouterLink } from '@angular/router';
+import { MicroVizComponent, MicroVizType } from '../micro-viz/micro-viz.component';
 
 export type StatsSeverity = 'info' | 'success' | 'warning' | 'critical';
 
@@ -33,7 +34,7 @@ const SEVERITY_TEXT: Record<StatsSeverity, string | null> = {
 @Component({
   selector: 'app-stats-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, RouterLink, MatCardModule, MatIconModule],
+  imports: [NgTemplateOutlet, RouterLink, MatCardModule, MatIconModule, MicroVizComponent],
   // Entrance animation class is present from creation, so it plays on first render.
   host: {
     class: 'stats-card-host--enter',
@@ -54,6 +55,10 @@ export class StatsCardComponent {
   readonly higherIsBetter = input(true);
   /** Pulse the value once after the entrance, to draw the eye to a critical metric. */
   readonly pulse = input(false);
+  /** Optional micro-visualization, right-aligned on the delta row. */
+  readonly vizType = input<MicroVizType>();
+  /** Oldest first, last entry today; for `progress`, a single 0-100 value. */
+  readonly vizValues = input<readonly number[]>([]);
   /** Router link; when set, the whole card becomes a link. */
   readonly link = input<string>();
   readonly queryParams = input<Params>();

@@ -1,0 +1,39 @@
+@switch (type()) {
+  @case ('bars') {
+    <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" [attr.width]="width" [attr.height]="height">
+      @for (bar of bars(); track $index) {
+        <path class="micro-viz__bar" [class.micro-viz__today]="$last" [style.--i]="$index" [attr.d]="bar.path" />
+        @if ($last) {
+          <rect class="micro-viz__today micro-viz__tick" [style.--i]="$index" [attr.x]="bar.x" [attr.y]="barBaseline + 1" [attr.width]="barWidth" height="2" rx="1" />
+        }
+      }
+    </svg>
+  }
+
+  @case ('dots') {
+    <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" [attr.width]="width" [attr.height]="height">
+      @for (dot of dots(); track $index) {
+        <circle class="micro-viz__dot" [class.micro-viz__today]="$last" [style.--i]="$index" [attr.cx]="dot.cx" cy="12" [attr.r]="dot.r" />
+      }
+    </svg>
+  }
+
+  @case ('sparkline') {
+    @let spark = sparkline();
+    <svg class="micro-viz__fade" [attr.viewBox]="'0 0 ' + width + ' ' + height" [attr.width]="width" [attr.height]="height">
+      <path class="micro-viz__area" [attr.d]="spark.area" />
+      <path class="micro-viz__line" [attr.d]="spark.line" />
+      <circle class="micro-viz__today" [attr.cx]="spark.last.x" [attr.cy]="spark.last.y" r="2.5" />
+    </svg>
+  }
+
+  @case ('progress') {
+    <div class="micro-viz__progress">
+      <svg [attr.viewBox]="'0 0 ' + width + ' 4'" [attr.width]="width" height="4">
+        <rect class="micro-viz__track" [attr.width]="width" height="4" rx="2" />
+        <rect class="micro-viz__fill micro-viz__today" [attr.width]="(width * percent()) / 100" height="4" rx="2" />
+      </svg>
+      <span class="micro-viz__caption">{{ percent() }} / 100</span>
+    </div>
+  }
+}

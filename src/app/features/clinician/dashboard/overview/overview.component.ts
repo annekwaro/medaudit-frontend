@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DashboardFigures, PatientDataService } from '../../../../core/services/patient-data.service';
 import { PatientProfile } from '../../../../shared/models/patient.model';
+import { MicroVizType } from '../../../../shared/components/micro-viz/micro-viz.component';
 import { StatsCardComponent, StatsSeverity } from '../../../../shared/components/stats-card/stats-card.component';
 import { PatientListTableComponent } from '../../_components/patient-list/patient-list.component';
 import { PatientQuickView } from '../../patients/patients.component';
@@ -29,6 +30,8 @@ interface StatSummary {
   filter?: PatientQuickView;
   linkLabel: string;
   valueUnit: string;
+  vizType: MicroVizType;
+  vizValues: readonly number[];
 }
 
 /** "+3 from yesterday", "0 from yesterday", "-2% from yesterday". */
@@ -155,22 +158,27 @@ export class OverviewComponent {
   readonly stats = computed<StatSummary[]>(() => {
     const today = this.figures();
     const change = this.changes();
+    const history = this.patientData.previousSixDays;
     return [
       {
         label: 'Unreviewed', value: today.unreviewed, delta: formatDelta(change.unreviewed), severity: 'warning', icon: 'pending_actions', higherIsBetter: false,
         filter: 'unreviewed', linkLabel: 'View unreviewed submissions', valueUnit: 'items',
+        vizType: 'bars', vizValues: [...history.newSubmissions, Math.max(change.unreviewed, 0)],
       },
       {
         label: 'Alerts', value: today.alerts, delta: formatDelta(change.alerts), severity: 'critical', icon: 'notifications_active', higherIsBetter: false, pulse: today.alerts > 0,
         filter: 'alerts', linkLabel: 'View patients with alerts', valueUnit: 'alerts',
+        vizType: 'dots', vizValues: [...history.newAlerts, Math.max(change.alerts, 0)],
       },
       {
         label: 'Active Patients', value: today.activePatients, delta: formatDelta(change.activePatients), severity: 'info', icon: 'groups', higherIsBetter: true,
         linkLabel: 'View all patients', valueUnit: 'patients',
+        vizType: 'sparkline', vizValues: [...history.activePatients, today.activePatients],
       },
       {
         label: 'Compliance', value: `${today.compliancePercent}%`, delta: formatDelta(change.compliancePercent, '%'), severity: complianceSeverity(today.compliancePercent), icon: 'task_alt', higherIsBetter: true,
         filter: 'compliance', linkLabel: 'View patients by lowest compliance', valueUnit: 'compliance',
+        vizType: 'progress', vizValues: [today.compliancePercent],
       },
     ];
   });

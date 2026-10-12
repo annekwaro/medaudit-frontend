@@ -222,6 +222,21 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
   color: var(--stats-card-ink);
 }
 
+// Delta on the left, micro-viz pinned right, sharing the bottom edge.
+.stats-card__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+// Starts once this card's entrance has landed.
+.stats-card__viz {
+  --micro-viz-delay: calc(var(--_enter-delay, 0ms) + 380ms);
+
+  margin-left: auto;
+}
+
 // Text stays muted; only the arrow is colored, in the card's severity color.
 .stats-card__delta {
   display: inline-flex;

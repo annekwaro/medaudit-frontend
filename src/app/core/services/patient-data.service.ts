@@ -267,6 +267,16 @@ export class PatientDataService {
     flaggedPatients: 0,
   };
 
+  /**
+   * Mock daily history for the stats cards' micro-visualizations: the six days before today,
+   * oldest first. Today's value is appended from the live figures, so the two always agree.
+   */
+  readonly previousSixDays = {
+    newSubmissions: [3, 5, 2, 6, 4, 7],
+    newAlerts: [2, 3, 1, 4, 2, 5],
+    activePatients: [5, 5, 6, 6, 6, 6],
+  } as const;
+
   getPatient(id: string): PatientProfile | undefined {
     return this.patients().find((patient) => patient.id === id);
   }

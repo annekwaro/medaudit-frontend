@@ -21,10 +21,17 @@
 
       <div class="stats-card__value">{{ value() }}</div>
 
-      @if (delta(); as deltaText) {
-        <div class="stats-card__delta" [class]="'stats-card__delta--' + sentiment()">
-          <mat-icon class="stats-card__delta-icon" aria-hidden="true">{{ directionIcon() }}</mat-icon>
-          <span>{{ deltaText }}</span>
+      @if (delta() || vizType()) {
+        <div class="stats-card__footer">
+          @if (delta(); as deltaText) {
+            <div class="stats-card__delta" [class]="'stats-card__delta--' + sentiment()">
+              <mat-icon class="stats-card__delta-icon" aria-hidden="true">{{ directionIcon() }}</mat-icon>
+              <span>{{ deltaText }}</span>
+            </div>
+          }
+          @if (vizType(); as type) {
+            <app-micro-viz class="stats-card__viz" [type]="type" [values]="vizValues()" />
+          }
         </div>
       }
     </mat-card-content>
