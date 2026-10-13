@@ -5,7 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { Params, RouterLink } from '@angular/router';
 import { MicroVizComponent, MicroVizType } from '../micro-viz/micro-viz.component';
 
-export type StatsSeverity = 'info' | 'success' | 'warning' | 'critical';
+/** `neutral` is for figures that are never a problem in themselves (e.g. a patient count). */
+export type StatsSeverity = 'neutral' | 'info' | 'success' | 'warning' | 'critical';
 
 type DeltaDirection = 'up' | 'down' | 'flat';
 
@@ -17,6 +18,7 @@ const DIRECTION_ICONS: Record<DeltaDirection, string> = {
 
 /** Fallback icon per severity when no `icon` is given. */
 const DEFAULT_ICONS: Record<StatsSeverity, string> = {
+  neutral: 'insights',
   info: 'insights',
   success: 'task_alt',
   warning: 'pending_actions',
@@ -25,6 +27,7 @@ const DEFAULT_ICONS: Record<StatsSeverity, string> = {
 
 /** Screen-reader text for severities that the card's color alone would otherwise convey. */
 const SEVERITY_TEXT: Record<StatsSeverity, string | null> = {
+  neutral: null,
   info: null,
   success: null,
   warning: 'needs attention',
@@ -35,10 +38,10 @@ const SEVERITY_TEXT: Record<StatsSeverity, string | null> = {
   selector: 'app-stats-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet, RouterLink, MatCardModule, MatIconModule, MicroVizComponent],
-  // Entrance animation class is present from creation, so it plays on first render.
+  // The entrance class is bound from creation, so it plays on first render (when enabled).
   host: {
-    class: 'stats-card-host--enter',
-    '[class.stats-card-host--pulse]': 'pulse()',
+    '[class.stats-card-host--enter]': 'animateEntrance()',
+    '[class.stats-card-host--pulse]': 'pulse() && animateEntrance()',
   },
   templateUrl: './stats-card.component.html',
   styleUrl: './stats-card.component.scss',
@@ -55,6 +58,8 @@ export class StatsCardComponent {
   readonly higherIsBetter = input(true);
   /** Pulse the value once after the entrance, to draw the eye to a critical metric. */
   readonly pulse = input(false);
+  /** Play the entrance (rise, value pulse, micro-viz). Off renders the card in place; hover motion stays. */
+  readonly animateEntrance = input(true);
   /** Optional micro-visualization, right-aligned on the delta row. */
   readonly vizType = input<MicroVizType>();
   /** Oldest first, last entry today; for `progress`, a single 0-100 value. */

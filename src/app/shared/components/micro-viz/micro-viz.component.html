@@ -28,12 +28,9 @@
   }
 
   @case ('progress') {
-    <div class="micro-viz__progress">
-      <svg [attr.viewBox]="'0 0 ' + width + ' 4'" [attr.width]="width" height="4">
-        <rect class="micro-viz__track" [attr.width]="width" height="4" rx="2" />
-        <rect class="micro-viz__fill micro-viz__today" [attr.width]="(width * percent()) / 100" height="4" rx="2" />
-      </svg>
-      <span class="micro-viz__caption">{{ percent() }} / 100</span>
-    </div>
+    <svg [attr.viewBox]="'0 0 ' + width + ' 4'" [attr.width]="width" height="4">
+      <rect class="micro-viz__track" [attr.width]="width" height="4" rx="2" />
+      <rect class="micro-viz__fill micro-viz__today" [attr.width]="(width * percent()) / 100" height="4" rx="2" />
+    </svg>
   }
 }

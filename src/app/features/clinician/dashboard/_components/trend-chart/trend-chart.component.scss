@@ -146,28 +146,23 @@ $draw-duration: 600ms;
 }
 
 // Mount: the line draws left to right; the area fades in alongside and each dot appears as the
-// line reaches it. Delay the whole sequence with --trend-chart-draw-delay.
+// line reaches it. Delay the whole sequence with --trend-chart-draw-delay. Only with animateEntrance.
 @media (prefers-reduced-motion: no-preference) {
-  .trend-chart__line {
+  .trend-chart__dot {
+    transition: transform 150ms ease;
+  }
+
+  .trend-chart--animate .trend-chart__line {
     stroke-dasharray: 1;
     animation: trend-chart-draw $draw-duration ease-out var(--trend-chart-draw-delay, 0ms) backwards;
   }
 
-  .trend-chart__area,
-  .trend-chart__expected {
+  .trend-chart--animate .trend-chart__area,
+  .trend-chart--animate .trend-chart__expected {
     animation: trend-chart-fade $draw-duration ease-out var(--trend-chart-draw-delay, 0ms) backwards;
   }
 
-  .trend-chart__expected {
-  fill: none;
-  stroke: var(--trend-chart-expected-color);
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
-  stroke-linejoin: round;
-}
-
-.trend-chart__dot {
-    transition: transform 150ms ease;
+  .trend-chart--animate .trend-chart__dot {
     animation: trend-chart-fade 150ms ease-out
       calc(var(--trend-chart-draw-delay, 0ms) + var(--dot-progress, 0) * #{$draw-duration}) backwards;
   }

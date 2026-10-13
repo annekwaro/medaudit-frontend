@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
  * - bars: daily counts as columns (e.g. new submissions)
  * - dots: daily counts as dot sizes (e.g. new alerts)
  * - sparkline: a level over time as a soft area (e.g. active patients)
- * - progress: values[0] out of 100
+ * - progress: values[0] out of 100 (a bar only; the card shows the figure)
  */
 export type MicroVizType = 'bars' | 'dots' | 'sparkline' | 'progress';
 
@@ -34,7 +34,7 @@ function topRoundedBar(x: number, y: number, width: number, height: number, radi
 @Component({
   selector: 'app-micro-viz',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { 'aria-hidden': 'true' },
+  host: { 'aria-hidden': 'true', '[class.micro-viz--animate]': 'animate()' },
   templateUrl: './micro-viz.component.html',
   styleUrl: './micro-viz.component.scss',
 })
@@ -42,6 +42,8 @@ export class MicroVizComponent {
   readonly type = input.required<MicroVizType>();
   /** Oldest first; the last entry is today. */
   readonly values = input.required<readonly number[]>();
+  /** Grow in on first render; off draws the final state immediately. */
+  readonly animate = input(true);
 
   readonly width = WIDTH;
   readonly height = HEIGHT;

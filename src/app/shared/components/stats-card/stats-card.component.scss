@@ -167,6 +167,12 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
     background: var(--stats-card-color);
   }
 
+  // stone-500 (4.8:1 on white): present but quiet, so color is left for cards that need attention.
+  &--neutral {
+    --stats-card-color: #78716c;
+    --stats-card-accent: #57534e; // stone-600
+  }
+
   &--info {
     --stats-card-color: #0f766e; // teal-700
     --stats-card-accent: #0f766e;

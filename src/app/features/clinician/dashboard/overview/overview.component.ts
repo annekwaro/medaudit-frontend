@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FirstVisitService } from '../../../../core/services/first-visit.service';
 import { DashboardFigures, PatientDataService } from '../../../../core/services/patient-data.service';
 import { PatientProfile } from '../../../../shared/models/patient.model';
 import { MicroVizType } from '../../../../shared/components/micro-viz/micro-viz.component';
@@ -135,6 +136,9 @@ export class OverviewComponent {
 
   private readonly snackBar = inject(MatSnackBar);
 
+  /** Entrance animations play on the first visit per app session; returning renders in place. */
+  readonly playIntro = inject(FirstVisitService).isFirstVisit('clinician-overview');
+
   readonly updatedAt = signal(new Date());
   readonly refreshing = signal(false);
 
@@ -201,7 +205,7 @@ export class OverviewComponent {
         vizType: 'dots', vizValues: [...history.newAlerts, Math.max(change.alerts, 0)],
       },
       {
-        label: 'Active Patients', value: today.activePatients, delta: formatDelta(change.activePatients), severity: 'info', icon: 'groups', higherIsBetter: true,
+        label: 'Active Patients', value: today.activePatients, delta: formatDelta(change.activePatients), severity: 'neutral', icon: 'groups', higherIsBetter: true,
         linkLabel: 'View all patients', valueUnit: 'patients',
         vizType: 'sparkline', vizValues: [...history.activePatients, today.activePatients],
       },

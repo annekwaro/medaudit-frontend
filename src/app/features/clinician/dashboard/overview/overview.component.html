@@ -41,6 +41,7 @@
       [valueUnit]="stat.valueUnit"
       [vizType]="stat.vizType"
       [vizValues]="stat.vizValues"
+      [animateEntrance]="playIntro"
     />
   }
 </section>
@@ -48,10 +49,12 @@
 <!-- Chart and visits side by side; they stack below 900px. -->
 <div class="overview__pair">
   <app-trend-chart
-    class="trend-chart rise-in"
+    class="trend-chart"
+    [class.rise-in]="playIntro"
     [style.--rise-index]="stats().length"
     [heading]="submissionsTrend().heading"
     [points]="submissionsTrend().points"
+    [animateEntrance]="playIntro"
   >
     <mat-form-field trendChartControls appearance="outline" subscriptSizing="dynamic" class="trend-period">
       <mat-select aria-label="Chart period" [value]="trendPeriod()" (selectionChange)="trendPeriod.set($event.value)">
@@ -63,7 +66,8 @@
   </app-trend-chart>
 
   <app-upcoming-visits
-    class="visits rise-in"
+    class="visits"
+    [class.rise-in]="playIntro"
     [style.--rise-index]="stats().length + 1"
     [patients]="patients()"
     [today]="today"
@@ -71,13 +75,14 @@
 </div>
 
 <app-patient-list-table
-  class="patient-list rise-in"
+  class="patient-list"
+  [class.rise-in]="playIntro"
   [style.--rise-index]="stats().length + 2"
   heading="Needs attention"
   viewAllLink="/clinician/patients"
   [patients]="needsAttention()"
   [reasons]="attentionReasons()"
-  [staggerRows]="true"
+  [staggerRows]="playIntro"
 >
   <button
     patientListActions

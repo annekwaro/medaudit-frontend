@@ -3,9 +3,12 @@
   --_color: var(--stats-card-color, currentColor);
   --_past: color-mix(in srgb, var(--_color) 35%, transparent);
 
-  display: block;
+  // Always 24px tall (the progress bar is centered in it), so every card's footer row lines up.
+  display: flex;
   flex: 0 0 auto;
+  align-items: center;
   width: 60px;
+  height: 24px;
   line-height: 0;
 }
 
@@ -39,40 +42,28 @@ svg {
   fill: color-mix(in srgb, var(--_color) 15%, transparent);
 }
 
-.micro-viz__progress {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-.micro-viz__caption {
-  font: 500 0.6875rem / 1rem var(--ma-font-body);
-  color: rgba(28, 28, 24, 0.62);
-}
-
-// Grow from the baseline / center / left edge, after the card's entrance.
+// Grow from the baseline / center / left edge, after the card's entrance (when animate is on).
 @media (prefers-reduced-motion: no-preference) {
-  .micro-viz__bar,
-  .micro-viz__tick {
+  :host(.micro-viz--animate) .micro-viz__bar,
+  :host(.micro-viz--animate) .micro-viz__tick {
     transform-box: fill-box;
     transform-origin: bottom;
     animation: micro-viz-grow-y 300ms ease-out calc(var(--micro-viz-delay, 0ms) + var(--i, 0) * 30ms) backwards;
   }
 
-  .micro-viz__dot {
+  :host(.micro-viz--animate) .micro-viz__dot {
     transform-box: fill-box;
     transform-origin: center;
     animation: micro-viz-scale 200ms ease-out calc(var(--micro-viz-delay, 0ms) + var(--i, 0) * 20ms) backwards;
   }
 
-  .micro-viz__fill {
+  :host(.micro-viz--animate) .micro-viz__fill {
     transform-box: fill-box;
     transform-origin: left;
     animation: micro-viz-grow-x 500ms ease-out var(--micro-viz-delay, 0ms) backwards;
   }
 
-  .micro-viz__fade {
+  :host(.micro-viz--animate) .micro-viz__fade {
     animation: micro-viz-fade 300ms ease-out var(--micro-viz-delay, 0ms) backwards;
   }
 }

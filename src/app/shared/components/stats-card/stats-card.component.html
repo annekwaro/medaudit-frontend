@@ -30,7 +30,7 @@
             </div>
           }
           @if (vizType(); as type) {
-            <app-micro-viz class="stats-card__viz" [type]="type" [values]="vizValues()" />
+            <app-micro-viz class="stats-card__viz" [type]="type" [values]="vizValues()" [animate]="animateEntrance()" />
           }
         </div>
       }

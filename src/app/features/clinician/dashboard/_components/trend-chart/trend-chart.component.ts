@@ -51,6 +51,8 @@ export class TrendChartComponent {
   readonly points = input.required<TrendPoint[]>();
   /** Plural noun for values, e.g. "submissions". */
   readonly unit = input('submissions');
+  /** Draw the lines in on first render; off shows the finished chart immediately. */
+  readonly animateEntrance = input(true);
   /** Legend label for the solid line: the unit, capitalized ("Submissions"). */
   readonly unitLabel = computed(() => this.unit().charAt(0).toUpperCase() + this.unit().slice(1));
 
