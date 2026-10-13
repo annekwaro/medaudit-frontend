@@ -17,7 +17,6 @@ import { PatientListTableComponent } from '../../_components/patient-list/patien
 import { PatientQuickView } from '../../patients/patients.component';
 import { TrendChartComponent, TrendPoint } from '../_components/trend-chart/trend-chart.component';
 import { UpcomingVisitsComponent } from '../_components/upcoming-visits/upcoming-visits.component';
-import { VisitBannerComponent } from '../_components/visit-banner/visit-banner.component';
 import { sortByUrgency, urgencyReasons } from './needs-attention';
 
 interface StatSummary {
@@ -58,6 +57,17 @@ const TREND_VALUES = {
   monthly: [64, 71, 69, 77],
 } as const satisfies Record<TrendPeriod, readonly number[]>;
 
+/**
+ * Mock scheduled questionnaires for the same periods: 14 a day across the 6 patients, 12 of them due
+ * by 16:00. The two oldest weeks are lower because PT-1094 enrolled on Sep 30. This week comes to
+ * 77 of 98 (79%), close to the 30-day compliance figure.
+ */
+const TREND_EXPECTED = {
+  daily: [0, 2, 6, 4],
+  weekly: [14, 14, 14, 14, 14, 14, 14],
+  monthly: [84, 84, 98, 98],
+} as const satisfies Record<TrendPeriod, readonly number[]>;
+
 /** Parses an ISO date (yyyy-MM-dd) as a local date, `offsetDays` from it. */
 function localDate(iso: string, offsetDays = 0): Date {
   const [year, month, day] = iso.split('-').map(Number);
@@ -72,7 +82,7 @@ function buildSubmissionTrends(today: string): Record<TrendPeriod, { heading: st
   const daily = TREND_VALUES.daily.map((value, i) => {
     const from = `${String(i * 4).padStart(2, '0')}:00`;
     const to = `${String(i * 4 + 4).padStart(2, '0')}:00`;
-    return { label: from, detail: `${todayDetail} · ${from}–${to}`, value };
+    return { label: from, detail: `${todayDetail} · ${from}–${to}`, value, expected: TREND_EXPECTED.daily[i] };
   });
   const weekly = TREND_VALUES.weekly.map((value, i, all) => {
     const date = localDate(today, i - (all.length - 1));
@@ -80,23 +90,21 @@ function buildSubmissionTrends(today: string): Record<TrendPeriod, { heading: st
       label: formatDay(date, { weekday: 'short' }),
       detail: formatDay(date, { weekday: 'short', month: 'short', day: 'numeric' }),
       value,
+      expected: TREND_EXPECTED.weekly[i],
     };
   });
   const monthly = TREND_VALUES.monthly.map((value, i, all) => {
     const end = localDate(today, (i - (all.length - 1)) * 7);
     const start = localDate(today, (i - (all.length - 1)) * 7 - 6);
     const startLabel = formatDay(start, { month: 'short', day: 'numeric' });
-    return { label: startLabel, detail: `${startLabel} – ${formatDay(end, { month: 'short', day: 'numeric' })}`, value };
+    const detail = `${startLabel} – ${formatDay(end, { month: 'short', day: 'numeric' })}`;
+    return { label: startLabel, detail, value, expected: TREND_EXPECTED.monthly[i] };
   });
   return {
     daily: { heading: 'Submissions today', points: daily },
     weekly: { heading: 'Submissions, last 7 days', points: weekly },
     monthly: { heading: 'Submissions, last 4 weeks', points: monthly },
   };
-}
-
-function plural(count: number, noun: string): string {
-  return `${count} ${noun}${count === 1 ? '' : 's'}`;
 }
 
 @Component({
@@ -116,7 +124,6 @@ function plural(count: number, noun: string): string {
     PatientListTableComponent,
     TrendChartComponent,
     UpcomingVisitsComponent,
-    VisitBannerComponent,
   ],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.scss',
@@ -163,7 +170,6 @@ export class OverviewComponent {
       alerts: sum((p) => p.alerts),
       activePatients: patients.length,
       compliancePercent: expected ? Math.round((submitted / expected) * 100) : 100,
-      flaggedPatients: patients.filter((p) => p.compliance === 'missing').length,
     };
   });
 
@@ -176,7 +182,6 @@ export class OverviewComponent {
       alerts: today.alerts - yesterday.alerts,
       activePatients: today.activePatients - yesterday.activePatients,
       compliancePercent: today.compliancePercent - yesterday.compliancePercent,
-      flaggedPatients: today.flaggedPatients - yesterday.flaggedPatients,
     };
   });
 
@@ -216,19 +221,6 @@ export class OverviewComponent {
   readonly trendPeriod = signal<TrendPeriod>('weekly');
   private readonly submissionTrends = buildSubmissionTrends(this.today);
   readonly submissionsTrend = computed(() => this.submissionTrends[this.trendPeriod()]);
-
-  /**
-   * Increases only, e.g. "3 new submissions since yesterday." or
-   * "3 new submissions and 2 patients flagged since yesterday."; null (no banner) if nothing went up.
-   */
-  readonly sinceLastVisit = computed(() => {
-    const change = this.changes();
-    const parts = [
-      change.unreviewed > 0 ? plural(change.unreviewed, 'new submission') : null,
-      change.flaggedPatients > 0 ? `${plural(change.flaggedPatients, 'patient')} flagged` : null,
-    ].filter((part) => part !== null);
-    return parts.length ? `${parts.join(' and ')} since yesterday.` : null;
-  });
 
   /**
    * Mock data is local and always current, so a refresh only re-stamps the time.

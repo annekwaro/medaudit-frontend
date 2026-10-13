@@ -18,6 +18,8 @@ export interface TrendPoint {
   /** Full description for the tooltip and the screen-reader table, e.g. "Mon, Oct 5". */
   detail: string;
   value: number;
+  /** Optional target for the period (e.g. scheduled questionnaires), drawn as a dashed line. */
+  expected?: number;
 }
 
 /** Minimum plot height; the plot grows to fill a taller card (e.g. next to a longer sibling). */
@@ -49,6 +51,8 @@ export class TrendChartComponent {
   readonly points = input.required<TrendPoint[]>();
   /** Plural noun for values, e.g. "submissions". */
   readonly unit = input('submissions');
+  /** Legend label for the solid line: the unit, capitalized ("Submissions"). */
+  readonly unitLabel = computed(() => this.unit().charAt(0).toUpperCase() + this.unit().slice(1));
 
   readonly pad = PAD;
 
@@ -57,6 +61,17 @@ export class TrendChartComponent {
   private readonly plot = viewChild.required<ElementRef<HTMLElement>>('plot');
 
   readonly total = computed(() => this.points().reduce((sum, point) => sum + point.value, 0));
+  /** Sum of `expected`, or null unless every point has one. */
+  readonly totalExpected = computed(() => {
+    const points = this.points();
+    return points.length && points.every((point) => point.expected !== undefined)
+      ? points.reduce((sum, point) => sum + point.expected!, 0)
+      : null;
+  });
+  readonly percentOfExpected = computed(() => {
+    const expected = this.totalExpected();
+    return expected ? Math.round((this.total() / expected) * 100) : null;
+  });
 
   readonly layout = computed(() => {
     const { width, height } = this.size();
@@ -66,7 +81,8 @@ export class TrendChartComponent {
     const plotWidth = width - PAD.left - PAD.right;
     const plotHeight = height - PAD.top - PAD.bottom;
     const baseline = PAD.top + plotHeight;
-    const max = Math.max(...data.map((point) => point.value), 1);
+    const hasExpected = this.totalExpected() !== null;
+    const max = Math.max(...data.map((point) => Math.max(point.value, point.expected ?? 0)), 1);
     const step = niceStep(max);
     const yMax = Math.ceil(max / step) * step;
     const y = (value: number) => baseline - (value / yMax) * plotHeight;
@@ -76,14 +92,16 @@ export class TrendChartComponent {
       ...point,
       x: PAD.left + (data.length > 1 ? i * columnWidth : plotWidth / 2),
       y: y(point.value),
+      expectedY: point.expected === undefined ? null : y(point.expected),
       // 0..1 position along the line, used to reveal each dot as the draw passes it.
       progress: data.length > 1 ? i / (data.length - 1) : 0,
     }));
     const line = points.map((p, i) => `${i ? 'L' : 'M'}${p.x},${p.y}`).join(' ');
     const area = `${line} L${points.at(-1)!.x},${baseline} L${points[0].x},${baseline} Z`;
+    const expectedLine = hasExpected ? points.map((p, i) => `${i ? 'L' : 'M'}${p.x},${p.expectedY}`).join(' ') : null;
     const ticks = Array.from({ length: yMax / step + 1 }, (_, i) => ({ value: i * step, y: y(i * step) }));
 
-    return { width, height, points, line, area, ticks, columnWidth };
+    return { width, height, points, line, area, expectedLine, ticks, columnWidth };
   });
 
   readonly hoveredPoint = computed(() => {

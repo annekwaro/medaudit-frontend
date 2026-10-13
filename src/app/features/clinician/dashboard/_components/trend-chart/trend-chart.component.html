@@ -3,9 +3,23 @@
     <h2 class="trend-chart__title">{{ heading() }}</h2>
     <div class="trend-chart__controls">
       <ng-content select="[trendChartControls]" />
-      <span class="trend-chart__total">Total: {{ total() }}</span>
+      <span class="trend-chart__total">
+        @if (totalExpected(); as expected) {
+          <strong>{{ total() }}</strong> of {{ expected }} expected · {{ percentOfExpected() }}%
+        } @else {
+          Total: {{ total() }}
+        }
+      </span>
     </div>
   </header>
+
+  @if (totalExpected() !== null) {
+    <!-- Decorative: the totals above and the hidden table below carry the same information. -->
+    <div class="trend-chart__legend" aria-hidden="true">
+      <span class="trend-chart__key trend-chart__key--actual">{{ unitLabel() }}</span>
+      <span class="trend-chart__key trend-chart__key--expected">Expected</span>
+    </div>
+  }
 
   <div #plot class="trend-chart__plot" (mouseleave)="hovered.set(null)">
     @if (layout(); as l) {
@@ -27,6 +41,9 @@
         }
 
         <path class="trend-chart__area" [attr.d]="l.area" />
+        @if (l.expectedLine; as expectedLine) {
+          <path class="trend-chart__expected" [attr.d]="expectedLine" />
+        }
         <!-- pathLength="1" normalizes the dash so the draw-in works at any width. -->
         <path class="trend-chart__line" [attr.d]="l.line" pathLength="1" />
 
@@ -68,6 +85,9 @@
         >
           <span class="trend-chart__tooltip-detail">{{ point.detail }}</span>
           <strong>{{ point.value }}</strong> {{ unit() }}
+          @if (point.expected !== undefined) {
+            <span class="trend-chart__tooltip-expected">of {{ point.expected }} expected</span>
+          }
         </div>
       }
     }
@@ -76,11 +96,23 @@
   <table class="sr-only">
     <caption>{{ heading() }}</caption>
     <thead>
-      <tr><th scope="col">Period</th><th scope="col">{{ unit() }}</th></tr>
+      <tr>
+        <th scope="col">Period</th>
+        <th scope="col">{{ unit() }}</th>
+        @if (totalExpected() !== null) {
+          <th scope="col">Expected</th>
+        }
+      </tr>
     </thead>
     <tbody>
       @for (point of points(); track $index) {
-        <tr><td>{{ point.detail }}</td><td>{{ point.value }}</td></tr>
+        <tr>
+          <td>{{ point.detail }}</td>
+          <td>{{ point.value }}</td>
+          @if (totalExpected() !== null) {
+            <td>{{ point.expected }}</td>
+          }
+        </tr>
       }
     </tbody>
   </table>

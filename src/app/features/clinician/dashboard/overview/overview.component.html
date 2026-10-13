@@ -25,15 +25,6 @@
   </div>
 </header>
 
-@if (sinceLastVisit(); as message) {
-  <app-visit-banner
-    class="overview__banner"
-    [message]="message"
-    actionLink="/clinician/patients"
-    [actionQueryParams]="{ filter: 'unreviewed' }"
-  />
-}
-
 <section class="stats-grid" aria-label="Summary statistics">
   @for (stat of stats(); track stat.label) {
     <app-stats-card

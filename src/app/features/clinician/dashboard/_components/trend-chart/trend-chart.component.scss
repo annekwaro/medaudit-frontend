@@ -6,6 +6,8 @@ $draw-duration: 600ms;
 
 .trend-chart {
   --mdc-elevated-card-container-color: #ffffff;
+  // Muted ink, still >= 3:1 on white for a non-text graphic.
+  --trend-chart-expected-color: rgba(28, 28, 24, 0.5);
 
   box-sizing: border-box;
   height: 100%;
@@ -41,6 +43,37 @@ $draw-duration: 600ms;
   letter-spacing: var(--mat-sys-body-small-tracking);
   color: var(--mat-sys-on-surface-variant);
   text-align: right;
+
+  strong {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+// Solid swatch for the actual series, dashed for the expected line (matching the SVG strokes).
+.trend-chart__legend {
+  display: flex;
+  gap: 16px;
+  margin: -4px 0 4px;
+}
+
+.trend-chart__key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  color: var(--mat-sys-on-surface-variant);
+
+  &::before {
+    content: '';
+    width: 16px;
+    border-top: 2px solid var(--mat-sys-primary);
+  }
+
+  &--expected::before {
+    border-top: 1.5px dashed var(--trend-chart-expected-color);
+  }
 }
 
 // Fills the card's remaining height (min 180px, so it doesn't jump while first measured).
@@ -80,6 +113,14 @@ $draw-duration: 600ms;
   stroke-linecap: round;
 }
 
+.trend-chart__expected {
+  fill: none;
+  stroke: var(--trend-chart-expected-color);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  stroke-linejoin: round;
+}
+
 .trend-chart__dot {
   fill: var(--mat-sys-primary);
   stroke: #ffffff;
@@ -112,11 +153,20 @@ $draw-duration: 600ms;
     animation: trend-chart-draw $draw-duration ease-out var(--trend-chart-draw-delay, 0ms) backwards;
   }
 
-  .trend-chart__area {
+  .trend-chart__area,
+  .trend-chart__expected {
     animation: trend-chart-fade $draw-duration ease-out var(--trend-chart-draw-delay, 0ms) backwards;
   }
 
-  .trend-chart__dot {
+  .trend-chart__expected {
+  fill: none;
+  stroke: var(--trend-chart-expected-color);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  stroke-linejoin: round;
+}
+
+.trend-chart__dot {
     transition: transform 150ms ease;
     animation: trend-chart-fade 150ms ease-out
       calc(var(--trend-chart-draw-delay, 0ms) + var(--dot-progress, 0) * #{$draw-duration}) backwards;
@@ -159,7 +209,8 @@ $draw-duration: 600ms;
   }
 }
 
-.trend-chart__tooltip-detail {
+.trend-chart__tooltip-detail,
+.trend-chart__tooltip-expected {
   display: block;
   opacity: 0.8;
 }

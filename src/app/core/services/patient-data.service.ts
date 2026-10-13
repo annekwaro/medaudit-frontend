@@ -11,8 +11,6 @@ export interface DashboardFigures {
   activePatients: number;
   /** Pooled 30-day submission rate across all patients, rounded. */
   compliancePercent: number;
-  /** Patients in the Missing compliance band. */
-  flaggedPatients: number;
 }
 
 /** Mock patient and audit data until the backend API exists. */
@@ -325,7 +323,6 @@ export class PatientDataService {
     alerts: 4,
     activePatients: 6,
     compliancePercent: 78,
-    flaggedPatients: 0,
   };
 
   /**

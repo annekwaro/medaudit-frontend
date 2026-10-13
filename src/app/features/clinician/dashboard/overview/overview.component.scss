@@ -121,11 +121,6 @@
   }
 }
 
-// The banner animates this margin to 0 as it collapses on dismiss.
-.overview__banner {
-  margin-bottom: 16px;
-}
-
 // Trend chart (2/3) beside the visits card (1/3); both stretch to the taller one.
 .overview__pair {
   display: grid;
