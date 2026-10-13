@@ -18,16 +18,22 @@ export interface DashboardFigures {
 /** Mock patient and audit data until the backend API exists. */
 @Injectable({ providedIn: 'root' })
 export class PatientDataService {
+  /**
+   * The mock data's "today" (a Tuesday), as an ISO date. Use this instead of `new Date()` wherever
+   * the dashboard needs today's date, so the mock records, deltas and charts stay in step.
+   */
+  readonly today = '2026-10-13';
+
   // submissions30d is chosen so each patient's rate lands in their compliance band
   // (On Track >= 90%, Late 70-89%, Missing < 70%). All patients are at Dr. Martin's site.
   readonly patients = signal<PatientProfile[]>([
     {
-      id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-11T08:14:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
+      id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-13T08:05:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
       age: 34, sex: 'Female', enrolledOn: '2026-09-12', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-18', submissions30d: { submitted: 28, missed: 2 },
     },
     {
-      id: 'PT-1057', name: 'Daniel Mwangi', lastSubmission: '2026-10-10T19:42:00', compliance: 'late', alerts: 1, pendingSubmissions: 3,
+      id: 'PT-1057', name: 'Daniel Mwangi', lastSubmission: '2026-10-12T20:47:00', compliance: 'late', alerts: 1, pendingSubmissions: 3,
       age: 51, sex: 'Male', enrolledOn: '2026-09-01', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-14', submissions30d: { submitted: 24, missed: 6 },
     },
@@ -37,20 +43,21 @@ export class PatientDataService {
       nextVisit: '2026-10-12', submissions30d: { submitted: 18, missed: 12 },
     },
     {
-      id: 'PT-1071', name: 'Hiroshi Tanaka', lastSubmission: '2026-10-11T07:30:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
+      id: 'PT-1071', name: 'Hiroshi Tanaka', lastSubmission: '2026-10-13T07:22:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
       age: 62, sex: 'Male', enrolledOn: '2026-08-20', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-25', submissions30d: { submitted: 29, missed: 1 },
     },
     {
-      id: 'PT-1088', name: 'Grace Achieng', lastSubmission: '2026-10-09T21:18:00', compliance: 'late', alerts: 0, pendingSubmissions: 2,
+      id: 'PT-1088', name: 'Grace Achieng', lastSubmission: '2026-10-12T21:52:00', compliance: 'late', alerts: 0, pendingSubmissions: 2,
       age: 29, sex: 'Female', enrolledOn: '2026-09-05', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-16', submissions30d: { submitted: 23, missed: 7 },
     },
     {
-      // Enrolled Sep 30, device not yet set up (see audit trail); setup visit Oct 13.
+      // Enrolled Sep 30, device not yet set up (see audit trail); setup visit today, Oct 13.
+      // 13 expected daily diaries since enrollment (Sep 30 – Oct 12), none received.
       id: 'PT-1094', name: 'Mateo Fernández', lastSubmission: null, compliance: 'missing', alerts: 2, pendingSubmissions: 0,
       age: 38, sex: 'Male', enrolledOn: '2026-09-30', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
-      nextVisit: '2026-10-13', submissions30d: { submitted: 0, missed: 11 },
+      nextVisit: '2026-10-13', submissions30d: { submitted: 0, missed: 13 },
     },
   ]);
 
@@ -255,6 +262,60 @@ export class PatientDataService {
       action: 'reviewed',
       field: 'Pain level',
       reason: 'Flag reviewed. AE form opened and sponsor notified.',
+    },
+    {
+      id: 'AE-0023',
+      patientId: 'PT-1057',
+      timestamp: '2026-10-12T20:47:00',
+      user: 'Patient (mobile)',
+      action: 'submitted',
+      field: 'Daily diary',
+      reason: 'Submitted after the scheduled window.',
+    },
+    {
+      id: 'AE-0024',
+      patientId: 'PT-1088',
+      timestamp: '2026-10-12T21:52:00',
+      user: 'Patient (mobile)',
+      action: 'submitted',
+      field: 'Sleep hours',
+      newValue: '6',
+      reason: 'Submitted after the scheduled window.',
+    },
+    {
+      id: 'AE-0025',
+      patientId: 'PT-1063',
+      timestamp: '2026-10-13T06:00:00',
+      user: 'System (compliance monitor)',
+      action: 'flagged',
+      field: 'Daily diary',
+      reason: 'No daily diary since Oct 7 (missed Oct 8–12). Escalated to site coordinator.',
+    },
+    {
+      id: 'AE-0026',
+      patientId: 'PT-1071',
+      timestamp: '2026-10-13T07:22:00',
+      user: 'Patient (mobile)',
+      action: 'submitted',
+      field: 'Sleep hours',
+      newValue: '7',
+    },
+    {
+      id: 'AE-0027',
+      patientId: 'PT-1042',
+      timestamp: '2026-10-13T08:05:00',
+      user: 'Patient (mobile)',
+      action: 'submitted',
+      field: 'Pain level',
+      newValue: '2',
+    },
+    {
+      id: 'AE-0028',
+      patientId: 'PT-1094',
+      timestamp: '2026-10-13T08:40:00',
+      user: 'J. Otieno (Site coordinator)',
+      action: 'reviewed',
+      reason: 'Patient confirmed by phone. Device setup visit today at 14:00.',
     },
   ]);
 

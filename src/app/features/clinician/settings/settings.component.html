@@ -107,19 +107,29 @@
     </header>
 
     <mat-card-content>
-      <!-- Read mode: toggles show their state but are disabled until Edit. -->
-      <ul class="toggle-list" (keydown.escape)="editingNotifications() && cancelNotifications()">
-        @for (item of notifications; track item.label) {
-          <li>
-            <mat-slide-toggle
-              #notificationToggle
-              labelPosition="before"
-              [checked]="item.state()"
-              [disabled]="!editingNotifications()"
-              (change)="item.state.set($event.checked)"
-            >
-              {{ item.label }}
-            </mat-slide-toggle>
+      <!-- Label and description on the left, state on the right. Read mode shows On/Off as text
+           (not disabled toggles, which read as unavailable); Edit swaps in the toggles. -->
+      <ul class="setting-list" (keydown.escape)="editingNotifications() && cancelNotifications()">
+        @for (item of notifications; track item.label; let i = $index) {
+          <li class="setting">
+            <div class="setting__text">
+              <span class="setting__label" [id]="'notification-' + i">{{ item.label }}</span>
+              <span class="setting__description" [id]="'notification-' + i + '-description'">{{ item.description }}</span>
+            </div>
+            @if (editingNotifications()) {
+              <mat-slide-toggle
+                #notificationToggle
+                class="setting__control fade-in"
+                [aria-labelledby]="'notification-' + i"
+                [aria-describedby]="'notification-' + i + '-description'"
+                [checked]="item.state()"
+                (change)="item.state.set($event.checked)"
+              />
+            } @else {
+              <span class="setting__state fade-in" [class.setting__state--on]="item.state()">
+                {{ item.state() ? 'On' : 'Off' }}
+              </span>
+            }
           </li>
         }
       </ul>
@@ -127,42 +137,75 @@
   </mat-card>
 
   <mat-card class="section">
-    <mat-card-header>
-      <mat-card-title><h2 class="section__title">Display Preferences</h2></mat-card-title>
-    </mat-card-header>
-    <mat-card-content class="display">
-      <div class="display__selects">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Language</mat-label>
-          <mat-select [value]="language()" (selectionChange)="language.set($event.value)">
-            @for (option of languageOptions; track option.value) {
-              <mat-option [value]="option.value" [attr.lang]="option.value">{{ option.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Date format</mat-label>
-          <mat-select [value]="dateFormat()" (selectionChange)="dateFormat.set($event.value)">
-            @for (option of dateFormatOptions; track option.value) {
-              <mat-option [value]="option.value">{{ option.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+    <header class="section__header">
+      <h2 class="section__title">Display Preferences</h2>
+      @if (editingDisplay()) {
+        <span class="section__pill fade-in">Editing</span>
+      }
+      <div class="section__actions">
+        @if (editingDisplay()) {
+          <button mat-button type="button" class="section__cancel fade-in" (click)="cancelDisplay()">Cancel</button>
+          <button mat-flat-button type="button" class="section__save fade-in" [disabled]="!displayChanged()" (click)="saveDisplay()">
+            Save
+          </button>
+        } @else {
+          <button #displayEdit type="button" class="section__edit fade-in" aria-label="Edit display preferences" (click)="editDisplay()">
+            Edit
+            <mat-icon aria-hidden="true">edit</mat-icon>
+          </button>
+        }
       </div>
+    </header>
 
-      <ul class="toggle-list">
-        <li>
-          <mat-slide-toggle labelPosition="before" [checked]="compactRows()" (change)="compactRows.set($event.checked)">
-            Compact table rows
-          </mat-slide-toggle>
+    <mat-card-content>
+      <ul class="setting-list" (keydown.escape)="editingDisplay() && cancelDisplay()">
+        <li class="setting">
+          <div class="setting__text">
+            <span class="setting__label" id="date-format-label">Date format</span>
+            <span class="setting__description">Used for dates in tables, audit trails and patient records.</span>
+          </div>
+          @if (editingDisplay()) {
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="setting__select fade-in">
+              <mat-select
+                #dateFormatSelect
+                aria-labelledby="date-format-label"
+                [value]="displayDraft().dateFormat"
+                (selectionChange)="updateDisplayDraft({ dateFormat: $event.value })"
+              >
+                @for (format of dateFormatOptions; track format) {
+                  <mat-option [value]="format">{{ today | date: format }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          } @else {
+            <span class="setting__state setting__state--on fade-in">{{ today | date: dateFormat() }}</span>
+          }
+        </li>
+        <li class="setting">
+          <div class="setting__text">
+            <span class="setting__label" id="compact-rows-label">Compact table rows</span>
+            <span class="setting__description" id="compact-rows-description">Fit more patients on screen with shorter rows.</span>
+          </div>
+          @if (editingDisplay()) {
+            <mat-slide-toggle
+              class="setting__control fade-in"
+              aria-labelledby="compact-rows-label"
+              aria-describedby="compact-rows-description"
+              [checked]="displayDraft().compactRows"
+              (change)="updateDisplayDraft({ compactRows: $event.checked })"
+            />
+          } @else {
+            <span class="setting__state fade-in" [class.setting__state--on]="compactRows()">
+              {{ compactRows() ? 'On' : 'Off' }}
+            </span>
+          }
         </li>
       </ul>
+      @if (editingDisplay()) {
+        <button mat-button type="button" class="section__reset fade-in" [disabled]="displayIsDefault()" (click)="resetDisplayDraft()">
+          Reset to defaults
+        </button>
+      }
     </mat-card-content>
   </mat-card>
-
-  <footer class="settings__footer">
-    <button mat-button type="button" (click)="resetToDefaults()">Reset to defaults</button>
-    <button mat-flat-button type="button" (click)="save()">Save changes</button>
-  </footer>
 </div>

@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { PatientDataService } from '../../../core/services/patient-data.service';
+import { UserPreferencesService } from '../../../core/services/user-preferences.service';
 import { BackLinkComponent, previousAppUrl } from '../../../shared/components/back-link/back-link.component';
 import { AuditEntryComponent } from '../../../shared/components/audit-entry/audit-entry.component';
 import { ComplianceBadgeComponent } from '../../../shared/components/compliance-badge/compliance-badge.component';
@@ -47,6 +48,7 @@ function backLabelFor(url: string | null): string {
 export class PatientDetailComponent {
   private readonly patientData = inject(PatientDataService);
   private readonly snackBar = inject(MatSnackBar);
+  readonly preferences = inject(UserPreferencesService);
   private readonly previousUrl = previousAppUrl(inject(Router));
 
   /** Bound from the :id route param (withComponentInputBinding). */

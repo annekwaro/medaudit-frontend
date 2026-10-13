@@ -11,9 +11,9 @@
     @if (layout(); as l) {
       <svg
         class="trend-chart__svg"
-        [attr.viewBox]="'0 0 ' + l.width + ' ' + height"
+        [attr.viewBox]="'0 0 ' + l.width + ' ' + l.height"
         [attr.width]="l.width"
-        [attr.height]="height"
+        [attr.height]="l.height"
         aria-hidden="true"
       >
         @for (tick of l.ticks; track tick.value) {
@@ -31,11 +31,11 @@
         <path class="trend-chart__line" [attr.d]="l.line" pathLength="1" />
 
         @if (hoveredPoint(); as point) {
-          <line class="trend-chart__guide" [attr.x1]="point.x" [attr.x2]="point.x" [attr.y1]="pad.top" [attr.y2]="height - pad.bottom" />
+          <line class="trend-chart__guide" [attr.x1]="point.x" [attr.x2]="point.x" [attr.y1]="pad.top" [attr.y2]="l.height - pad.bottom" />
         }
 
         @for (point of l.points; track $index; let i = $index) {
-          <text class="trend-chart__label" [attr.x]="point.x" [attr.y]="height - 8" text-anchor="middle">
+          <text class="trend-chart__label" [attr.x]="point.x" [attr.y]="l.height - 8" text-anchor="middle">
             {{ point.label }}
           </text>
           <circle
@@ -52,7 +52,7 @@
             [attr.x]="point.x - l.columnWidth / 2"
             y="0"
             [attr.width]="l.columnWidth"
-            [attr.height]="height"
+            [attr.height]="l.height"
             (mouseenter)="hovered.set(i)"
           />
         }

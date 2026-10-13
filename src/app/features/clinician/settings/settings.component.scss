@@ -182,69 +182,66 @@
   color: var(--mat-sys-error);
 }
 
-.toggle-list {
+.setting-list {
   margin: 8px 0 0;
   padding: 0;
   list-style: none;
+}
 
-  li {
-    display: flex;
-    align-items: center;
-    min-height: 56px;
-  }
+// Label + description left, control (or its read-mode state) right.
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding: 10px 0;
 
-  li + li {
+  & + & {
     border-top: var(--settings-divider);
   }
-
-  mat-slide-toggle {
-    --mat-switch-label-text-font: var(--ma-font-body);
-    --mat-switch-label-text-size: 0.9375rem;
-    --mat-switch-label-text-weight: 500;
-    --mat-switch-label-text-line-height: 1.375rem;
-    --mat-switch-label-text-color: var(--settings-ink);
-    // Read mode disables the toggles; keep labels and on/off state legible rather than greyed out.
-    --mat-switch-disabled-label-text-color: var(--settings-ink);
-    --mdc-switch-disabled-track-opacity: 0.5;
-    --mdc-switch-disabled-handle-opacity: 0.7;
-    --mdc-switch-disabled-selected-icon-opacity: 0.7;
-
-    display: block;
-    width: 100%;
-  }
-
-  // Label left, switch right, full row width (Material has no option for this layout).
-  ::ng-deep .mdc-form-field {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
 }
 
-.display {
+.setting__text {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
+  min-width: 0;
 }
 
-// Two columns on desktop, stacked when the card is narrower than ~2 × 240px.
-.display__selects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
+.setting__label {
+  font: 500 0.9375rem / 1.375rem var(--ma-font-body);
+  color: var(--settings-ink);
 }
 
-// Sticky frosted bar: content scrolls beneath it mid-scroll; at the end of the page nothing is covered.
-.settings__footer {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 16px 24px;
-  border-top: var(--settings-divider);
-  background: rgba(253, 249, 242, 0.95); // surface #FDF9F2 at 95%
-  backdrop-filter: blur(8px);
+.setting__description {
+  font: 400 0.8125rem / 1.25rem var(--ma-font-body);
+  color: var(--settings-ink-soft);
+}
+
+.setting__control {
+  flex: 0 0 auto;
+}
+
+// Read-mode value: "Off" muted, "On" (and chosen values) in full ink.
+.setting__state {
+  flex: 0 0 auto;
+  font: 500 0.875rem / 1.25rem var(--ma-font-body);
+  color: var(--settings-ink-soft);
+
+  &--on {
+    color: var(--settings-ink);
+  }
+}
+
+.setting__select {
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+
+  flex: 0 0 auto;
+  width: 200px;
+}
+
+.section__reset {
+  margin: 8px 0 -8px -12px;
 }

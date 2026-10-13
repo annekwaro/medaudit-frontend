@@ -18,12 +18,23 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+// "Compact table rows" display preference.
+:host(.patient-list-host--compact) .patient-list {
+  --mat-table-row-item-container-height: 44px;
+}
+
 .patient-list__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 12px 8px 4px 16px;
+}
+
+.patient-list__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .patient-list__title {
@@ -43,6 +54,13 @@
 
 .patient-list__name {
   font: 500 0.9375rem / 1.375rem var(--ma-font-display);
+}
+
+// IDs, names and headers stay on one line; the table scrolls sideways before they'd wrap.
+.patient-list__id,
+.patient-list__name,
+.patient-list__table th {
+  white-space: nowrap;
 }
 
 // Patient ID and timestamp. 64% ink (not 60%) keeps >= 4.5:1 on the row hover tint too.
@@ -76,6 +94,47 @@
   &--high {
     background: #fda4af;
     color: #881337; // rose-900
+  }
+}
+
+// Reason chips: text + icon, tinted by tone (700/800 shades on 8-10% tints: >= 4.5:1).
+.patient-list__reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.patient-list__reason {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font: 500 0.75rem / 1.125rem var(--ma-font-body);
+  white-space: nowrap;
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+
+  &--critical {
+    background: rgba(190, 18, 60, 0.08);
+    color: #be123c; // rose-700
+  }
+
+  &--warning {
+    background: rgba(217, 119, 6, 0.1);
+    color: #92400e; // amber-800
+  }
+
+  &--info {
+    background: rgba(15, 118, 110, 0.08);
+    color: #0f766e; // teal-700
   }
 }
 

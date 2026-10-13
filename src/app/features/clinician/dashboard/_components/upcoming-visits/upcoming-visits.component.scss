@@ -1,0 +1,125 @@
+:host {
+  display: block;
+}
+
+// Same white 20px card as the trend chart and patient table; fills its grid cell's height.
+.visits {
+  --mdc-elevated-card-container-color: #ffffff;
+  --visits-ink-soft: rgba(28, 28, 24, 0.64);
+
+  box-sizing: border-box;
+  height: 100%;
+  padding: 16px 12px 8px;
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.visits__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 0 8px 8px;
+}
+
+.visits__title {
+  margin: 0;
+  font: var(--ma-type-section);
+}
+
+.visits__hint,
+.visits__empty {
+  font: var(--mat-sys-body-small);
+  letter-spacing: var(--mat-sys-body-small-tracking);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.visits__empty {
+  margin: 0;
+  padding: 8px 8px 12px;
+}
+
+.visits__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.visits__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(31, 78, 74, 0.04);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: -2px;
+  }
+}
+
+// Name over "ID · date": two short lines fit the narrow side column as well as the full width.
+.visits__who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.visits__name {
+  overflow: hidden;
+  font: 500 0.9375rem / 1.375rem var(--ma-font-display);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.visits__meta {
+  font: 400 0.8125rem / 1.25rem var(--ma-font-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--visits-ink-soft);
+  white-space: nowrap;
+}
+
+.visits__status {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font: 500 0.75rem / 1.125rem var(--ma-font-body);
+  white-space: nowrap;
+  color: var(--visits-ink-soft);
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+
+  // rose-700 / teal-700 on their 8% tints: >= 4.5:1.
+  &--overdue {
+    background: rgba(190, 18, 60, 0.08);
+    color: #be123c;
+  }
+
+  &--today {
+    background: rgba(15, 118, 110, 0.08);
+    color: #0f766e;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .visits__row {
+    transition: background-color 150ms ease;
+  }
+}

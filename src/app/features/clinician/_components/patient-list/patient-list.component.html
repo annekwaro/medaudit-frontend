@@ -2,9 +2,12 @@
   @if (heading(); as headingText) {
     <header class="patient-list__header">
       <h2 class="patient-list__title">{{ headingText }}</h2>
-      @if (viewAllLink(); as link) {
-        <a mat-button [routerLink]="link">View all</a>
-      }
+      <div class="patient-list__header-actions">
+        <ng-content select="[patientListActions]" />
+        @if (viewAllLink(); as link) {
+          <a mat-button [routerLink]="link">View all</a>
+        }
+      </div>
     </header>
   }
 
@@ -24,9 +27,29 @@
         <th mat-header-cell *matHeaderCellDef>Last Submission</th>
         <td mat-cell *matCellDef="let patient" class="patient-list__meta">
           @if (patient.lastSubmission) {
-            <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: 'MMM d, HH:mm' }}</time>
+            <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: preferences.dateTime() }}</time>
           } @else {
             No submissions
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="reasons">
+        <th mat-header-cell *matHeaderCellDef>Reason</th>
+        <td mat-cell *matCellDef="let patient">
+          @let rowReasons = reasons()?.get(patient.id) ?? [];
+          @if (rowReasons.length) {
+            <!-- Each reason is spelled out; tone colors and icons only reinforce it. -->
+            <ul class="patient-list__reasons">
+              @for (reason of rowReasons; track reason.label) {
+                <li class="patient-list__reason" [class]="'patient-list__reason--' + reason.tone">
+                  <mat-icon aria-hidden="true">{{ reason.icon }}</mat-icon>
+                  {{ reason.label }}
+                </li>
+              }
+            </ul>
+          } @else {
+            <span class="patient-list__meta">Nothing urgent</span>
           }
         </td>
       </ng-container>
@@ -75,11 +98,11 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
       <!-- Row click is a mouse shortcut; the Review link is the keyboard/screen-reader path. -->
       <tr
         mat-row
-        *matRowDef="let row; columns: displayedColumns; let i = index"
+        *matRowDef="let row; columns: displayedColumns(); let i = index"
         class="patient-list__row"
         [class.patient-list__row--enter]="staggerRows()"
         [style.--row-index]="i"
@@ -101,12 +124,12 @@
       <mat-icon>chat_bubble_outline</mat-icon>
       <span>Send message</span>
     </button>
-    <button mat-menu-item type="button" (click)="notify('Patient flagged')">
+    <button mat-menu-item type="button" (click)="notify('Demo: patient not flagged, nothing was saved')">
       <mat-icon>outlined_flag</mat-icon>
       <span>Flag for follow-up</span>
     </button>
     <mat-divider />
-    <button mat-menu-item type="button" class="patient-list__archive" (click)="notify('Patient archived')">
+    <button mat-menu-item type="button" class="patient-list__archive" (click)="notify('Demo: patient not archived, nothing was saved')">
       <mat-icon>archive</mat-icon>
       <span>Archive patient</span>
     </button>

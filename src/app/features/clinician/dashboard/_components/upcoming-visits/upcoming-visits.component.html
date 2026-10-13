@@ -1,0 +1,31 @@
+<mat-card class="visits">
+  <header class="visits__header">
+    <h2 class="visits__title" id="visits-title">Visits</h2>
+    <span class="visits__hint">Overdue, today and next {{ daysAhead }} days</span>
+  </header>
+
+  @if (visits().length) {
+    <ul class="visits__list" aria-labelledby="visits-title">
+      @for (visit of visits(); track visit.id) {
+        <li>
+          <a class="visits__row" [routerLink]="['/clinician/patient', visit.id]">
+            <span class="visits__who">
+              <span class="visits__name">{{ visit.name }}</span>
+              <span class="visits__meta">
+                {{ visit.id }}<span aria-hidden="true"> · </span>
+                <time [attr.datetime]="visit.date">{{ visit.date | date: preferences.weekdayDate() }}</time>
+              </span>
+            </span>
+            <!-- Status is spelled out (and has its own icon), so color is never the only cue. -->
+            <span class="visits__status" [class]="'visits__status--' + visit.status">
+              <mat-icon aria-hidden="true">{{ visit.icon }}</mat-icon>
+              {{ visit.statusLabel }}
+            </span>
+          </a>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="visits__empty">No visits overdue or due in the next {{ daysAhead }} days.</p>
+  }
+</mat-card>

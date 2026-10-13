@@ -16,7 +16,9 @@ import { StatsCardComponent, StatsSeverity } from '../../../../shared/components
 import { PatientListTableComponent } from '../../_components/patient-list/patient-list.component';
 import { PatientQuickView } from '../../patients/patients.component';
 import { TrendChartComponent, TrendPoint } from '../_components/trend-chart/trend-chart.component';
+import { UpcomingVisitsComponent } from '../_components/upcoming-visits/upcoming-visits.component';
 import { VisitBannerComponent } from '../_components/visit-banner/visit-banner.component';
+import { sortByUrgency, urgencyReasons } from './needs-attention';
 
 interface StatSummary {
   label: string;
@@ -46,40 +48,52 @@ function complianceSeverity(percent: number): StatsSeverity {
 
 type TrendPeriod = 'daily' | 'weekly' | 'monthly';
 
-// Mock series, consistent with each other: today (Sun Oct 11) totals 9, matching Sunday in the
-// weekly series, and the latest week totals 77, matching the weekly total.
-const SUBMISSION_TRENDS: Record<TrendPeriod, { heading: string; points: TrendPoint[] }> = {
-  daily: {
-    heading: 'Submissions today',
-    points: [
-      { label: '00:00', detail: 'Sun, Oct 11 · 00:00–04:00', value: 0 },
-      { label: '04:00', detail: 'Sun, Oct 11 · 04:00–08:00', value: 1 },
-      { label: '08:00', detail: 'Sun, Oct 11 · 08:00–12:00', value: 5 },
-      { label: '12:00', detail: 'Sun, Oct 11 · 12:00–16:00', value: 3 },
-    ],
-  },
-  weekly: {
-    heading: 'Submissions this week',
-    points: [
-      { label: 'Mon', detail: 'Mon, Oct 5', value: 8 },
-      { label: 'Tue', detail: 'Tue, Oct 6', value: 12 },
-      { label: 'Wed', detail: 'Wed, Oct 7', value: 10 },
-      { label: 'Thu', detail: 'Thu, Oct 8', value: 14 },
-      { label: 'Fri', detail: 'Fri, Oct 9', value: 18 },
-      { label: 'Sat', detail: 'Sat, Oct 10', value: 6 },
-      { label: 'Sun', detail: 'Sun, Oct 11', value: 9 },
-    ],
-  },
-  monthly: {
-    heading: 'Submissions, last 4 weeks',
-    points: [
-      { label: 'Sep 14', detail: 'Week of Sep 14', value: 64 },
-      { label: 'Sep 21', detail: 'Week of Sep 21', value: 71 },
-      { label: 'Sep 28', detail: 'Week of Sep 28', value: 69 },
-      { label: 'Oct 5', detail: 'Week of Oct 5', value: 77 },
-    ],
-  },
-};
+/** Mock submission counts, oldest first; the last entry ends today. */
+const TREND_VALUES = {
+  /** Today in 4-hour slots so far; totals 9. */
+  daily: [0, 1, 5, 3],
+  /** The last 7 days; today (9) matches the daily total, and the 7 days total 77. */
+  weekly: [8, 12, 10, 14, 18, 6, 9],
+  /** Four 7-day blocks; the last one is the weekly series (77). */
+  monthly: [64, 71, 69, 77],
+} as const satisfies Record<TrendPeriod, readonly number[]>;
+
+/** Parses an ISO date (yyyy-MM-dd) as a local date, `offsetDays` from it. */
+function localDate(iso: string, offsetDays = 0): Date {
+  const [year, month, day] = iso.split('-').map(Number);
+  return new Date(year, month - 1, day + offsetDays);
+}
+
+const formatDay = (date: Date, options: Intl.DateTimeFormatOptions) => date.toLocaleDateString('en-US', options);
+
+/** Chart series with labels counted back from the mock "today", so they always agree with it. */
+function buildSubmissionTrends(today: string): Record<TrendPeriod, { heading: string; points: TrendPoint[] }> {
+  const todayDetail = formatDay(localDate(today), { weekday: 'short', month: 'short', day: 'numeric' });
+  const daily = TREND_VALUES.daily.map((value, i) => {
+    const from = `${String(i * 4).padStart(2, '0')}:00`;
+    const to = `${String(i * 4 + 4).padStart(2, '0')}:00`;
+    return { label: from, detail: `${todayDetail} · ${from}–${to}`, value };
+  });
+  const weekly = TREND_VALUES.weekly.map((value, i, all) => {
+    const date = localDate(today, i - (all.length - 1));
+    return {
+      label: formatDay(date, { weekday: 'short' }),
+      detail: formatDay(date, { weekday: 'short', month: 'short', day: 'numeric' }),
+      value,
+    };
+  });
+  const monthly = TREND_VALUES.monthly.map((value, i, all) => {
+    const end = localDate(today, (i - (all.length - 1)) * 7);
+    const start = localDate(today, (i - (all.length - 1)) * 7 - 6);
+    const startLabel = formatDay(start, { month: 'short', day: 'numeric' });
+    return { label: startLabel, detail: `${startLabel} – ${formatDay(end, { month: 'short', day: 'numeric' })}`, value };
+  });
+  return {
+    daily: { heading: 'Submissions today', points: daily },
+    weekly: { heading: 'Submissions, last 7 days', points: weekly },
+    monthly: { heading: 'Submissions, last 4 weeks', points: monthly },
+  };
+}
 
 function plural(count: number, noun: string): string {
   return `${count} ${noun}${count === 1 ? '' : 's'}`;
@@ -101,6 +115,7 @@ function plural(count: number, noun: string): string {
     StatsCardComponent,
     PatientListTableComponent,
     TrendChartComponent,
+    UpcomingVisitsComponent,
     VisitBannerComponent,
   ],
   templateUrl: './overview.component.html',
@@ -109,22 +124,32 @@ function plural(count: number, noun: string): string {
 export class OverviewComponent {
   private readonly patientData = inject(PatientDataService);
   readonly patients = this.patientData.patients;
+  readonly today = this.patientData.today;
 
   private readonly snackBar = inject(MatSnackBar);
 
   readonly updatedAt = signal(new Date());
   readonly refreshing = signal(false);
 
-  // Header filter popover: narrows the Recent Submissions table.
+  // Filter popover on the Needs attention table.
   readonly filterOpen = signal(false);
   readonly onlyWithAlerts = signal(false);
   readonly onlyLate = signal(false);
   readonly filtersActive = computed(() => this.onlyWithAlerts() || this.onlyLate());
 
-  readonly recentPatients = computed(() =>
-    this.patients().filter(
-      (patient) => (!this.onlyWithAlerts() || patient.alerts > 0) && (!this.onlyLate() || patient.compliance === 'late'),
+  /** Most urgent first (see sortByUrgency), narrowed by the filter popover. */
+  readonly needsAttention = computed(() =>
+    sortByUrgency(
+      this.patients().filter(
+        (patient) => (!this.onlyWithAlerts() || patient.alerts > 0) && (!this.onlyLate() || patient.compliance === 'late'),
+      ),
+      this.today,
     ),
+  );
+
+  /** Reason chips for the Needs attention table, by patient ID. */
+  readonly attentionReasons = computed(
+    () => new Map(this.patients().map((patient) => [patient.id, urgencyReasons(patient, this.today)])),
   );
 
   /** Today's figures, derived from the same patient records as the table and the quick views. */
@@ -161,12 +186,12 @@ export class OverviewComponent {
     const history = this.patientData.previousSixDays;
     return [
       {
-        label: 'Unreviewed', value: today.unreviewed, delta: formatDelta(change.unreviewed), severity: 'warning', icon: 'pending_actions', higherIsBetter: false,
+        label: 'Unreviewed', value: today.unreviewed, delta: formatDelta(change.unreviewed), severity: today.unreviewed > 0 ? 'warning' : 'success', icon: 'pending_actions', higherIsBetter: false,
         filter: 'unreviewed', linkLabel: 'View unreviewed submissions', valueUnit: 'items',
         vizType: 'bars', vizValues: [...history.newSubmissions, Math.max(change.unreviewed, 0)],
       },
       {
-        label: 'Alerts', value: today.alerts, delta: formatDelta(change.alerts), severity: 'critical', icon: 'notifications_active', higherIsBetter: false, pulse: today.alerts > 0,
+        label: 'Alerts', value: today.alerts, delta: formatDelta(change.alerts), severity: today.alerts > 0 ? 'critical' : 'success', icon: 'notifications_active', higherIsBetter: false, pulse: today.alerts > 0,
         filter: 'alerts', linkLabel: 'View patients with alerts', valueUnit: 'alerts',
         vizType: 'dots', vizValues: [...history.newAlerts, Math.max(change.alerts, 0)],
       },
@@ -189,14 +214,20 @@ export class OverviewComponent {
     { value: 'monthly', label: 'Monthly' },
   ];
   readonly trendPeriod = signal<TrendPeriod>('weekly');
-  readonly submissionsTrend = computed(() => SUBMISSION_TRENDS[this.trendPeriod()]);
+  private readonly submissionTrends = buildSubmissionTrends(this.today);
+  readonly submissionsTrend = computed(() => this.submissionTrends[this.trendPeriod()]);
 
-  /** Increases only: e.g. "3 new submissions since yesterday. 2 patients flagged." */
+  /**
+   * Increases only, e.g. "3 new submissions since yesterday." or
+   * "3 new submissions and 2 patients flagged since yesterday."; null (no banner) if nothing went up.
+   */
   readonly sinceLastVisit = computed(() => {
     const change = this.changes();
-    const submissions = plural(Math.max(change.unreviewed, 0), 'new submission');
-    const flagged = plural(Math.max(change.flaggedPatients, 0), 'patient');
-    return `${submissions} since yesterday. ${flagged} flagged.`;
+    const parts = [
+      change.unreviewed > 0 ? plural(change.unreviewed, 'new submission') : null,
+      change.flaggedPatients > 0 ? `${plural(change.flaggedPatients, 'patient')} flagged` : null,
+    ].filter((part) => part !== null);
+    return parts.length ? `${parts.join(' and ')} since yesterday.` : null;
   });
 
   /**

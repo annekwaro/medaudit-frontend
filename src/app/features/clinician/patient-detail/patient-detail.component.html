@@ -18,7 +18,7 @@
               <dt>Last submission</dt>
               <dd>
                 @if (patient.lastSubmission) {
-                  <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: 'MMM d, HH:mm' }}</time>
+                  <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: preferences.dateTime() }}</time>
                 } @else {
                   No submissions
                 }
@@ -85,7 +85,7 @@
             <div class="info-rows__row"><dt>Sex</dt><dd>{{ patient.sex }}</dd></div>
             <div class="info-rows__row">
               <dt>Enrolled</dt>
-              <dd><time [attr.datetime]="patient.enrolledOn">{{ patient.enrolledOn | date: 'MMM d, y' }}</time></dd>
+              <dd><time [attr.datetime]="patient.enrolledOn">{{ patient.enrolledOn | date: preferences.dateFormat() }}</time></dd>
             </div>
             <div class="info-rows__row"><dt>Site</dt><dd>{{ patient.site }}</dd></div>
             <div class="info-rows__row"><dt>Treatment arm</dt><dd>{{ patient.treatmentArm }}</dd></div>
@@ -93,7 +93,7 @@
               <dt>Next visit</dt>
               <dd>
                 @if (patient.nextVisit) {
-                  <time [attr.datetime]="patient.nextVisit">{{ patient.nextVisit | date: 'MMM d, y' }}</time>
+                  <time [attr.datetime]="patient.nextVisit">{{ patient.nextVisit | date: preferences.dateFormat() }}</time>
                 } @else {
                   Not scheduled
                 }

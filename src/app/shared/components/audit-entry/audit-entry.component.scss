@@ -1,9 +1,8 @@
-// Per-action identity: 4px accent bar, a soft background wash (22-25%), and a gradient badge.
-// All entry text keeps >= 8.8:1 contrast on the tinted backgrounds.
+// Per-action identity comes from the 4px accent bar and the gradient badge only; the card itself stays
+// white, so a run of flags reads as a list rather than a wall of color.
 // Badge text colors pass >= 4.5:1 on both gradient stops (Flagged uses rose-900, not rose-800).
 :host {
   --audit-entry-accent: var(--mat-sys-outline-variant);
-  --audit-entry-tint: transparent;
   --audit-entry-badge-bg: var(--mat-sys-surface-container);
   --audit-entry-badge-ink: var(--mat-sys-on-surface);
 
@@ -12,7 +11,7 @@
   overflow: hidden; // clips the accent bar to the rounded corners
   padding: 20px 20px 20px 24px; // extra left space clears the 4px accent bar
   border-radius: 16px;
-  background: linear-gradient(var(--audit-entry-tint), var(--audit-entry-tint)), #ffffff;
+  background: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
   &::before {
@@ -31,28 +30,24 @@
 
 :host([data-action='submitted']) {
   --audit-entry-accent: var(--mat-sys-primary); // #1F4E4A
-  --audit-entry-tint: rgba(188, 236, 230, 0.22); // mint is more saturated, so slightly lower
   --audit-entry-badge-bg: linear-gradient(135deg, #d1fae5, #a7f3d0);
   --audit-entry-badge-ink: #065f46; // 6.0:1
 }
 
 :host([data-action='modified']) {
   --audit-entry-accent: var(--mat-sys-tertiary); // #8F4E0E
-  --audit-entry-tint: rgba(255, 220, 196, 0.25);
   --audit-entry-badge-bg: linear-gradient(135deg, #fef3c7, #fde68a);
   --audit-entry-badge-ink: #92400e; // 5.7:1
 }
 
 :host([data-action='reviewed']) {
   --audit-entry-accent: var(--mat-sys-secondary); // #50625F
-  --audit-entry-tint: rgba(211, 230, 227, 0.25);
   --audit-entry-badge-bg: linear-gradient(135deg, #d3e6e3, #bcece6);
   --audit-entry-badge-ink: #1f4e4a; // 7.2:1
 }
 
 :host([data-action='flagged']) {
   --audit-entry-accent: var(--mat-sys-error); // #BA1A1A
-  --audit-entry-tint: rgba(255, 218, 214, 0.25);
   --audit-entry-badge-bg: linear-gradient(135deg, #fecdd3, #fda4af);
   --audit-entry-badge-ink: #881337; // rose-900, 5.1:1 (#9F1239 was 4.2:1)
 }

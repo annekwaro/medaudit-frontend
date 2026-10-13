@@ -2,7 +2,7 @@
 <div class="audit-entry__meta">
   <span class="audit-entry__badge">{{ actionLabel() }}</span>
   <time class="audit-entry__time" [attr.datetime]="e.timestamp" [title]="e.timestamp | date: 'MMM d, y, HH:mm:ss zzzz'">
-    {{ e.timestamp | date: 'MMM d, HH:mm' }}
+    {{ e.timestamp | date: preferences.dateTime() }}
   </time>
   <span class="audit-entry__user">{{ e.user }}</span>
   @if (patient(); as p) {

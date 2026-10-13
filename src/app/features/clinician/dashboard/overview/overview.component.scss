@@ -126,7 +126,14 @@
   margin-bottom: 16px;
 }
 
-.trend-chart,
+// Trend chart (2/3) beside the visits card (1/3); both stretch to the taller one.
+.overview__pair {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
 .patient-list {
   margin-top: 24px;
 }
@@ -146,9 +153,9 @@
   width: 120px;
 }
 
-// Rows start staggering as the card itself begins its entrance (index 5 × 60ms).
+// Rows start staggering as the card itself begins its entrance (index 6 × 60ms).
 .patient-list {
-  --rows-enter-delay: 300ms;
+  --rows-enter-delay: 360ms;
 }
 
 // Page-load entrance: fade in + rise 8px, staggered 60ms per item.
@@ -172,10 +179,14 @@
   gap: 16px;
 }
 
-// Tablet: 2 columns.
+// Tablet: 2 stat columns; chart and visits stack.
 @container (max-width: 900px) {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .overview__pair {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

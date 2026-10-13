@@ -18,58 +18,21 @@
         >sync</mat-icon>
       </button>
 
-      <button
-        type="button"
-        class="header-action"
-        [class.header-action--active]="filtersActive()"
-        cdkOverlayOrigin
-        #filterOrigin="cdkOverlayOrigin"
-        [attr.aria-label]="filtersActive() ? 'Filter recent submissions (filters on)' : 'Filter recent submissions'"
-        aria-haspopup="dialog"
-        [attr.aria-expanded]="filterOpen()"
-        matTooltip="Filter"
-        (click)="filterOpen.set(!filterOpen())"
-      >
-        <mat-icon>tune</mat-icon>
-      </button>
-
       <button type="button" class="header-action" aria-label="Export" matTooltip="Export" (click)="exportData()">
         <mat-icon>download</mat-icon>
       </button>
     </div>
   </div>
-
-  <!-- Popover: Tab moves between controls (focus trapped), Esc or an outside click closes it,
-       and focus returns to the filter button. -->
-  <ng-template
-    cdkConnectedOverlay
-    [cdkConnectedOverlayOrigin]="filterOrigin"
-    [cdkConnectedOverlayOpen]="filterOpen()"
-    [cdkConnectedOverlayPositions]="[
-      { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
-      { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 }
-    ]"
-    cdkConnectedOverlayHasBackdrop
-    cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
-    (backdropClick)="filterOpen.set(false)"
-    (detach)="filterOpen.set(false)"
-    (overlayKeydown)="$event.key === 'Escape' && filterOpen.set(false)"
-  >
-    <div class="filter-popover" role="dialog" aria-label="Filter recent submissions" cdkTrapFocus cdkTrapFocusAutoCapture>
-      <mat-slide-toggle [checked]="onlyWithAlerts()" (change)="onlyWithAlerts.set($event.checked)">
-        Show only patients with alerts
-      </mat-slide-toggle>
-      <mat-slide-toggle [checked]="onlyLate()" (change)="onlyLate.set($event.checked)">
-        Show only late submissions
-      </mat-slide-toggle>
-      <button mat-button type="button" class="filter-popover__reset" [disabled]="!filtersActive()" (click)="resetFilters()">
-        Reset
-      </button>
-    </div>
-  </ng-template>
 </header>
 
-<app-visit-banner class="overview__banner" [message]="sinceLastVisit()" actionLink="/clinician/audit-log" />
+@if (sinceLastVisit(); as message) {
+  <app-visit-banner
+    class="overview__banner"
+    [message]="message"
+    actionLink="/clinician/patients"
+    [actionQueryParams]="{ filter: 'unreviewed' }"
+  />
+}
 
 <section class="stats-grid" aria-label="Summary statistics">
   @for (stat of stats(); track stat.label) {
@@ -91,26 +54,82 @@
   }
 </section>
 
-<app-trend-chart
-  class="trend-chart rise-in"
-  [style.--rise-index]="stats().length"
-  [heading]="submissionsTrend().heading"
-  [points]="submissionsTrend().points"
->
-  <mat-form-field trendChartControls appearance="outline" subscriptSizing="dynamic" class="trend-period">
-    <mat-select aria-label="Chart period" [value]="trendPeriod()" (selectionChange)="trendPeriod.set($event.value)">
-      @for (option of trendPeriodOptions; track option.value) {
-        <mat-option [value]="option.value">{{ option.label }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-</app-trend-chart>
+<!-- Chart and visits side by side; they stack below 900px. -->
+<div class="overview__pair">
+  <app-trend-chart
+    class="trend-chart rise-in"
+    [style.--rise-index]="stats().length"
+    [heading]="submissionsTrend().heading"
+    [points]="submissionsTrend().points"
+  >
+    <mat-form-field trendChartControls appearance="outline" subscriptSizing="dynamic" class="trend-period">
+      <mat-select aria-label="Chart period" [value]="trendPeriod()" (selectionChange)="trendPeriod.set($event.value)">
+        @for (option of trendPeriodOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </app-trend-chart>
+
+  <app-upcoming-visits
+    class="visits rise-in"
+    [style.--rise-index]="stats().length + 1"
+    [patients]="patients()"
+    [today]="today"
+  />
+</div>
 
 <app-patient-list-table
   class="patient-list rise-in"
-  [style.--rise-index]="stats().length + 1"
-  heading="Recent Submissions"
+  [style.--rise-index]="stats().length + 2"
+  heading="Needs attention"
   viewAllLink="/clinician/patients"
-  [patients]="recentPatients()"
+  [patients]="needsAttention()"
+  [reasons]="attentionReasons()"
   [staggerRows]="true"
-/>
+>
+  <button
+    patientListActions
+    type="button"
+    class="header-action"
+    [class.header-action--active]="filtersActive()"
+    cdkOverlayOrigin
+    #filterOrigin="cdkOverlayOrigin"
+    [attr.aria-label]="filtersActive() ? 'Filter needs attention list (filters on)' : 'Filter needs attention list'"
+    aria-haspopup="dialog"
+    [attr.aria-expanded]="filterOpen()"
+    matTooltip="Filter"
+    (click)="filterOpen.set(!filterOpen())"
+  >
+    <mat-icon>tune</mat-icon>
+  </button>
+</app-patient-list-table>
+
+<!-- Popover: Tab moves between controls (focus trapped), Esc or an outside click closes it,
+     and focus returns to the filter button. -->
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="filterOrigin"
+  [cdkConnectedOverlayOpen]="filterOpen()"
+  [cdkConnectedOverlayPositions]="[
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 }
+  ]"
+  cdkConnectedOverlayHasBackdrop
+  cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+  (backdropClick)="filterOpen.set(false)"
+  (detach)="filterOpen.set(false)"
+  (overlayKeydown)="$event.key === 'Escape' && filterOpen.set(false)"
+>
+  <div class="filter-popover" role="dialog" aria-label="Filter needs attention list" cdkTrapFocus cdkTrapFocusAutoCapture>
+    <mat-slide-toggle [checked]="onlyWithAlerts()" (change)="onlyWithAlerts.set($event.checked)">
+      Show only patients with alerts
+    </mat-slide-toggle>
+    <mat-slide-toggle [checked]="onlyLate()" (change)="onlyLate.set($event.checked)">
+      Show only late submissions
+    </mat-slide-toggle>
+    <button mat-button type="button" class="filter-popover__reset" [disabled]="!filtersActive()" (click)="resetFilters()">
+      Reset
+    </button>
+  </div>
+</ng-template>

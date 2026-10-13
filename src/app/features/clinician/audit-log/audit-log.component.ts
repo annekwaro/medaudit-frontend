@@ -82,7 +82,9 @@ export class AuditLogComponent {
     const patientId = this.patientFilter();
     const action = this.actionFilter();
     const days = DATE_FILTER_DAYS[this.dateFilter()];
-    const cutoff = days === null ? null : Date.now() - days * DAY_MS;
+    // Counted back from the end of the mock "today", not the real clock, so the mock entries stay in range.
+    const endOfToday = Date.parse(`${this.patientData.today}T00:00:00`) + DAY_MS;
+    const cutoff = days === null ? null : endOfToday - days * DAY_MS;
 
     return this.allEntries().filter(({ entry, patient }) => {
       if (patientId !== 'all' && entry.patientId !== patientId) return false;

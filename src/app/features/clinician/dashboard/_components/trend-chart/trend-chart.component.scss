@@ -7,6 +7,9 @@ $draw-duration: 600ms;
 .trend-chart {
   --mdc-elevated-card-container-color: #ffffff;
 
+  box-sizing: border-box;
+  height: 100%;
+
   padding: 16px 20px 12px;
   border: 0;
   border-radius: 20px;
@@ -40,13 +43,17 @@ $draw-duration: 600ms;
   text-align: right;
 }
 
-// Fixed height so the card doesn't jump while the width is first measured.
+// Fills the card's remaining height (min 180px, so it doesn't jump while first measured).
 .trend-chart__plot {
   position: relative;
-  height: 180px;
+  flex: 1 1 auto;
+  min-height: 180px;
 }
 
+// Out of flow, so the SVG never holds the plot open: the plot's height comes from the card alone.
 .trend-chart__svg {
+  position: absolute;
+  inset: 0;
   display: block;
   overflow: visible;
 }

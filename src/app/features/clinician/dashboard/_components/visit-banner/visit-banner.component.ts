@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+import { Params, RouterLink } from '@angular/router';
 
 type BannerState = 'shown' | 'leaving' | 'dismissed';
 
@@ -21,11 +21,11 @@ type BannerState = 'shown' | 'leaving' | 'dismissed';
   template: `
     @if (state() !== 'dismissed') {
       <div class="visit-banner__clip">
-        <aside class="visit-banner" aria-label="Since your last visit">
+        <aside class="visit-banner" aria-label="Changes since yesterday">
           <mat-icon class="visit-banner__icon" aria-hidden="true">notifications_active</mat-icon>
           <p class="visit-banner__text">{{ message() }}</p>
           @if (actionLink(); as link) {
-            <a class="visit-banner__action" [routerLink]="link">{{ actionLabel() }}</a>
+            <a class="visit-banner__action" [routerLink]="link" [queryParams]="actionQueryParams()">{{ actionLabel() }}</a>
           }
           <button mat-icon-button type="button" class="visit-banner__dismiss" aria-label="Dismiss summary" (click)="dismiss()">
             <mat-icon>close</mat-icon>
@@ -128,11 +128,12 @@ type BannerState = 'shown' | 'leaving' | 'dismissed';
 export class VisitBannerComponent {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
-  /** e.g. "3 new submissions since yesterday. 2 patients flagged." */
+  /** e.g. "3 new submissions and 2 patients flagged since yesterday." */
   readonly message = input.required<string>();
   /** Optional text link shown before the dismiss button. */
   readonly actionLabel = input('Review');
   readonly actionLink = input<string>();
+  readonly actionQueryParams = input<Params>();
 
   readonly state = signal<BannerState>('shown');
 

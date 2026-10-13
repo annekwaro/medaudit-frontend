@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { UserPreferencesService } from '../../../core/services/user-preferences.service';
 import { AUDIT_ACTION_LABELS, AuditEntry } from '../../models/audit.model';
 
 /**
@@ -18,6 +19,8 @@ import { AUDIT_ACTION_LABELS, AuditEntry } from '../../models/audit.model';
 export class AuditEntryComponent {
   readonly entry = input.required<AuditEntry>();
   readonly patient = input<{ id: string; name: string }>();
+
+  readonly preferences = inject(UserPreferencesService);
 
   readonly actionLabel = computed(() => AUDIT_ACTION_LABELS[this.entry().action]);
 }

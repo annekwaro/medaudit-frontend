@@ -20,7 +20,8 @@ export interface TrendPoint {
   value: number;
 }
 
-const HEIGHT = 180;
+/** Minimum plot height; the plot grows to fill a taller card (e.g. next to a longer sibling). */
+const MIN_HEIGHT = 180;
 const PAD = { top: 12, right: 16, bottom: 28, left: 32 };
 
 /** Smallest 1/2/5 × 10^n step that splits `max` into at most ~4 gridlines. */
@@ -31,9 +32,10 @@ function niceStep(max: number): number {
 }
 
 /**
- * Single-series line + area chart card as inline SVG. The viewBox tracks the measured width, so the
- * chart is responsive without stretching text or strokes. The SVG is decorative; a visually hidden
- * table carries the data. Header controls are projected via `[trendChartControls]`.
+ * Single-series line + area chart card as inline SVG. The viewBox tracks the measured plot size (the plot
+ * fills the card, at least 180px tall), so the chart is responsive without stretching text or strokes.
+ * The SVG is decorative; a visually hidden table carries the data. Header controls are projected via
+ * `[trendChartControls]`.
  */
 @Component({
   selector: 'app-trend-chart',
@@ -48,22 +50,21 @@ export class TrendChartComponent {
   /** Plural noun for values, e.g. "submissions". */
   readonly unit = input('submissions');
 
-  readonly height = HEIGHT;
   readonly pad = PAD;
 
   readonly hovered = signal<number | null>(null);
-  private readonly width = signal(0);
+  private readonly size = signal({ width: 0, height: MIN_HEIGHT });
   private readonly plot = viewChild.required<ElementRef<HTMLElement>>('plot');
 
   readonly total = computed(() => this.points().reduce((sum, point) => sum + point.value, 0));
 
   readonly layout = computed(() => {
-    const width = this.width();
+    const { width, height } = this.size();
     const data = this.points();
     if (!width || !data.length) return null;
 
     const plotWidth = width - PAD.left - PAD.right;
-    const plotHeight = HEIGHT - PAD.top - PAD.bottom;
+    const plotHeight = height - PAD.top - PAD.bottom;
     const baseline = PAD.top + plotHeight;
     const max = Math.max(...data.map((point) => point.value), 1);
     const step = niceStep(max);
@@ -82,7 +83,7 @@ export class TrendChartComponent {
     const area = `${line} L${points.at(-1)!.x},${baseline} L${points[0].x},${baseline} Z`;
     const ticks = Array.from({ length: yMax / step + 1 }, (_, i) => ({ value: i * step, y: y(i * step) }));
 
-    return { width, points, line, area, ticks, columnWidth };
+    return { width, height, points, line, area, ticks, columnWidth };
   });
 
   readonly hoveredPoint = computed(() => {
@@ -91,7 +92,9 @@ export class TrendChartComponent {
   });
 
   constructor() {
-    const observer = new ResizeObserver(([entry]) => this.width.set(entry.contentRect.width));
+    const observer = new ResizeObserver(([entry]) =>
+      this.size.set({ width: entry.contentRect.width, height: Math.max(entry.contentRect.height, MIN_HEIGHT) }),
+    );
     afterNextRender(() => observer.observe(this.plot().nativeElement));
     inject(DestroyRef).onDestroy(() => observer.disconnect());
   }
