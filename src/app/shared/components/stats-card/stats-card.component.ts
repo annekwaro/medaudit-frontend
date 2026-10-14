@@ -71,17 +71,21 @@ export class StatsCardComponent {
   readonly linkLabel = input<string>();
   /** Unit read after the value in the aria-label, e.g. "items" → "12 items". */
   readonly valueUnit = input<string>();
+  /** Short context beside the value, e.g. "oldest 7 days" or "target 90%". */
+  readonly note = input<string>();
 
   readonly iconName = computed(() => this.icon() ?? DEFAULT_ICONS[this.severity()]);
   readonly severityText = computed(() => SEVERITY_TEXT[this.severity()]);
 
-  /** e.g. "View unreviewed submissions — 12 items, +3 from yesterday". */
+  /** e.g. "View unreviewed submissions — 12 items (oldest 7 days), +3 from yesterday, worsening". */
   readonly ariaLabel = computed(() => {
     const destination = this.linkLabel() ?? this.label();
     const unit = this.valueUnit();
-    const value = unit ? `${this.value()} ${unit}` : `${this.value()}`;
+    const note = this.note();
+    const value = `${this.value()}${unit ? ` ${unit}` : ''}${note ? ` (${note})` : ''}`;
     const delta = this.delta();
-    return `${destination} — ${value}${delta ? `, ${delta}` : ''}`;
+    const sentiment = this.sentimentText();
+    return `${destination} — ${value}${delta ? `, ${delta}` : ''}${sentiment ? `, ${sentiment}` : ''}`;
   });
 
   readonly direction = computed<DeltaDirection | null>(() => {
@@ -97,9 +101,15 @@ export class StatsCardComponent {
     return direction ? DIRECTION_ICONS[direction] : null;
   });
 
+  /** Colors the delta: green when improving, rose when worsening, muted when flat. */
   readonly sentiment = computed<'positive' | 'negative' | 'neutral'>(() => {
     const direction = this.direction();
     if (!direction || direction === 'flat') return 'neutral';
     return (direction === 'up') === this.higherIsBetter() ? 'positive' : 'negative';
   });
+
+  /** The delta's color in words, for screen readers. */
+  readonly sentimentText = computed(() =>
+    this.sentiment() === 'positive' ? 'improving' : this.sentiment() === 'negative' ? 'worsening' : null,
+  );
 }

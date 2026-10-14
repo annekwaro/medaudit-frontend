@@ -19,7 +19,12 @@
         </span>
       </div>
 
-      <div class="stats-card__value">{{ value() }}</div>
+      <div class="stats-card__value-row">
+        <div class="stats-card__value">{{ value() }}</div>
+        @if (note(); as noteText) {
+          <span class="stats-card__note">{{ noteText }}</span>
+        }
+      </div>
 
       @if (delta() || vizType()) {
         <div class="stats-card__footer">
@@ -27,6 +32,9 @@
             <div class="stats-card__delta" [class]="'stats-card__delta--' + sentiment()">
               <mat-icon class="stats-card__delta-icon" aria-hidden="true">{{ directionIcon() }}</mat-icon>
               <span>{{ deltaText }}</span>
+              @if (sentimentText(); as text) {
+                <span class="sr-only">({{ text }})</span>
+              }
             </div>
           }
           @if (vizType(); as type) {

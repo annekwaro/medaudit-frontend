@@ -17,6 +17,8 @@ export interface PatientSummary {
   alerts: number;
   /** Diary submissions awaiting clinician review. */
   pendingSubmissions: number;
+  /** ISO 8601 timestamp of the oldest submission awaiting review, or null if none are waiting. */
+  oldestPendingSince: string | null;
 }
 
 /** Full patient record for the detail page (superset of the table summary). */

@@ -134,8 +134,9 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
 
 // Per-severity identity: near-white card with a 3% tint of the severity color; full color only in
 // the top strip, icon and delta arrow.
-// --stats-card-color: strip/icon/arrow. --stats-card-accent: darker -700 shade (>= 3:1 on white)
+// --stats-card-color: strip/icon/micro-viz. --stats-card-accent: darker -700 shade (>= 3:1 on white)
 // for the focus ring and the link arrow.
+// the top strip and icon (the delta is colored by direction instead, see .stats-card__delta).
 .stats-card {
   --stats-card-ink: #1c1c18;
   --stats-card-ink-soft: rgba(28, 28, 24, 0.62); // >= 4.73:1 on every tinted background (WCAG AA)
@@ -220,9 +221,16 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
   color: var(--stats-card-ink-soft);
 }
 
+// Value with an optional note on its baseline ("12  oldest 7 days").
+.stats-card__value-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
 .stats-card__value {
-  // Shrink to the number so the pulse scales around its own center.
-  align-self: flex-start;
+  // As a flex item it shrinks to the number, so the pulse scales around its own center.
   font: var(--ma-type-stat);
   letter-spacing: -0.02em;
   color: var(--stats-card-ink);
@@ -243,20 +251,33 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
   margin-left: auto;
 }
 
-// Text stays muted; only the arrow is colored, in the card's severity color.
+.stats-card__note {
+  font: 500 0.8125rem / 1.25rem var(--ma-font-body);
+  color: var(--stats-card-ink-soft);
+}
+
+// The card's color says where the figure stands; the delta's says which way it's moving.
+// rose-700 / emerald-700 keep >= 4.5:1 on every tinted card background.
 .stats-card__delta {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font: 500 0.8125rem / 1.25rem var(--ma-font-body);
   color: var(--stats-card-ink-soft);
+
+  &--negative {
+    color: #be123c;
+  }
+
+  &--positive {
+    color: #047857;
+  }
 }
 
 .stats-card__delta-icon {
   width: 16px;
   height: 16px;
   font-size: 16px;
-  color: var(--stats-card-color);
 }
 
 // Hidden until hover/focus on a linked card; slides in only when motion is allowed (see above).

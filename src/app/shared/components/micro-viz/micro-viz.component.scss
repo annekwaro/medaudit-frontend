@@ -38,6 +38,10 @@ svg {
   stroke-linecap: round;
 }
 
+.micro-viz__target {
+  fill: rgba(28, 28, 24, 0.7);
+}
+
 .micro-viz__track {
   fill: color-mix(in srgb, var(--_color) 15%, transparent);
 }

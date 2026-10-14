@@ -26,34 +26,34 @@ export class PatientDataService {
   // (On Track >= 90%, Late 70-89%, Missing < 70%). All patients are at Dr. Martin's site.
   readonly patients = signal<PatientProfile[]>([
     {
-      id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-13T08:05:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
+      id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-13T08:05:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0, oldestPendingSince: null,
       age: 34, sex: 'Female', enrolledOn: '2026-09-12', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-18', submissions30d: { submitted: 28, missed: 2 },
     },
     {
-      id: 'PT-1057', name: 'Daniel Mwangi', lastSubmission: '2026-10-12T20:47:00', compliance: 'late', alerts: 1, pendingSubmissions: 3,
+      id: 'PT-1057', name: 'Daniel Mwangi', lastSubmission: '2026-10-12T20:47:00', compliance: 'late', alerts: 1, pendingSubmissions: 3, oldestPendingSince: '2026-10-11T20:15:00',
       age: 51, sex: 'Male', enrolledOn: '2026-09-01', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-14', submissions30d: { submitted: 24, missed: 6 },
     },
     {
-      id: 'PT-1063', name: 'Sofia Lindqvist', lastSubmission: '2026-10-07T09:05:00', compliance: 'missing', alerts: 3, pendingSubmissions: 7,
+      id: 'PT-1063', name: 'Sofia Lindqvist', lastSubmission: '2026-10-07T09:05:00', compliance: 'missing', alerts: 3, pendingSubmissions: 7, oldestPendingSince: '2026-10-06T08:40:00',
       age: 46, sex: 'Female', enrolledOn: '2026-08-24', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-12', submissions30d: { submitted: 18, missed: 12 },
     },
     {
-      id: 'PT-1071', name: 'Hiroshi Tanaka', lastSubmission: '2026-10-13T07:22:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0,
+      id: 'PT-1071', name: 'Hiroshi Tanaka', lastSubmission: '2026-10-13T07:22:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0, oldestPendingSince: null,
       age: 62, sex: 'Male', enrolledOn: '2026-08-20', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-25', submissions30d: { submitted: 29, missed: 1 },
     },
     {
-      id: 'PT-1088', name: 'Grace Achieng', lastSubmission: '2026-10-12T21:52:00', compliance: 'late', alerts: 0, pendingSubmissions: 2,
+      id: 'PT-1088', name: 'Grace Achieng', lastSubmission: '2026-10-12T21:52:00', compliance: 'late', alerts: 0, pendingSubmissions: 2, oldestPendingSince: '2026-10-12T21:52:00',
       age: 29, sex: 'Female', enrolledOn: '2026-09-05', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-16', submissions30d: { submitted: 23, missed: 7 },
     },
     {
       // Enrolled Sep 30, device not yet set up (see audit trail); setup visit today, Oct 13.
       // 13 expected daily diaries since enrollment (Sep 30 – Oct 12), none received.
-      id: 'PT-1094', name: 'Mateo Fernández', lastSubmission: null, compliance: 'missing', alerts: 2, pendingSubmissions: 0,
+      id: 'PT-1094', name: 'Mateo Fernández', lastSubmission: null, compliance: 'missing', alerts: 2, pendingSubmissions: 0, oldestPendingSince: null,
       age: 38, sex: 'Male', enrolledOn: '2026-09-30', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
       nextVisit: '2026-10-13', submissions30d: { submitted: 0, missed: 13 },
     },

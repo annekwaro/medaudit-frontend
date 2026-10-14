@@ -19,6 +19,8 @@ import { PatientQuickView } from '../../patients/patients.component';
 import { TrendChartComponent, TrendPoint } from '../_components/trend-chart/trend-chart.component';
 import { UpcomingVisitsComponent } from '../_components/upcoming-visits/upcoming-visits.component';
 import { sortByUrgency, urgencyReasons } from './needs-attention';
+import { COMPLIANCE_TARGET, complianceSeverity, unreviewedSeverity } from './stat-severity';
+import { daysBetween } from '../../../../shared/utils/dates';
 
 interface StatSummary {
   label: string;
@@ -32,6 +34,8 @@ interface StatSummary {
   filter?: PatientQuickView;
   linkLabel: string;
   valueUnit: string;
+  /** Short context beside the value, e.g. "oldest 7 days". */
+  note?: string;
   vizType: MicroVizType;
   vizValues: readonly number[];
 }
@@ -39,11 +43,6 @@ interface StatSummary {
 /** "+3 from yesterday", "0 from yesterday", "-2% from yesterday". */
 function formatDelta(change: number, unit = ''): string {
   return `${change > 0 ? '+' : ''}${change}${unit} from yesterday`;
-}
-
-/** Same bands as the patient detail page: >= 90% on track, 70-89% late, < 70% missing. */
-function complianceSeverity(percent: number): StatsSeverity {
-  return percent >= 90 ? 'success' : percent >= 70 ? 'warning' : 'critical';
 }
 
 type TrendPeriod = 'daily' | 'weekly' | 'monthly';
@@ -189,13 +188,23 @@ export class OverviewComponent {
     };
   });
 
+  /** Days the oldest unreviewed submission has waited, or null if none are waiting. */
+  private readonly oldestWaitingDays = computed(() => {
+    const oldest = this.patients()
+      .flatMap((patient) => (patient.pendingSubmissions > 0 && patient.oldestPendingSince ? [patient.oldestPendingSince] : []))
+      .sort()[0];
+    return oldest ? daysBetween(oldest, this.today) : null;
+  });
+
   readonly stats = computed<StatSummary[]>(() => {
     const today = this.figures();
+    const waiting = this.oldestWaitingDays();
     const change = this.changes();
     const history = this.patientData.previousSixDays;
     return [
       {
-        label: 'Unreviewed', value: today.unreviewed, delta: formatDelta(change.unreviewed), severity: today.unreviewed > 0 ? 'warning' : 'success', icon: 'pending_actions', higherIsBetter: false,
+        label: 'Unreviewed', value: today.unreviewed, delta: formatDelta(change.unreviewed), severity: unreviewedSeverity(today.unreviewed, waiting), icon: 'pending_actions',
+        note: waiting === null ? undefined : waiting === 0 ? 'oldest today' : `oldest ${waiting} day${waiting === 1 ? '' : 's'}`, higherIsBetter: false,
         filter: 'unreviewed', linkLabel: 'View unreviewed submissions', valueUnit: 'items',
         vizType: 'bars', vizValues: [...history.newSubmissions, Math.max(change.unreviewed, 0)],
       },
@@ -210,9 +219,9 @@ export class OverviewComponent {
         vizType: 'sparkline', vizValues: [...history.activePatients, today.activePatients],
       },
       {
-        label: 'Compliance', value: `${today.compliancePercent}%`, delta: formatDelta(change.compliancePercent, '%'), severity: complianceSeverity(today.compliancePercent), icon: 'task_alt', higherIsBetter: true,
+        label: 'Compliance', value: `${today.compliancePercent}%`, delta: formatDelta(change.compliancePercent, '%'), severity: complianceSeverity(today.compliancePercent), icon: 'task_alt', note: `target ${COMPLIANCE_TARGET}%`, higherIsBetter: true,
         filter: 'compliance', linkLabel: 'View patients by lowest compliance', valueUnit: 'compliance',
-        vizType: 'progress', vizValues: [today.compliancePercent],
+        vizType: 'progress', vizValues: [today.compliancePercent, COMPLIANCE_TARGET],
       },
     ];
   });

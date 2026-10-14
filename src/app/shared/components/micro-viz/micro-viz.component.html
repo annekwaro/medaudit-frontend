@@ -28,9 +28,13 @@
   }
 
   @case ('progress') {
-    <svg [attr.viewBox]="'0 0 ' + width + ' 4'" [attr.width]="width" height="4">
-      <rect class="micro-viz__track" [attr.width]="width" height="4" rx="2" />
-      <rect class="micro-viz__fill micro-viz__today" [attr.width]="(width * percent()) / 100" height="4" rx="2" />
+    <!-- 4px bar centered in 12px, leaving room for the taller target tick. -->
+    <svg [attr.viewBox]="'0 0 ' + width + ' 12'" [attr.width]="width" height="12">
+      <rect class="micro-viz__track" y="4" [attr.width]="width" height="4" rx="2" />
+      <rect class="micro-viz__fill micro-viz__today" y="4" [attr.width]="(width * percent()) / 100" height="4" rx="2" />
+      @if (target(); as target) {
+        <rect class="micro-viz__target" [attr.x]="(width * target) / 100 - 1" width="2" height="12" rx="1" />
+      }
     </svg>
   }
 }

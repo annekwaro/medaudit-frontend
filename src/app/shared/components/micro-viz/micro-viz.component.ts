@@ -4,7 +4,8 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
  * - bars: daily counts as columns (e.g. new submissions)
  * - dots: daily counts as dot sizes (e.g. new alerts)
  * - sparkline: a level over time as a soft area (e.g. active patients)
- * - progress: values[0] out of 100 (a bar only; the card shows the figure)
+ * - progress: values[0] out of 100 (a bar only; the card shows the figure), with an optional
+ *   target tick at values[1]
  */
 export type MicroVizType = 'bars' | 'dots' | 'sparkline' | 'progress';
 
@@ -19,6 +20,8 @@ const BAR_BASELINE = 21;
 /** Dots: 1 → r 2, 5 or more → r 5; zero days get a faint r 1 placeholder. */
 const DOT_MIN_R = 2;
 const DOT_MAX_R = 5;
+
+const clampPercent = (value: number) => Math.min(Math.max(value, 0), 100);
 
 /** Path for a bar with only its top corners rounded. */
 function topRoundedBar(x: number, y: number, width: number, height: number, radius: number): string {
@@ -85,5 +88,10 @@ export class MicroVizComponent {
     return { line, area: `${line} L${last.x},${HEIGHT} L${points[0].x},${HEIGHT} Z`, last };
   });
 
-  readonly percent = computed(() => Math.min(Math.max(this.values()[0] ?? 0, 0), 100));
+  readonly percent = computed(() => clampPercent(this.values()[0] ?? 0));
+  /** Target marker position (0-100), or null if no target was given. */
+  readonly target = computed(() => {
+    const target = this.values()[1];
+    return target === undefined ? null : clampPercent(target);
+  });
 }

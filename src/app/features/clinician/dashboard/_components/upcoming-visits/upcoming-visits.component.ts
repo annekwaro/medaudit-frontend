@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { UserPreferencesService } from '../../../../../core/services/user-preferences.service';
 import { PatientProfile } from '../../../../../shared/models/patient.model';
+import { daysBetween } from '../../../../../shared/utils/dates';
 
 type VisitStatus = 'overdue' | 'today' | 'upcoming';
 
@@ -27,15 +28,6 @@ const STATUS_ICONS: Record<VisitStatus, string> = {
   today: 'today',
   upcoming: 'event',
 };
-
-/** Whole days from one ISO date (yyyy-MM-dd) to another; negative if `to` is earlier. UTC avoids DST shifts. */
-function daysBetween(from: string, to: string): number {
-  const utc = (iso: string) => {
-    const [year, month, day] = iso.split('-').map(Number);
-    return Date.UTC(year, month - 1, day);
-  };
-  return Math.round((utc(to) - utc(from)) / 86_400_000);
-}
 
 function statusLabel(days: number): string {
   if (days < 0) return 'Overdue';
