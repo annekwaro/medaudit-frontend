@@ -24,7 +24,8 @@ export interface RowReason {
 
 /**
  * Patient table in an outlined card. The header row only renders when `heading` is set;
- * extra header controls can be projected next to "View all" with `[patientListActions]`.
+ * extra header controls can be projected next to "View all" with `[patientListActions]`,
+ * and a footer line below the table with `[patientListFooter]`.
  */
 @Component({
   selector: 'app-patient-list-table',
@@ -57,14 +58,17 @@ export class PatientListTableComponent {
   readonly staggerRows = input(false);
 
   /**
-   * Reason chips per patient ID. When set, a Reason column replaces Last Submission and Alerts
-   * (alert counts appear as a reason instead).
+   * Reason chips per patient ID ("triage" layout). When set, a Reason column replaces Last Submission
+   * and Alerts (alert counts appear as a reason), the ID moves under the name, and compliance shows
+   * as a dot so the reason chips are the only filled color in the row.
    */
   readonly reasons = input<ReadonlyMap<string, readonly RowReason[]>>();
+  /** Shown in place of the table when `patients` is empty. */
+  readonly emptyMessage = input<string>();
 
   readonly displayedColumns = computed(() =>
     this.reasons()
-      ? ['id', 'name', 'reasons', 'compliance', 'actions']
+      ? ['name', 'reasons', 'compliance', 'actions']
       : ['id', 'name', 'lastSubmission', 'compliance', 'alerts', 'actions'],
   );
 

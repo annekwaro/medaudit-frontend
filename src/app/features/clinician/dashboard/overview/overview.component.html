@@ -83,6 +83,7 @@
   viewAllLink="/clinician/patients"
   [patients]="needsAttention()"
   [reasons]="attentionReasons()"
+  [emptyMessage]="needsAttentionEmpty()"
   [staggerRows]="playIntro"
 >
   <button
@@ -100,6 +101,14 @@
   >
     <mat-icon>tune</mat-icon>
   </button>
+
+  @if (nothingUrgentCount(); as count) {
+    <a patientListFooter class="calm-footer" routerLink="/clinician/patients">
+      <mat-icon class="calm-footer__icon" aria-hidden="true">check_circle</mat-icon>
+      {{ count }} {{ count === 1 ? 'patient has' : 'patients have' }} nothing urgent
+      <span class="calm-footer__link">View all patients</span>
+    </a>
+  }
 </app-patient-list-table>
 
 <!-- Popover: Tab moves between controls (focus trapped), Esc or an outside click closes it,

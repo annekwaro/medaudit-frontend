@@ -23,3 +23,33 @@
   background: linear-gradient(135deg, #fecdd3, #fda4af);
   color: #881337; // rose-900
 }
+
+// Dot: the label carries the status; the dot (-600 shades, >= 3:1 on white) only reinforces it.
+:host([data-appearance='dot']) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  color: rgba(28, 28, 24, 0.8);
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--compliance-dot);
+  }
+}
+
+:host([data-appearance='dot'][data-status='on-track']) {
+  --compliance-dot: #059669; // emerald-600
+}
+
+:host([data-appearance='dot'][data-status='late']) {
+  --compliance-dot: #d97706; // amber-600
+}
+
+:host([data-appearance='dot'][data-status='missing']) {
+  --compliance-dot: #e11d48; // rose-600
+}

@@ -148,6 +148,40 @@
   width: 120px;
 }
 
+// Footer line under the Needs attention table, in place of "Nothing urgent" rows.
+.calm-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: none;
+
+  &:hover .calm-footer__link {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: -2px;
+  }
+}
+
+.calm-footer__icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #059669; // emerald-600
+}
+
+.calm-footer__link {
+  margin-left: auto;
+  font-weight: 500;
+  color: var(--ma-color-brand);
+}
+
 // Rows start staggering as the card itself begins its entrance (index 6 × 60ms).
 .patient-list {
   --rows-enter-delay: 360ms;

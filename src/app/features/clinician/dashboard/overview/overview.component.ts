@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
 import { FirstVisitService } from '../../../../core/services/first-visit.service';
 import { DashboardFigures, PatientDataService } from '../../../../core/services/patient-data.service';
 import { PatientProfile } from '../../../../shared/models/patient.model';
@@ -120,6 +121,7 @@ function buildSubmissionTrends(today: string): Record<TrendPeriod, { heading: st
     MatSelectModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    RouterLink,
     StatsCardComponent,
     PatientListTableComponent,
     TrendChartComponent,
@@ -147,19 +149,31 @@ export class OverviewComponent {
   readonly onlyLate = signal(false);
   readonly filtersActive = computed(() => this.onlyWithAlerts() || this.onlyLate());
 
-  /** Most urgent first (see sortByUrgency), narrowed by the filter popover. */
+  /** Reason chips for the Needs attention table, by patient ID. */
+  readonly attentionReasons = computed(
+    () => new Map(this.patients().map((patient) => [patient.id, urgencyReasons(patient, this.today)])),
+  );
+
+  /** Patients passing the filter popover. */
+  private readonly filteredPatients = computed(() =>
+    this.patients().filter(
+      (patient) => (!this.onlyWithAlerts() || patient.alerts > 0) && (!this.onlyLate() || patient.compliance === 'late'),
+    ),
+  );
+
+  /** Only patients with at least one reason, most urgent first (see sortByUrgency). */
   readonly needsAttention = computed(() =>
     sortByUrgency(
-      this.patients().filter(
-        (patient) => (!this.onlyWithAlerts() || patient.alerts > 0) && (!this.onlyLate() || patient.compliance === 'late'),
-      ),
+      this.filteredPatients().filter((patient) => this.attentionReasons().get(patient.id)?.length),
       this.today,
     ),
   );
 
-  /** Reason chips for the Needs attention table, by patient ID. */
-  readonly attentionReasons = computed(
-    () => new Map(this.patients().map((patient) => [patient.id, urgencyReasons(patient, this.today)])),
+  /** The rest are summarized in one footer line instead of "Nothing urgent" rows. */
+  readonly nothingUrgentCount = computed(() => this.filteredPatients().length - this.needsAttention().length);
+
+  readonly needsAttentionEmpty = computed(() =>
+    this.filtersActive() ? 'No patients match these filters.' : 'Nothing needs attention right now.',
   );
 
   /** Today's figures, derived from the same patient records as the table and the quick views. */

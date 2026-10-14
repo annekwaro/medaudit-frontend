@@ -56,6 +56,18 @@
   font: 500 0.9375rem / 1.375rem var(--ma-font-display);
 }
 
+// Triage layout: the ID sits on its own line under the name.
+.patient-list__sub {
+  display: block;
+}
+
+.patient-list__empty {
+  margin: 0;
+  padding: 8px 16px 20px;
+  font: var(--mat-sys-body-medium);
+  color: var(--patient-list-ink-soft);
+}
+
 // IDs, names and headers stay on one line; the table scrolls sideways before they'd wrap.
 .patient-list__id,
 .patient-list__name,
