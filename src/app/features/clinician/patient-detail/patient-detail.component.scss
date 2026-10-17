@@ -17,11 +17,29 @@
   gap: 24px;
 }
 
+// Two columns: the aside comes first in the source but sits on the right.
+.patient-detail__main {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.patient-detail__aside {
+  grid-row: 1;
+  grid-column: 2;
+}
+
 @container (max-width: 900px) {
   .patient-detail__layout {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .patient-detail__main,
+  .patient-detail__aside {
+    grid-row: auto;
+    grid-column: auto;
+  }
 }
+
 
 .patient-detail__aside {
   display: flex;
@@ -29,7 +47,7 @@
   gap: 24px;
 }
 
-// Same card language as Settings: white, 20px radius, soft shadow, no gradients.
+// Same card language as Settings: white, large radius, soft shadow, no gradients.
 .info-card {
   --info-ink: var(--mat-sys-on-surface);
   // 62%: 60% ink is 4.49:1 on white, just under AA.
@@ -37,9 +55,9 @@
 
   padding: 24px;
   border: 0;
-  border-radius: 20px;
+  border-radius: var(--ma-card-radius);
   background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--ma-card-shadow);
 }
 
 .info-card__title {
@@ -47,45 +65,6 @@
   font: var(--ma-type-section);
   letter-spacing: -0.01em;
   color: var(--info-ink);
-}
-
-// Label left, value right (Settings Profile row style).
-.info-rows {
-  margin: 8px 0 0;
-}
-
-.info-rows__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 48px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-
-  &:last-child {
-    border-bottom: 0;
-  }
-
-  dt {
-    font: 500 0.875rem / 1.25rem var(--ma-font-body);
-    color: var(--info-ink-soft);
-  }
-
-  dd {
-    margin: 0;
-    font: 500 0.9375rem / 1.375rem var(--ma-font-body);
-    color: var(--info-ink);
-    text-align: end;
-    overflow-wrap: anywhere;
-  }
-}
-
-.info-rows--compact .info-rows__row {
-  min-height: 40px;
-}
-
-.info-rows__mono {
-  font-variant-numeric: tabular-nums;
 }
 
 .compliance-summary {
@@ -112,29 +91,15 @@
   color: var(--info-ink-soft);
 }
 
-.quick-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
-
-  button {
-    width: 100%;
-  }
-}
-
 .patient-detail__back {
   margin-bottom: 8px;
 }
 
 .patient-header {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px 32px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
 }
 
 .patient-header__identity {
@@ -148,29 +113,297 @@
   margin: 0;
 }
 
-.patient-header__meta {
+// Small muted label over each value (D365 record header), on a white card strip with hairline
+// dividers between the facts.
+.patient-facts {
   display: flex;
-  gap: 32px;
+  flex-wrap: wrap;
+  gap: 12px 0;
   margin: 0;
+  padding: 16px 8px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: var(--ma-card-shadow);
+
+  > div {
+    padding: 0 24px;
+
+    & + div {
+      border-left: 1px solid var(--ma-hairline);
+    }
+  }
 
   dt {
-    font: var(--mat-sys-label-medium);
-    letter-spacing: var(--mat-sys-label-medium-tracking);
+    font: 500 0.75rem / 1rem var(--ma-font-body);
     color: var(--mat-sys-on-surface-variant);
   }
 
   dd {
     margin: 2px 0 0;
-    font: var(--mat-sys-body-large);
+    font: 500 0.9375rem / 1.375rem var(--ma-font-body);
   }
 }
 
-.patient-header__id {
+.patient-facts__mono {
   font-variant-numeric: tabular-nums;
 }
 
-.audit {
-  margin-top: 24px;
+// Journey stepper: one pill track; done stages quiet with a check, the current one filled deep teal,
+// upcoming ones locked.
+.journey {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 4px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: var(--ma-card-shadow);
+  list-style: none;
+  overflow-x: auto;
+}
+
+.journey__stage {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: max-content;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font: 500 0.875rem / 1.25rem var(--ma-font-body);
+  white-space: nowrap;
+
+  &--done {
+    color: var(--mat-sys-primary);
+  }
+
+  &--current {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+
+  &--upcoming {
+    color: rgba(28, 28, 24, 0.5);
+  }
+}
+
+.journey__icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.journey__day {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+// Up next: the first open action in a pale-teal block with a filled button; the rest listed quietly.
+.up-next {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--ma-color-highlight) 55%, #ffffff);
+}
+
+.up-next__step {
+  display: flex;
+  gap: 12px;
+}
+
+.up-next__icon,
+.then-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--mat-sys-primary);
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+.up-next__title {
+  margin: 0;
+  font: 500 1rem / 1.5rem var(--ma-font-display);
+  color: var(--mat-sys-on-surface);
+}
+
+.up-next__detail {
+  margin: 2px 0 0;
+  font: 400 0.8125rem / 1.25rem var(--ma-font-body);
+  color: var(--info-ink-soft);
+}
+
+.up-next__action {
+  --mdc-filled-button-container-shape: 999px;
+
+  align-self: flex-start;
+}
+
+.up-next__calm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 0;
+  font: var(--mat-sys-body-medium);
+  color: var(--info-ink-soft);
+
+  mat-icon {
+    color: #059669; // emerald-600
+  }
+}
+
+.then-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.then-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(31, 78, 74, 0.04);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: -2px;
+  }
+
+  .then-list__icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(31, 78, 74, 0.06);
+  }
+}
+
+.then-list__title {
+  display: block;
+  font: 500 0.875rem / 1.25rem var(--ma-font-body);
+}
+
+.then-list__detail {
+  display: block;
+  font: 400 0.8125rem / 1.25rem var(--ma-font-body);
+  color: var(--info-ink-soft);
+}
+
+// Round icon buttons under Up next (same as the dashboard header actions).
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.quick-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(31, 78, 74, 0.06);
+  color: var(--mat-sys-primary);
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ma-color-highlight) 60%, #ffffff);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: 2px;
+  }
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+}
+
+// This week's diaries: a dot and weekday initial per day, today last.
+.week {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0 4px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(31, 78, 74, 0.04);
+}
+
+.week__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.week__none {
+  width: 12px;
+  height: 12px;
+}
+
+.week__label {
+  font: 500 0.6875rem / 1rem var(--ma-font-body);
+  color: var(--info-ink-soft);
+}
+
+// Reasons behind the score; tone colors are status colors (700 shades, >= 4.5:1 on white).
+.factors {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.factors__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 400 0.875rem / 1.25rem var(--ma-font-body);
+  color: var(--info-ink);
+
+  &[data-tone='good'] .factors__icon { color: #047857; } // emerald-700
+  &[data-tone='warning'] .factors__icon { color: #b45309; } // amber-700
+  &[data-tone='critical'] .factors__icon { color: #be123c; } // rose-700
+  &[data-tone='neutral'] .factors__icon { color: var(--info-ink-soft); }
+}
+
+.factors__icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
 }
 
 .audit__heading-row {
@@ -194,13 +427,13 @@
 }
 
 .audit__range {
-  width: 180px;
+  width: 172px;
 }
 
 .audit__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 4px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -240,5 +473,35 @@
     left: 1px;
     width: 2px;
     background: rgba(31, 78, 74, 0.08);
+  }
+}
+
+// Last in the file so it overrides the base .patient-facts rule above.
+// Phones: facts in a two-column grid (no dividers), and the journey shows only the current stage's
+// label; the others shrink to their icon (their names stay available to screen readers).
+@container (max-width: 600px) {
+  .patient-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 0;
+
+    > div,
+    > div + div {
+      border-left: 0;
+    }
+  }
+
+  .journey__stage:not(.journey__stage--current) {
+    flex: 0 0 auto;
+    padding-inline: 12px;
+
+    .journey__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 }

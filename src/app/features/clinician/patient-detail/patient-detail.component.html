@@ -2,31 +2,158 @@
   <app-back-link class="patient-detail__back" [label]="backLabel" />
 
   @if (patient(); as patient) {
-    <div class="patient-detail__layout">
-      <div class="patient-detail__main">
-        <header class="patient-header">
-          <div class="patient-header__identity">
-            <h1 class="patient-header__name">{{ patient.name }}</h1>
-            <app-compliance-badge [status]="patient.compliance" />
-          </div>
-          <dl class="patient-header__meta">
-            <div>
-              <dt>Patient ID</dt>
-              <dd class="patient-header__id">{{ patient.id }}</dd>
-            </div>
-            <div>
-              <dt>Last submission</dt>
-              <dd>
-                @if (patient.lastSubmission) {
-                  <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: preferences.dateTime() }}</time>
-                } @else {
-                  No submissions
-                }
-              </dd>
-            </div>
-          </dl>
-        </header>
+    <!-- Record header (D365 pattern): identity, a row of label-over-value facts, then the journey. -->
+    <header class="patient-header">
+      <div class="patient-header__identity">
+        <h1 class="patient-header__name">{{ patient.name }}</h1>
+        <app-compliance-badge [status]="patient.compliance" />
+      </div>
 
+      <dl class="patient-facts">
+        <div><dt>Patient ID</dt><dd class="patient-facts__mono">{{ patient.id }}</dd></div>
+        <div><dt>Age · Sex</dt><dd>{{ patient.age }} · {{ patient.sex }}</dd></div>
+        <div><dt>Site</dt><dd>{{ patient.site }}</dd></div>
+        <div><dt>Treatment arm</dt><dd>{{ patient.treatmentArm }}</dd></div>
+        <div>
+          <dt>Enrolled</dt>
+          <dd><time [attr.datetime]="patient.enrolledOn">{{ patient.enrolledOn | date: preferences.dateFormat() }}</time></dd>
+        </div>
+        <div>
+          <dt>Last submission</dt>
+          <dd>
+            @if (patient.lastSubmission) {
+              <time [attr.datetime]="patient.lastSubmission">{{ patient.lastSubmission | date: preferences.dateTime() }}</time>
+            } @else {
+              None yet
+            }
+          </dd>
+        </div>
+        <div>
+          <dt>Next visit</dt>
+          <dd>
+            @if (patient.nextVisit) {
+              <time [attr.datetime]="patient.nextVisit">{{ patient.nextVisit | date: preferences.weekdayDate() }}</time>
+            } @else {
+              Not scheduled
+            }
+          </dd>
+        </div>
+      </dl>
+
+      <ol class="journey" aria-label="Study journey">
+        @for (stage of stages(); track stage.label) {
+          <li class="journey__stage" [class]="'journey__stage--' + stage.state" [attr.aria-current]="stage.state === 'current' ? 'step' : null">
+            <mat-icon class="journey__icon" aria-hidden="true">
+              {{ stage.state === 'done' ? 'check' : stage.state === 'current' ? 'radio_button_checked' : 'lock' }}
+            </mat-icon>
+            <span class="journey__label">
+              {{ stage.label }}
+              @if (stage.state === 'current') {
+                <span class="journey__day">· study day {{ studyDay() }}</span>
+              }
+            </span>
+            <span class="sr-only">{{ stage.state === 'done' ? '(completed)' : stage.state === 'upcoming' ? '(not started)' : '(current)' }}</span>
+          </li>
+        }
+      </ol>
+    </header>
+
+    <div class="patient-detail__layout">
+      <!-- First in source order, so on phones (one column) Up next comes before the audit trail;
+           on wide screens the grid places it in the right-hand column. -->
+      <aside class="patient-detail__aside" aria-label="Patient actions and compliance">
+        <mat-card class="info-card">
+          <h2 class="info-card__title">Up next</h2>
+
+          @if (actionsOpen(); as actions) {
+            @if (actions.length) {
+              <!-- One emphasized step with its action (D365 "Up next"); later steps stay quiet. -->
+              <div class="up-next">
+                <div class="up-next__step">
+                  <span class="up-next__icon" aria-hidden="true"><mat-icon>{{ actions[0].icon }}</mat-icon></span>
+                  <div>
+                    <p class="up-next__title">{{ actions[0].title }}</p>
+                    <p class="up-next__detail">{{ actions[0].detail }}</p>
+                  </div>
+                </div>
+                <button mat-flat-button type="button" class="up-next__action" (click)="runAction(actions[0])">
+                  {{ actions[0].actionLabel }}
+                </button>
+              </div>
+
+              @if (actions.length > 1) {
+                <ol class="then-list" aria-label="Then">
+                  @for (action of actions.slice(1); track action.title) {
+                    <li>
+                      <button type="button" class="then-list__item" (click)="runAction(action)">
+                        <span class="then-list__icon" aria-hidden="true"><mat-icon>{{ action.icon }}</mat-icon></span>
+                        <span>
+                          <span class="then-list__title">{{ action.title }}</span>
+                          <span class="then-list__detail">{{ action.detail }}</span>
+                        </span>
+                      </button>
+                    </li>
+                  }
+                </ol>
+              }
+            } @else {
+              <p class="up-next__calm">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                Nothing open for this patient.
+              </p>
+            }
+          }
+
+          <div class="quick-actions" role="group" aria-label="Quick actions">
+            <button type="button" class="quick-action" matTooltip="Send message" aria-label="Send message" (click)="comingSoon()">
+              <mat-icon>mail</mat-icon>
+            </button>
+            <button type="button" class="quick-action" matTooltip="Add note" aria-label="Add note" (click)="comingSoon()">
+              <mat-icon>edit_note</mat-icon>
+            </button>
+            <button type="button" class="quick-action" matTooltip="Schedule visit" aria-label="Schedule visit" (click)="comingSoon()">
+              <mat-icon>event</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <h2 class="info-card__title">Compliance</h2>
+          <p class="compliance-summary">
+            <span class="compliance-summary__value" [attr.data-band]="complianceBand()">
+              {{ compliancePercent() ?? '—' }}{{ compliancePercent() !== null ? '%' : '' }}
+            </span>
+            <span class="compliance-summary__window">{{ complianceWindow() }} · target {{ complianceTarget }}%</span>
+          </p>
+
+          <!-- Decorative: the "this week" factor below says the same in words. -->
+          <div class="week" aria-hidden="true">
+            @for (day of week(); track day.iso) {
+              <span class="week__day">
+                @if (day.status !== 'not-enrolled') {
+                  <app-diary-dot [status]="day.status" />
+                } @else {
+                  <span class="week__none"></span>
+                }
+                <span class="week__label">{{ day.date | date: 'EEEEE' }}</span>
+              </span>
+            }
+          </div>
+
+          <ul class="factors" aria-label="Why this score">
+            @for (factor of factors(); track factor.text) {
+              <li class="factors__item" [attr.data-tone]="factor.tone">
+                <mat-icon class="factors__icon" aria-hidden="true">
+                  {{ factor.tone === 'good' ? 'check_circle' : factor.tone === 'neutral' ? 'info' : factor.tone === 'warning' ? 'error' : 'cancel' }}
+                </mat-icon>
+                {{ factor.text }}
+              </li>
+            }
+          </ul>
+        </mat-card>
+      </aside>
+
+      <div class="patient-detail__main">
         <section class="audit" aria-labelledby="audit-heading">
           <div class="audit__heading-row">
             <h2 id="audit-heading" class="audit__heading">Audit trail</h2>
@@ -37,9 +164,9 @@
           </div>
 
           <div class="audit__filters" role="group" aria-label="Filter audit entries">
-            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="audit__range">
-              <mat-label>Date range</mat-label>
-              <mat-select [value]="dateRange()" (selectionChange)="dateRange.set($event.value)">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="audit__range ma-pill-field">
+              <mat-icon matPrefix aria-hidden="true">calendar_today</mat-icon>
+              <mat-select aria-label="Date range" [value]="dateRange()" (selectionChange)="dateRange.set($event.value)">
                 @for (option of dateRangeOptions; track option.value) {
                   <mat-option [value]="option.value">{{ option.label }}</mat-option>
                 }
@@ -48,13 +175,19 @@
 
             <fieldset class="audit__actions">
               <legend class="sr-only">Action types</legend>
+              <!-- Toggle pills (aria-pressed) instead of checkboxes; same multi-select behaviour. -->
               @for (action of actions; track action) {
-                <mat-checkbox
-                  [checked]="selectedActions().has(action)"
-                  (change)="toggleAction(action, $event.checked)"
+                @let selected = selectedActions().has(action);
+                <button
+                  type="button"
+                  class="ma-filter-pill"
+                  [attr.data-action]="action"
+                  [attr.aria-pressed]="selected"
+                  (click)="toggleAction(action, !selected)"
                 >
+                  <span class="ma-filter-pill__dot" aria-hidden="true"></span>
                   {{ actionLabels[action] }}
-                </mat-checkbox>
+                </button>
               }
             </fieldset>
           </div>
@@ -75,65 +208,6 @@
         </section>
       </div>
 
-      <aside class="patient-detail__aside" aria-label="Patient information">
-        <mat-card class="info-card">
-          <h2 class="info-card__title">Patient Info</h2>
-          <dl class="info-rows">
-            <div class="info-rows__row"><dt>Full name</dt><dd>{{ patient.name }}</dd></div>
-            <div class="info-rows__row"><dt>Patient ID</dt><dd class="info-rows__mono">{{ patient.id }}</dd></div>
-            <div class="info-rows__row"><dt>Age</dt><dd>{{ patient.age }}</dd></div>
-            <div class="info-rows__row"><dt>Sex</dt><dd>{{ patient.sex }}</dd></div>
-            <div class="info-rows__row">
-              <dt>Enrolled</dt>
-              <dd><time [attr.datetime]="patient.enrolledOn">{{ patient.enrolledOn | date: preferences.dateFormat() }}</time></dd>
-            </div>
-            <div class="info-rows__row"><dt>Site</dt><dd>{{ patient.site }}</dd></div>
-            <div class="info-rows__row"><dt>Treatment arm</dt><dd>{{ patient.treatmentArm }}</dd></div>
-            <div class="info-rows__row">
-              <dt>Next visit</dt>
-              <dd>
-                @if (patient.nextVisit) {
-                  <time [attr.datetime]="patient.nextVisit">{{ patient.nextVisit | date: preferences.dateFormat() }}</time>
-                } @else {
-                  Not scheduled
-                }
-              </dd>
-            </div>
-          </dl>
-        </mat-card>
-
-        <mat-card class="info-card">
-          <h2 class="info-card__title">Compliance</h2>
-          <p class="compliance-summary">
-            <span class="compliance-summary__value" [attr.data-band]="complianceBand()">
-              {{ compliancePercent() ?? '—' }}{{ compliancePercent() !== null ? '%' : '' }}
-            </span>
-            <span class="compliance-summary__window">{{ complianceWindow() }}</span>
-          </p>
-          <dl class="info-rows info-rows--compact">
-            <div class="info-rows__row"><dt>Submissions</dt><dd>{{ patient.submissions30d.submitted }}</dd></div>
-            <div class="info-rows__row"><dt>Missed</dt><dd>{{ patient.submissions30d.missed }}</dd></div>
-          </dl>
-        </mat-card>
-
-        <mat-card class="info-card">
-          <h2 class="info-card__title">Quick Actions</h2>
-          <div class="quick-actions">
-            <button mat-stroked-button type="button" (click)="comingSoon()">
-              <mat-icon>mail</mat-icon>
-              Send message
-            </button>
-            <button mat-stroked-button type="button" (click)="comingSoon()">
-              <mat-icon>edit_note</mat-icon>
-              Add note
-            </button>
-            <button mat-stroked-button type="button" (click)="comingSoon()">
-              <mat-icon>event</mat-icon>
-              Schedule visit
-            </button>
-          </div>
-        </mat-card>
-      </aside>
     </div>
   } @else {
     <h1>Patient not found</h1>
