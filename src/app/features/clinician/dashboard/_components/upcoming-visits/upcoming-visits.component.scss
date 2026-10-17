@@ -2,17 +2,17 @@
   display: block;
 }
 
-// Same white 20px card as the trend chart and patient table; fills its grid cell's height.
+// same white card as the trend chart and patient table; fills its grid cell's height.
 .visits {
   --mdc-elevated-card-container-color: #ffffff;
   --visits-ink-soft: rgba(28, 28, 24, 0.64);
 
   box-sizing: border-box;
   height: 100%;
-  padding: 16px 12px 8px;
+  padding: 20px 16px 12px;
   border: 0;
-  border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: var(--ma-card-radius);
+  box-shadow: var(--ma-card-shadow);
 }
 
 .visits__header {
@@ -39,6 +39,99 @@
 .visits__empty {
   margin: 0;
   padding: 8px 8px 12px;
+}
+
+// Filled deep-teal card for the next visit (the dashboard's "one emphasized item" pattern).
+// Warm off-white text on primary is ~9:1; the "when" chip uses the pale-teal highlight, not a status color.
+.next-visit {
+  --next-visit-fg: var(--mat-sys-on-primary);
+  --next-visit-fg-soft: color-mix(in srgb, var(--mat-sys-on-primary) 78%, transparent);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 8px;
+  padding: 16px 16px 14px 20px;
+  border-radius: 20px;
+  background: var(--mat-sys-primary);
+  color: var(--next-visit-fg);
+  text-decoration: none;
+
+  &:hover .next-visit__open {
+    background: var(--ma-color-highlight);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: 2px;
+  }
+}
+
+.next-visit__top,
+.next-visit__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.next-visit__eyebrow {
+  font: 500 0.75rem / 1rem var(--ma-font-body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--next-visit-fg-soft);
+}
+
+.next-visit__when {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px 2px 8px;
+  border-radius: 999px;
+  font: 500 0.75rem / 1.125rem var(--ma-font-body);
+  background: var(--ma-color-highlight);
+  color: var(--mat-sys-on-primary-container);
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+}
+
+.next-visit__name {
+  overflow: hidden;
+  font: 500 1.25rem / 1.75rem var(--ma-font-display);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.next-visit__meta {
+  font: 400 0.8125rem / 1.25rem var(--ma-font-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--next-visit-fg-soft);
+  white-space: nowrap;
+}
+
+// Round ↗ "open" affordance, as on the other dashboard cards.
+.next-visit__open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 14%, transparent);
+  color: var(--next-visit-fg);
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
 }
 
 .visits__list {
@@ -121,5 +214,11 @@
 @media (prefers-reduced-motion: no-preference) {
   .visits__row {
     transition: background-color 150ms ease;
+  }
+
+  .next-visit__open {
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
   }
 }

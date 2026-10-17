@@ -4,9 +4,30 @@
     <span class="visits__hint">Overdue, today and next {{ daysAhead }} days</span>
   </header>
 
-  @if (visits().length) {
+  @if (nextVisit(); as next) {
+    <!-- The one emphasized item: filled deep teal, the rest stay quiet below. -->
+    <a class="next-visit" [routerLink]="['/clinician/patient', next.id]">
+      <span class="next-visit__top">
+        <span class="next-visit__eyebrow">Next visit</span>
+        <span class="next-visit__when">
+          <mat-icon aria-hidden="true">{{ next.icon }}</mat-icon>
+          {{ next.statusLabel }}
+        </span>
+      </span>
+      <span class="next-visit__name">{{ next.name }}</span>
+      <span class="next-visit__bottom">
+        <span class="next-visit__meta">
+          {{ next.id }}<span aria-hidden="true"> · </span>
+          <time [attr.datetime]="next.date">{{ next.date | date: preferences.weekdayDate() }}</time>
+        </span>
+        <span class="next-visit__open" aria-hidden="true"><mat-icon>north_east</mat-icon></span>
+      </span>
+    </a>
+  }
+
+  @if (otherVisits().length) {
     <ul class="visits__list" aria-labelledby="visits-title">
-      @for (visit of visits(); track visit.id) {
+      @for (visit of otherVisits(); track visit.id) {
         <li>
           <a class="visits__row" [routerLink]="['/clinician/patient', visit.id]">
             <span class="visits__who">
@@ -25,7 +46,7 @@
         </li>
       }
     </ul>
-  } @else {
+  } @else if (!nextVisit()) {
     <p class="visits__empty">No visits overdue or due in the next {{ daysAhead }} days.</p>
   }
 </mat-card>

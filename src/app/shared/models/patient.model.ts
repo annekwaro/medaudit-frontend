@@ -8,6 +8,22 @@ export const COMPLIANCE_LABELS: Record<ComplianceStatus, string> = {
   missing: 'Missing',
 };
 
+/** Where a patient is in the study, in protocol order. */
+export type TrialStage = 'screening' | 'baseline' | 'treatment' | 'follow-up' | 'completed';
+
+export const TRIAL_STAGES: readonly TrialStage[] = ['screening', 'baseline', 'treatment', 'follow-up', 'completed'];
+
+export const TRIAL_STAGE_LABELS: Record<TrialStage, string> = {
+  screening: 'Screening',
+  baseline: 'Baseline',
+  treatment: 'Treatment',
+  'follow-up': 'Follow-up',
+  completed: 'Completed',
+};
+
+/** One day of a patient's diary. `due`: today's entry not in yet (not missed until the day ends). */
+export type DiaryDayStatus = 'submitted' | 'late' | 'missed' | 'due' | 'not-enrolled';
+
 export interface PatientSummary {
   id: string;
   name: string;
@@ -32,6 +48,7 @@ export interface PatientProfile extends PatientSummary {
   treatmentArm: string;
   /** ISO 8601 date, or null if none scheduled. */
   nextVisit: string | null;
+  stage: TrialStage;
   /** Expected diary submissions over the last 30 days (or since enrollment, if shorter). */
   submissions30d: { submitted: number; missed: number };
 }

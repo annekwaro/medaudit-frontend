@@ -1,0 +1,255 @@
+:host {
+  display: block;
+}
+
+.timeline {
+  --mdc-elevated-card-container-color: #ffffff;
+  --timeline-ink-soft: rgba(28, 28, 24, 0.64);
+  --timeline-hairline: rgba(0, 0, 0, 0.06);
+  // Patient column, then one column per day (DAYS_BEFORE + today + DAYS_AFTER = 14); every row
+  // shares it so the days line up.
+  --timeline-columns: 200px repeat(14, minmax(40px, 1fr));
+  // Hatching for days before enrollment: a fourth state without a fourth color.
+  --timeline-hatch: repeating-linear-gradient(135deg, rgba(28, 28, 24, 0.09) 0 2px, transparent 2px 7px);
+
+  overflow: hidden;
+  padding: 20px 0 8px;
+  border: 0;
+  border-radius: var(--ma-card-radius);
+  box-shadow: var(--ma-card-shadow);
+}
+
+.timeline__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 0 24px 12px;
+}
+
+.timeline__title {
+  margin: 0;
+  font: var(--ma-type-section);
+}
+
+.timeline__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 400 0.75rem / 1rem var(--ma-font-body);
+  color: var(--timeline-ink-soft);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.timeline__swatch {
+  display: inline-block;
+  width: 16px;
+  height: 10px;
+  border-radius: 3px;
+
+  &--hatched {
+    background: var(--timeline-hatch);
+  }
+
+  &--window {
+    background: var(--ma-color-highlight);
+  }
+}
+
+.timeline__scroll {
+  overflow-x: auto;
+}
+
+.timeline__grid {
+  min-width: 760px;
+}
+
+// Two lanes per patient: diary dots on top, the visit window bar underneath, so they never overlap.
+.timeline__row {
+  display: grid;
+  grid-template-columns: var(--timeline-columns);
+  grid-template-rows: 28px 24px;
+  row-gap: 4px;
+  padding: 8px 24px 8px 24px;
+  border-top: 1px solid var(--timeline-hairline);
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(31, 78, 74, 0.03);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: -2px;
+  }
+
+  &--head {
+    grid-template-rows: auto;
+    padding-top: 0;
+    padding-bottom: 6px;
+    border-top: 0;
+
+    &:hover {
+      background: none;
+    }
+  }
+}
+
+.timeline__corner {
+  align-self: end;
+  font: 500 0.75rem / 1rem var(--ma-font-body);
+  color: var(--timeline-ink-soft);
+}
+
+.timeline__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-self: center;
+  gap: 1px;
+  min-width: 34px;
+  padding: 4px 0;
+  border-radius: 10px;
+  font: 400 0.75rem / 1rem var(--ma-font-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--timeline-ink-soft);
+
+  &--weekend {
+    color: rgba(28, 28, 24, 0.45);
+  }
+
+  // Today: the one filled chip in the header (deep teal, like the next-visit card).
+  &--today {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+}
+
+.timeline__date {
+  font: 500 0.875rem / 1.125rem var(--ma-font-display);
+}
+
+.timeline__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.timeline__who-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.timeline__name {
+  overflow: hidden;
+  font: 500 0.9375rem / 1.375rem var(--ma-font-display);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.timeline__id {
+  font: 400 0.8125rem / 1.25rem var(--ma-font-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--timeline-ink-soft);
+}
+
+// Spans both lanes so today's tint and the hatching run the full row height.
+.timeline__cell {
+  display: flex;
+  justify-content: center;
+  grid-row: 1 / 3;
+  padding-top: 8px;
+
+  // Bleeds into the row padding so today's column reads as one unbroken band.
+  &--today {
+    margin-block: -8px;
+    padding-top: 16px;
+    background: color-mix(in srgb, var(--ma-color-highlight) 35%, transparent);
+  }
+
+  &--hatched {
+    margin: 0 2px;
+    border-radius: 6px;
+    background: var(--timeline-hatch);
+  }
+}
+
+// Visit window: pale teal by default; filled deep teal on the day; rose when overdue.
+.visit-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  grid-row: 2;
+  z-index: 1;
+  min-width: 0;
+  margin: 0 2px;
+  padding: 0 10px 0 8px;
+  border-radius: 999px;
+  font: 500 0.75rem / 1rem var(--ma-font-body);
+  white-space: nowrap;
+  background: var(--ma-color-highlight);
+  color: var(--mat-sys-on-primary-container);
+
+  mat-icon {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+
+  &--today {
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+
+  // rose-700 on a 10% tint: >= 4.5:1. Opaque, so today's column doesn't show through.
+  &--overdue {
+    background: color-mix(in srgb, #e11d48 10%, #ffffff);
+    color: #be123c;
+  }
+}
+
+.visit-bar__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// A visit beyond the visible days: a quiet hint at the row's end instead of a bar.
+.visit-later {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  grid-column: -5 / -1;
+  grid-row: 2;
+  font: 400 0.75rem / 1rem var(--ma-font-body);
+  white-space: nowrap;
+  color: var(--timeline-ink-soft);
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .timeline__row {
+    transition: background-color 150ms ease;
+  }
+}

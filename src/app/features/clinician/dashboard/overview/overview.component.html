@@ -1,6 +1,6 @@
 <header class="overview__header">
   <div>
-    <h1 class="overview__title">Welcome back, Dr. Martin</h1>
+    <h1 class="overview__title"><span class="overview__greeting">Welcome back,</span> Dr. Martin</h1>
     <p class="overview__subtitle">Here's what's happening with your patients today.</p>
   </div>
 
@@ -75,10 +75,18 @@
   />
 </div>
 
+<app-visit-timeline
+  class="visit-timeline"
+  [class.rise-in]="playIntro"
+  [style.--rise-index]="stats().length + 2"
+  [patients]="patients()"
+  [today]="today"
+/>
+
 <app-patient-list-table
   class="patient-list"
   [class.rise-in]="playIntro"
-  [style.--rise-index]="stats().length + 2"
+  [style.--rise-index]="stats().length + 3"
   heading="Needs attention"
   viewAllLink="/clinician/patients"
   [patients]="needsAttention()"

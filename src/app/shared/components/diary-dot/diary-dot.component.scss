@@ -1,0 +1,26 @@
+// submitted = solid, late = half-filled, missed = hollow ring, due = dashed ring.
+:host {
+  display: inline-block;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+:host([data-status='submitted']) {
+  background: var(--mat-sys-primary);
+}
+
+:host([data-status='late']) {
+  border: 2px solid #d97706; // amber-600, as in compliance-badge
+  background: linear-gradient(to top, #d97706 50%, transparent 50%);
+}
+
+:host([data-status='missed']) {
+  border: 2px solid #e11d48; // rose-600
+}
+
+:host([data-status='due']) {
+  border: 1.5px dashed rgba(28, 28, 24, 0.45);
+}

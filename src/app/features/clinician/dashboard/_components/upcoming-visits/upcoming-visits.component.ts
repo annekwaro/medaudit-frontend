@@ -35,7 +35,10 @@ function statusLabel(days: number): string {
   return `In ${days} day${days === 1 ? '' : 's'}`;
 }
 
-/** Overdue, today's and next-7-days patient visits, soonest (most overdue) first. Each row links to the patient. */
+/**
+ * Overdue, today's and next-7-days patient visits, soonest (most overdue) first. The next visit from
+ * today on is highlighted above the list. Each row links to the patient.
+ */
 @Component({
   selector: 'app-upcoming-visits',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,4 +68,10 @@ export class UpcomingVisitsComponent {
         return { id: patient.id, name: patient.name, date, status, statusLabel: statusLabel(days), icon: STATUS_ICONS[status] };
       });
   });
+
+  /** The soonest visit from today on, shown as the filled card. Overdue visits stay in the list with their red chip. */
+  readonly nextVisit = computed(() => this.visits().find((visit) => visit.status !== 'overdue') ?? null);
+
+  /** Everything except the highlighted visit, in the same order. */
+  readonly otherVisits = computed(() => this.visits().filter((visit) => visit !== this.nextVisit()));
 }

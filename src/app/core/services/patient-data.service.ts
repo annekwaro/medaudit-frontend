@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { AuditEntry } from '../../shared/models/audit.model';
-import { PatientProfile } from '../../shared/models/patient.model';
+import { DiaryDayStatus, PatientProfile } from '../../shared/models/patient.model';
+import { daysBetween } from '../../shared/utils/dates';
 
 /** Dashboard figures at a point in time; today's are derived from `patients`. */
 export interface DashboardFigures {
@@ -28,34 +29,35 @@ export class PatientDataService {
     {
       id: 'PT-1042', name: 'Amara Okafor', lastSubmission: '2026-10-13T08:05:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0, oldestPendingSince: null,
       age: 34, sex: 'Female', enrolledOn: '2026-09-12', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
-      nextVisit: '2026-10-18', submissions30d: { submitted: 28, missed: 2 },
+      stage: 'treatment', nextVisit: '2026-10-18', submissions30d: { submitted: 28, missed: 2 },
     },
     {
       id: 'PT-1057', name: 'Daniel Mwangi', lastSubmission: '2026-10-12T20:47:00', compliance: 'late', alerts: 1, pendingSubmissions: 3, oldestPendingSince: '2026-10-11T20:15:00',
       age: 51, sex: 'Male', enrolledOn: '2026-09-01', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
-      nextVisit: '2026-10-14', submissions30d: { submitted: 24, missed: 6 },
+      stage: 'treatment', nextVisit: '2026-10-14', submissions30d: { submitted: 24, missed: 6 },
     },
     {
       id: 'PT-1063', name: 'Sofia Lindqvist', lastSubmission: '2026-10-07T09:05:00', compliance: 'missing', alerts: 3, pendingSubmissions: 7, oldestPendingSince: '2026-10-06T08:40:00',
       age: 46, sex: 'Female', enrolledOn: '2026-08-24', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
-      nextVisit: '2026-10-12', submissions30d: { submitted: 18, missed: 12 },
+      stage: 'treatment', nextVisit: '2026-10-12', submissions30d: { submitted: 18, missed: 12 },
     },
     {
       id: 'PT-1071', name: 'Hiroshi Tanaka', lastSubmission: '2026-10-13T07:22:00', compliance: 'on-track', alerts: 0, pendingSubmissions: 0, oldestPendingSince: null,
       age: 62, sex: 'Male', enrolledOn: '2026-08-20', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
-      nextVisit: '2026-10-25', submissions30d: { submitted: 29, missed: 1 },
+      stage: 'treatment', nextVisit: '2026-10-25', submissions30d: { submitted: 29, missed: 1 },
     },
     {
       id: 'PT-1088', name: 'Grace Achieng', lastSubmission: '2026-10-12T21:52:00', compliance: 'late', alerts: 0, pendingSubmissions: 2, oldestPendingSince: '2026-10-12T21:52:00',
       age: 29, sex: 'Female', enrolledOn: '2026-09-05', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
-      nextVisit: '2026-10-16', submissions30d: { submitted: 23, missed: 7 },
+      stage: 'treatment', nextVisit: '2026-10-16', submissions30d: { submitted: 23, missed: 7 },
     },
     {
-      // Enrolled Sep 30, device not yet set up (see audit trail); setup visit today, Oct 13.
+      // Enrolled Sep 30, device not yet set up (see audit trail); setup visit today, Oct 13, so still
+      // in Baseline.
       // 13 expected daily diaries since enrollment (Sep 30 – Oct 12), none received.
       id: 'PT-1094', name: 'Mateo Fernández', lastSubmission: null, compliance: 'missing', alerts: 2, pendingSubmissions: 0, oldestPendingSince: null,
       age: 38, sex: 'Male', enrolledOn: '2026-09-30', site: 'Site 042 · Grenoble', treatmentArm: 'Blinded',
-      nextVisit: '2026-10-13', submissions30d: { submitted: 0, missed: 13 },
+      stage: 'baseline', nextVisit: '2026-10-13', submissions30d: { submitted: 0, missed: 13 },
     },
   ]);
 
@@ -334,6 +336,29 @@ export class PatientDataService {
     newAlerts: [2, 3, 1, 4, 2, 5],
     activePatients: [5, 5, 6, 6, 6, 6],
   } as const;
+
+  /**
+   * Mock diary status for one patient on one day (today or earlier). Deterministic and consistent
+   * with the record: nothing before enrollment, missed after the last submission, the last
+   * submission itself late if sent after 20:00, and earlier days patterned by compliance band.
+   * TODO: replace with real per-day diary data from the API.
+   */
+  diaryStatus(patient: PatientProfile, date: string): DiaryDayStatus {
+    if (date < patient.enrolledOn) return 'not-enrolled';
+    const lastDay = patient.lastSubmission?.slice(0, 10) ?? null;
+    if (lastDay === null || date > lastDay) return date === this.today ? 'due' : 'missed';
+    if (date === lastDay) return Number(patient.lastSubmission!.slice(11, 13)) >= 20 ? 'late' : 'submitted';
+
+    const n = daysBetween(patient.enrolledOn, date);
+    switch (patient.compliance) {
+      case 'on-track':
+        return n % 15 === 7 ? 'late' : 'submitted';
+      case 'late':
+        return n % 4 === 1 ? 'late' : n % 9 === 4 ? 'missed' : 'submitted';
+      case 'missing':
+        return n % 3 === 0 ? 'missed' : n % 4 === 1 ? 'late' : 'submitted';
+    }
+  }
 
   getPatient(id: string): PatientProfile | undefined {
     return this.patients().find((patient) => patient.id === id);

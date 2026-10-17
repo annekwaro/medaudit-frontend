@@ -19,6 +19,7 @@ import { PatientListTableComponent } from '../../_components/patient-list/patien
 import { PatientQuickView } from '../../patients/patients.component';
 import { TrendChartComponent, TrendPoint } from '../_components/trend-chart/trend-chart.component';
 import { UpcomingVisitsComponent } from '../_components/upcoming-visits/upcoming-visits.component';
+import { VisitTimelineComponent } from '../_components/visit-timeline/visit-timeline.component';
 import { sortByUrgency, urgencyReasons } from './needs-attention';
 import { COMPLIANCE_TARGET, complianceSeverity, unreviewedSeverity } from './stat-severity';
 import { daysBetween } from '../../../../shared/utils/dates';
@@ -126,6 +127,7 @@ function buildSubmissionTrends(today: string): Record<TrendPeriod, { heading: st
     PatientListTableComponent,
     TrendChartComponent,
     UpcomingVisitsComponent,
+    VisitTimelineComponent,
   ],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.scss',

@@ -19,10 +19,15 @@
   margin: 0;
 }
 
+// Two-tone greeting: the salutation recedes, the name carries the weight.
+.overview__greeting {
+  color: var(--ma-ink-faint);
+}
+
 .overview__subtitle {
   margin: 4px 0 0;
   font: 400 0.9375rem / 1.375rem var(--ma-font-body);
-  color: rgba(28, 28, 24, 0.62);
+  color: var(--ma-ink-soft);
 }
 
 .time-anchor {
@@ -52,13 +57,15 @@
   height: 36px;
   padding: 0;
   border: 0;
-  border-radius: 10px;
-  background: transparent;
+  // Round white button on the page wash; pale teal on hover.
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: var(--ma-card-shadow);
   color: rgba(28, 28, 24, 0.62);
   cursor: pointer;
 
   &:hover {
-    background: rgba(31, 78, 74, 0.06);
+    background: color-mix(in srgb, var(--ma-color-highlight) 50%, #ffffff);
   }
 
   &:focus-visible {
@@ -76,8 +83,8 @@
   &--active::after {
     content: '';
     position: absolute;
-    top: 7px;
-    right: 7px;
+    top: 6px;
+    right: 6px;
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -129,6 +136,7 @@
   margin-top: 24px;
 }
 
+.visit-timeline,
 .patient-list {
   margin-top: 24px;
 }
@@ -144,6 +152,10 @@
   --mat-form-field-container-vertical-padding: 6px;
   --mat-form-field-container-text-size: 0.8125rem;
   --mat-select-trigger-text-size: 0.8125rem;
+  // Pill (half the 36px height), to match the round header actions and "View all". A larger value
+  // breaks the notched outline: its leading segment is sized from the radius.
+  --mdc-outlined-text-field-container-shape: 18px;
+  --mdc-outlined-text-field-outline-color: var(--mat-sys-outline-variant);
 
   width: 120px;
 }
@@ -153,7 +165,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 16px;
+  padding: 16px 24px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   font: var(--mat-sys-body-medium);
   color: var(--mat-sys-on-surface-variant);
@@ -182,9 +194,9 @@
   color: var(--ma-color-brand);
 }
 
-// Rows start staggering as the card itself begins its entrance (index 6 × 60ms).
+// Rows start staggering as the card itself begins its entrance (index 7 × 60ms).
 .patient-list {
-  --rows-enter-delay: 360ms;
+  --rows-enter-delay: 420ms;
 }
 
 // Page-load entrance: fade in + rise 8px, staggered 60ms per item.
@@ -219,8 +231,8 @@
   }
 }
 
-// Mobile: 1 column.
-@container (max-width: 520px) {
+// Small phones: 1 column (two stat cards side by side still fit down to ~360px).
+@container (max-width: 359px) {
   .stats-grid {
     grid-template-columns: minmax(0, 1fr);
   }

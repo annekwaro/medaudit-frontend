@@ -1,0 +1,86 @@
+<mat-card class="timeline">
+  <header class="timeline__header">
+    <h2 class="timeline__title" id="timeline-title">Diaries &amp; visit windows</h2>
+
+    <!-- Decorative: each row link spells out the same information for screen readers. -->
+    <ul class="timeline__legend" aria-hidden="true">
+      <li><app-diary-dot status="submitted" />Submitted</li>
+      <li><app-diary-dot status="late" />Late</li>
+      <li><app-diary-dot status="missed" />Missed</li>
+      <li><app-diary-dot status="due" />Due today</li>
+      @if (anyNotEnrolled()) {
+        <li><span class="timeline__swatch timeline__swatch--hatched"></span>Not enrolled</li>
+      }
+      <li><span class="timeline__swatch timeline__swatch--window"></span>Visit window ±{{ windowDays }} days</li>
+    </ul>
+  </header>
+
+  <!-- Narrow screens scroll the grid sideways rather than squashing the day columns. -->
+  <div class="timeline__scroll">
+    <div class="timeline__grid" role="list" aria-labelledby="timeline-title">
+      <div class="timeline__row timeline__row--head" aria-hidden="true">
+        <span class="timeline__corner">Patient</span>
+        @for (day of days(); track day.iso; let i = $index) {
+          <span
+            class="timeline__day"
+            [class.timeline__day--today]="day.isToday"
+            [class.timeline__day--weekend]="day.isWeekend"
+            [style.grid-column]="i + 2"
+          >
+            <span class="timeline__weekday">{{ day.date | date: 'EEE' }}</span>
+            <span class="timeline__date">{{ day.date | date: 'd' }}</span>
+          </span>
+        }
+      </div>
+
+      @for (row of rows(); track row.id) {
+        <div role="listitem">
+          <a class="timeline__row" [routerLink]="['/clinician/patient', row.id]" [attr.aria-label]="row.summary">
+            <span class="timeline__who">
+              <app-avatar [name]="row.name" />
+              <span class="timeline__who-text">
+                <span class="timeline__name">{{ row.name }}</span>
+                <span class="timeline__id">{{ row.id }}</span>
+              </span>
+            </span>
+
+            @for (cell of row.cells; track cell.iso; let i = $index) {
+              <span
+                class="timeline__cell"
+                [class.timeline__cell--today]="days()[i].isToday"
+                [class.timeline__cell--hatched]="cell.status === 'not-enrolled'"
+                [style.grid-column]="i + 2"
+              >
+                @if (cell.status && cell.status !== 'not-enrolled') {
+                  <app-diary-dot [status]="cell.status" />
+                }
+              </span>
+            }
+
+            @if (row.visit; as visit) {
+              <span
+                class="visit-bar"
+                [class]="'visit-bar--' + visit.tone"
+                [style.grid-column]="visit.first + 2 + ' / ' + (visit.last + 3)"
+              >
+                <mat-icon>{{ visit.tone === 'overdue' ? 'event_busy' : 'event' }}</mat-icon>
+                <span class="visit-bar__label">
+                  @switch (visit.tone) {
+                    @case ('overdue') { Overdue · {{ visit.date | date: preferences.weekdayDate() }} }
+                    @case ('today') { Visit today }
+                    @default { Visit · {{ visit.date | date: preferences.weekdayDate() }} }
+                  }
+                </span>
+              </span>
+            } @else if (row.laterVisit) {
+              <span class="visit-later">
+                Next visit {{ row.laterVisit | date: preferences.weekdayDate() }}
+                <mat-icon>arrow_forward</mat-icon>
+              </span>
+            }
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</mat-card>
