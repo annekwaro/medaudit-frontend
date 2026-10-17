@@ -1,6 +1,6 @@
-// Per-action identity comes from the 4px accent bar and the gradient badge only; the card itself stays
-// white, so a run of flags reads as a list rather than a wall of color.
-// Badge text colors pass >= 4.5:1 on both gradient stops (Flagged uses rose-900, not rose-800).
+// Per-action identity comes from a short rounded accent mark and the tinted badge only; the card
+// itself stays white, so a run of flags reads as a list rather than a wall of color.
+// Badge text colors pass >= 4.5:1 on their tints (Flagged uses rose-900, not rose-800).
 :host {
   --audit-entry-accent: var(--mat-sys-outline-variant);
   --audit-entry-badge-bg: var(--mat-sys-surface-container);
@@ -8,47 +8,48 @@
 
   position: relative;
   display: block;
-  overflow: hidden; // clips the accent bar to the rounded corners
-  padding: 20px 20px 20px 24px; // extra left space clears the 4px accent bar
-  border-radius: 16px;
+  padding: 20px 24px 20px 28px; // extra left space clears the accent mark
+  border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--ma-card-shadow);
 
+  // Accent mark: a rounded pill inset from the card edge rather than a full-height stripe.
   &::before {
     content: '';
     position: absolute;
-    inset: 0 auto 0 0;
+    inset: 20px auto 20px 12px;
     width: 4px;
+    border-radius: 999px;
     background: var(--audit-entry-accent);
   }
 
   // The shadow is not motion, so it deepens regardless of reduced-motion.
   &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--ma-card-shadow-raised);
   }
 }
 
 :host([data-action='submitted']) {
   --audit-entry-accent: var(--mat-sys-primary); // #1F4E4A
-  --audit-entry-badge-bg: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  --audit-entry-badge-bg: #d1fae5;
   --audit-entry-badge-ink: #065f46; // 6.0:1
 }
 
 :host([data-action='modified']) {
   --audit-entry-accent: var(--mat-sys-tertiary); // #8F4E0E
-  --audit-entry-badge-bg: linear-gradient(135deg, #fef3c7, #fde68a);
+  --audit-entry-badge-bg: #fef3c7;
   --audit-entry-badge-ink: #92400e; // 5.7:1
 }
 
 :host([data-action='reviewed']) {
   --audit-entry-accent: var(--mat-sys-secondary); // #50625F
-  --audit-entry-badge-bg: linear-gradient(135deg, #d3e6e3, #bcece6);
+  --audit-entry-badge-bg: #d3ece8;
   --audit-entry-badge-ink: #1f4e4a; // 7.2:1
 }
 
 :host([data-action='flagged']) {
   --audit-entry-accent: var(--mat-sys-error); // #BA1A1A
-  --audit-entry-badge-bg: linear-gradient(135deg, #fecdd3, #fda4af);
+  --audit-entry-badge-bg: #ffe4e6;
   --audit-entry-badge-ink: #881337; // rose-900, 5.1:1 (#9F1239 was 4.2:1)
 }
 

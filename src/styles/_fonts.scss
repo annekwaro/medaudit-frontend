@@ -1,5 +1,5 @@
 // Self-hosted fonts (offline-first, no third-party requests). Files live in src/assets/fonts,
-// each folder alongside its license: Inter (SIL OFL 1.1), General Sans (ITF Free Font License;
+// each folder alongside its license: DM Sans (SIL OFL 1.1), General Sans (ITF Free Font License;
 // self-hosting for our own apps only, files must not be modified or redistributed),
 // Material Icons (Apache 2.0).
 
@@ -13,10 +13,10 @@
   }
 }
 
-// Inter: body text, tables, UI.
-@include font-face('Inter', 'inter/Inter-Regular.woff2', 400);
-@include font-face('Inter', 'inter/Inter-Medium.woff2', 500);
-@include font-face('Inter', 'inter/Inter-SemiBold.woff2', 600);
+// DM Sans: body text, tables, UI (Fontsource, Latin subset).
+@include font-face('DM Sans', 'dm-sans/dm-sans-latin-400-normal.woff2', 400);
+@include font-face('DM Sans', 'dm-sans/dm-sans-latin-500-normal.woff2', 500);
+@include font-face('DM Sans', 'dm-sans/dm-sans-latin-600-normal.woff2', 600);
 
 // General Sans: display and headings.
 @include font-face('General Sans', 'general-sans/GeneralSans-Regular.woff2', 400);

@@ -1,0 +1,16 @@
+:host {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font: 600 0.75rem / 1 var(--ma-font-display);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+:host([data-tone='dark']) {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}

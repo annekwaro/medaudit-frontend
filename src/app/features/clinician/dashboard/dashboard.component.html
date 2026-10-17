@@ -6,7 +6,10 @@
     (openedChange)="sidenavOpened.set($event)"
   >
     <div class="shell__nav">
-      <div class="shell__brand">MedAudit</div>
+      <div class="shell__brand">
+        <span class="shell__mark" aria-hidden="true"><mat-icon>monitor_heart</mat-icon></span>
+        MedAudit
+      </div>
       <mat-nav-list aria-label="Clinician navigation">
         @for (item of navItems; track item.path) {
           <a
@@ -51,9 +54,28 @@
       >
         <mat-icon>menu</mat-icon>
       </button>
-      <span class="shell__title">Clinician Portal</span>
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li class="crumbs__root">Clinician</li>
+          @for (crumb of crumbs(); track crumb.label) {
+            <li>
+              @if (crumb.link) {
+                <a [routerLink]="crumb.link">{{ crumb.label }}</a>
+              } @else {
+                <span aria-current="page">{{ crumb.label }}</span>
+              }
+            </li>
+          }
+        </ol>
+      </nav>
       <span class="shell__spacer"></span>
-      <span class="shell__role-badge" aria-label="Current role">{{ role() }}</span>
+      <div class="shell__user">
+        <app-avatar [name]="userName()" tone="dark" />
+        <span class="shell__user-text">
+          <span class="shell__user-name">{{ userName() }}</span>
+          <span class="shell__user-role"><span class="sr-only">Role: </span>{{ role() | titlecase }}</span>
+        </span>
+      </div>
       <button mat-icon-button type="button" matTooltip="Log out" aria-label="Log out" (click)="logout()">
         <mat-icon>logout</mat-icon>
       </button>

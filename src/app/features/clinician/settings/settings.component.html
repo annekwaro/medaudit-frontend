@@ -1,5 +1,8 @@
 <div class="settings">
-  <h1 class="settings__title">Settings</h1>
+  <header>
+    <h1 class="settings__title">Settings</h1>
+    <p class="settings__subtitle">Your profile, notifications and display preferences</p>
+  </header>
 
   <mat-card class="section">
     <header class="section__header">
@@ -23,6 +26,14 @@
     </header>
 
     <mat-card-content>
+      <div class="profile-hero">
+        <app-avatar class="profile-hero__avatar" [name]="profile().name" tone="dark" />
+        <div>
+          <p class="profile-hero__name">{{ profile().name }}</p>
+          <p class="profile-hero__meta">{{ profile().role }} · {{ profile().site }}</p>
+        </div>
+      </div>
+
       @if (editingProfile()) {
         <!-- Enter saves, Esc cancels. Role and site stay locked: they drive access control. -->
         <form
@@ -66,8 +77,9 @@
           }
         </form>
       } @else {
+        <!-- Name, role and site are in the identity row above; read mode lists the rest. -->
         <dl class="profile fade-in">
-          @for (field of profileFields; track field.key) {
+          @for (field of profileDetailFields; track field.key) {
             <div class="profile__row">
               <dt class="profile__label">{{ field.label }}</dt>
               <dd class="profile__value">{{ profile()[field.key] }}</dd>
@@ -126,8 +138,8 @@
                 (change)="item.state.set($event.checked)"
               />
             } @else {
-              <span class="setting__state fade-in" [class.setting__state--on]="item.state()">
-                {{ item.state() ? 'On' : 'Off' }}
+              <span class="setting__state setting__state--switch fade-in" [class.setting__state--on]="item.state()">
+                <span class="setting__dot" aria-hidden="true"></span>{{ item.state() ? 'On' : 'Off' }}
               </span>
             }
           </li>
@@ -195,8 +207,8 @@
               (change)="updateDisplayDraft({ compactRows: $event.checked })"
             />
           } @else {
-            <span class="setting__state fade-in" [class.setting__state--on]="compactRows()">
-              {{ compactRows() ? 'On' : 'Off' }}
+            <span class="setting__state setting__state--switch fade-in" [class.setting__state--on]="compactRows()">
+              <span class="setting__dot" aria-hidden="true"></span>{{ compactRows() ? 'On' : 'Off' }}
             </span>
           }
         </li>

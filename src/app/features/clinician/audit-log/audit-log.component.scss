@@ -18,19 +18,11 @@
 }
 
 .filters {
-  --mdc-outlined-card-container-color: var(--mat-sys-surface-container-lowest);
-  --mdc-outlined-card-outline-color: var(--mat-sys-outline-variant);
-
-  margin-top: 24px;
-}
-
-.filters__row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  // mat-card-content pads 16px; keep the top edge even with the sides.
-  padding: 16px;
+  margin-top: 24px;
 }
 
 .filters__search {

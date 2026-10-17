@@ -2,20 +2,25 @@
   display: block;
 }
 
-// Borderless 20px card with a soft shadow (matches the stats cards).
+// Borderless card with a soft shadow (matches the stats cards).
 .patient-list {
   --mdc-elevated-card-container-color: var(--mat-sys-surface-container-lowest);
   --mat-table-background-color: var(--mat-sys-surface-container-lowest);
   --mat-table-row-item-container-height: 56px;
   // Header and row dividers share one very light hairline.
   --mat-table-row-item-outline-color: rgba(0, 0, 0, 0.06);
+  // Header row: small, muted labels, so the patient rows carry the weight.
+  --mat-table-header-container-height: 40px;
+  --mat-table-header-headline-size: 0.8125rem;
+  --mat-table-header-headline-weight: 500;
+  --mat-table-header-headline-color: var(--ma-ink-soft);
 
   --patient-list-ink-soft: color-mix(in srgb, var(--mat-sys-on-surface) 64%, transparent);
 
   overflow: hidden;
   border: 0;
-  border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: var(--ma-card-radius);
+  box-shadow: var(--ma-card-shadow);
 }
 
 // "Compact table rows" display preference.
@@ -28,18 +33,45 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 8px 4px 16px;
+  padding: 20px 20px 8px 24px;
 }
 
 .patient-list__header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .patient-list__title {
   margin: 0;
   font: var(--ma-type-section);
+}
+
+// "↗ View all": outlined pill, the shared "open this" affordance on dashboard cards.
+.patient-list__view-all {
+  --mdc-outlined-button-container-height: 36px;
+  --mdc-outlined-button-container-shape: 999px;
+  --mdc-outlined-button-outline-color: var(--mat-sys-outline-variant);
+  --mdc-outlined-button-label-text-color: var(--mat-sys-on-surface);
+  --mdc-outlined-button-label-text-font: var(--ma-font-body);
+  --mdc-outlined-button-label-text-weight: 500;
+  --mat-outlined-button-horizontal-padding: 16px;
+  --mat-outlined-button-icon-spacing: 6px;
+
+  &:hover {
+    background: color-mix(in srgb, var(--ma-color-highlight) 40%, transparent);
+  }
+}
+
+// Line the first and last columns up with the header's 24px inset.
+.patient-list__table .mat-mdc-header-cell:first-child,
+.patient-list__table .mat-mdc-cell:first-child {
+  padding-left: 24px;
+}
+
+.patient-list__table .mat-mdc-header-cell:last-child,
+.patient-list__table .mat-mdc-cell:last-child {
+  padding-right: 24px;
 }
 
 // Narrow screens scroll the table horizontally instead of squashing columns.
@@ -56,6 +88,13 @@
   font: 500 0.9375rem / 1.375rem var(--ma-font-display);
 }
 
+// Avatar beside the name (and the ID under it, in the triage layout).
+.patient-list__person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 // Triage layout: the ID sits on its own line under the name.
 .patient-list__sub {
   display: block;
@@ -63,7 +102,7 @@
 
 .patient-list__empty {
   margin: 0;
-  padding: 8px 16px 20px;
+  padding: 8px 24px 24px;
   font: var(--mat-sys-body-medium);
   color: var(--patient-list-ink-soft);
 }

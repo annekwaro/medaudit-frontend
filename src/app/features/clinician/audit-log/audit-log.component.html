@@ -4,13 +4,12 @@
     <p class="audit-log__subtitle">Searchable history of all data changes across patients</p>
   </header>
 
-  <mat-card appearance="outlined" class="filters">
-    <mat-card-content class="filters__row" role="search" aria-label="Filter audit log">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__search">
-        <mat-label>Search</mat-label>
-        <mat-icon matPrefix>search</mat-icon>
+  <div class="filters" role="search" aria-label="Filter audit log">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__search ma-pill-field">
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
         <input
           matInput
+          aria-label="Search audit log"
           #search
           type="search"
           placeholder="Patient name, ID or reason"
@@ -19,29 +18,29 @@
         />
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__select">
-        <mat-label>Patient</mat-label>
-        <mat-select [value]="patientFilter()" (selectionChange)="patientFilter.set($event.value)">
-          <mat-option value="all">All Patients</mat-option>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__select ma-pill-field">
+        <mat-icon matPrefix aria-hidden="true">person</mat-icon>
+        <mat-select aria-label="Patient" [value]="patientFilter()" (selectionChange)="patientFilter.set($event.value)">
+          <mat-option value="all">All patients</mat-option>
           @for (patient of patients(); track patient.id) {
             <mat-option [value]="patient.id">{{ patient.name }} ({{ patient.id }})</mat-option>
           }
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__select">
-        <mat-label>Action</mat-label>
-        <mat-select [value]="actionFilter()" (selectionChange)="actionFilter.set($event.value)">
-          <mat-option value="all">All</mat-option>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__select ma-pill-field">
+        <mat-icon matPrefix aria-hidden="true">tune</mat-icon>
+        <mat-select aria-label="Action" [value]="actionFilter()" (selectionChange)="actionFilter.set($event.value)">
+          <mat-option value="all">All actions</mat-option>
           @for (action of actions; track action) {
             <mat-option [value]="action">{{ actionLabels[action] }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__select">
-        <mat-label>Date range</mat-label>
-        <mat-select [value]="dateFilter()" (selectionChange)="dateFilter.set($event.value)">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filters__select ma-pill-field">
+        <mat-icon matPrefix aria-hidden="true">calendar_today</mat-icon>
+        <mat-select aria-label="Date range" [value]="dateFilter()" (selectionChange)="dateFilter.set($event.value)">
           @for (option of dateOptions; track option.value) {
             <mat-option [value]="option.value">{{ option.label }}</mat-option>
           }
@@ -51,8 +50,7 @@
       <button mat-button type="button" class="filters__clear" [disabled]="!hasActiveFilters()" (click)="clearFilters()">
         Clear
       </button>
-    </mat-card-content>
-  </mat-card>
+  </div>
 
   <p class="audit-log__summary" aria-live="polite">
     Showing {{ filteredEntries().length }} of {{ totalCount() }} entries

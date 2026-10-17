@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { Router, RouterLink } from '@angular/router';
 import { UserPreferencesService } from '../../../../core/services/user-preferences.service';
+import { AvatarComponent } from '../../../../shared/components/avatar/avatar.component';
 import { ComplianceBadgeComponent } from '../../../../shared/components/compliance-badge/compliance-badge.component';
 import { PatientSummary } from '../../../../shared/models/patient.model';
 
@@ -39,6 +40,7 @@ export interface RowReason {
     MatDividerModule,
     MatIconModule,
     MatMenuModule,
+    AvatarComponent,
     ComplianceBadgeComponent,
   ],
   host: { '[class.patient-list-host--compact]': 'preferences.compactRows()' },

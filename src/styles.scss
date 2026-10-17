@@ -11,15 +11,36 @@ html {
   // App design tokens, derived from the M3 system tokens.
   // Declared before the theme mixin, which emits nested rules (Sass mixed-decls).
   --ma-color-brand: var(--mat-sys-primary);
-  --ma-sidenav-width: 240px;
+  --ma-sidenav-width: 252px;
   --ma-content-padding: 24px;
 
-  // Typography: General Sans for display/headings, Inter for body, tables and UI text.
+  // Cards: large radius, no border; a soft teal-tinted shadow lifts them off the page wash.
+  --ma-card-radius: 28px;
+  --ma-card-shadow: 0 1px 2px rgb(31 78 74 / 0.04), 0 8px 24px rgb(31 78 74 / 0.05);
+  --ma-card-shadow-raised: 0 2px 4px rgb(31 78 74 / 0.06), 0 16px 32px rgb(31 78 74 / 0.1);
+
+  // "Now / next / selected" highlight. Pale teal, never yellow, amber, green or red: those are
+  // reserved for status (warning, success, critical).
+  --ma-color-highlight: var(--mat-sys-primary-container);
+
+  // Page wash: warm cream, a teal glow top-right and a peach glow bottom-left (Crextio-style).
+  --ma-page-wash:
+    radial-gradient(60% 55% at 100% 0%, rgb(167 227 219 / 0.55), transparent 70%),
+    radial-gradient(55% 50% at 0% 100%, rgb(255 222 204 / 0.6), transparent 70%),
+    linear-gradient(180deg, #fbf8f2, #f6f1e8);
+
+  // Ink: warm near-black and its softer steps, for text on white or the wash.
+  --ma-ink: #1d2422;
+  --ma-ink-soft: rgb(29 36 34 / 0.64);
+  --ma-ink-faint: rgb(29 36 34 / 0.45);
+  --ma-hairline: rgb(29 36 34 / 0.07);
+
+  // Typography: General Sans for display/headings, DM Sans for body, tables and UI text.
   --ma-font-display: 'General Sans', sans-serif;
-  --ma-font-body: 'Inter', sans-serif;
+  --ma-font-body: 'DM Sans', sans-serif;
 
   // Custom type roles (font shorthand; pair with the matching letter-spacing where noted).
-  --ma-type-page-title: 500 2.5rem / 1.1 var(--ma-font-display); // letter-spacing: -0.02em
+  --ma-type-page-title: 400 2.5rem / 1.1 var(--ma-font-display); // letter-spacing: -0.02em
   --ma-type-section: 500 1.125rem / 1.5rem var(--ma-font-display);
   --ma-type-stat: 600 2.25rem / 2.75rem var(--ma-font-display); // letter-spacing: -0.02em
   --ma-type-logo: 600 1.25rem / 1.75rem var(--ma-font-display); // letter-spacing: -0.01em
@@ -49,6 +70,15 @@ html {
       headline-medium-tracking: -0.01em,
       headline-small-tracking: -0.01em,
       title-large-tracking: -0.005em,
+      // Material's body/label tracking (0.25-0.5px) is set for Roboto; on DM Sans it reads spaced out.
+      title-medium-tracking: -0.005em,
+      title-small-tracking: 0,
+      body-large-tracking: -0.005em,
+      body-medium-tracking: 0,
+      body-small-tracking: 0,
+      label-large-tracking: 0,
+      label-medium-tracking: 0.005em,
+      label-small-tracking: 0.01em,
     )
   );
 }
@@ -62,6 +92,11 @@ body {
   // Neutral tone 98: the lightest warm off-white in the generated palette.
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // Kerning and contextual alternates.
+  font-feature-settings: 'calt' 1, 'kern' 1;
+  text-rendering: optimizeLegibility;
 }
 
 // M3 themes no longer style bare headings via .mat-typography; map them to the type scale.
@@ -75,6 +110,99 @@ h1 { font: var(--ma-type-page-title); letter-spacing: -0.02em; }
 h2 { font: var(--mat-sys-headline-medium); letter-spacing: var(--mat-sys-headline-medium-tracking); }
 h3 { font: var(--mat-sys-headline-small); letter-spacing: var(--mat-sys-headline-small-tracking); }
 h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large-tracking); }
+
+// Compact pill filter field (search inputs and selects in filter bars): white, borderless at rest with
+// the card shadow, outline on hover and focus. No floating label; give the control an aria-label and
+// a leading icon instead. Radius is half the 44px height (a larger one breaks the notched outline).
+.ma-pill-field {
+  --mat-form-field-container-height: 44px;
+  --mat-form-field-container-vertical-padding: 10px;
+  --mat-form-field-container-text-size: 0.875rem;
+  --mat-select-trigger-text-size: 0.875rem;
+  --mdc-outlined-text-field-container-shape: 22px;
+  --mdc-outlined-text-field-outline-color: transparent;
+  --mdc-outlined-text-field-hover-outline-color: var(--mat-sys-outline-variant);
+
+  .mat-mdc-text-field-wrapper {
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: var(--ma-card-shadow);
+  }
+
+  .mat-mdc-form-field-icon-prefix > .mat-icon {
+    width: 20px;
+    height: 20px;
+    padding: 0 6px 0 14px;
+    font-size: 20px;
+    color: var(--ma-ink-soft);
+  }
+}
+
+// Toggle filter pill (<button aria-pressed>), e.g. audit action types. Off: white outline with a hollow
+// dot. On: pale-teal fill with the dot in the action's color (matching the audit entry accent marks).
+.ma-filter-pill {
+  --filter-pill-color: var(--mat-sys-primary);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px 0 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 999px;
+  font: 500 0.875rem / 1 var(--ma-font-body);
+  background: #ffffff;
+  color: var(--ma-ink-soft);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--mat-sys-outline);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: 2px;
+  }
+
+  &[aria-pressed='true'] {
+    border-color: transparent;
+    background: var(--ma-color-highlight);
+    color: var(--mat-sys-on-primary-container);
+
+    .ma-filter-pill__dot {
+      background: var(--filter-pill-color);
+      box-shadow: none;
+    }
+  }
+
+  &[data-action='modified'] {
+    --filter-pill-color: var(--mat-sys-tertiary);
+  }
+
+  &[data-action='reviewed'] {
+    --filter-pill-color: var(--mat-sys-secondary);
+  }
+
+  &[data-action='flagged'] {
+    --filter-pill-color: var(--mat-sys-error);
+  }
+}
+
+.ma-filter-pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--filter-pill-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ma-filter-pill {
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+}
 
 // Visually hidden but available to screen readers.
 .sr-only {

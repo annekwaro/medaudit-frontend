@@ -7,46 +7,44 @@
     <p class="patients__subtitle">All enrolled patients in the trial</p>
   </header>
 
-  <mat-card appearance="outlined" class="toolbar">
-    <mat-card-content class="toolbar__row">
-      <div class="toolbar__filters" role="search" aria-label="Filter patients">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__search">
-          <mat-label>Search</mat-label>
-          <mat-icon matPrefix>search</mat-icon>
-          <input
-            matInput
-            #search
-            type="search"
-            placeholder="Name or patient ID"
-            [value]="searchTerm()"
-            (input)="setSearchTerm(search.value)"
-          />
-        </mat-form-field>
+  <div class="toolbar">
+    <div class="toolbar__filters" role="search" aria-label="Filter patients">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__search ma-pill-field">
+        <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+        <input
+          matInput
+          aria-label="Search patients"
+          #search
+          type="search"
+          placeholder="Name or patient ID"
+          [value]="searchTerm()"
+          (input)="setSearchTerm(search.value)"
+        />
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__status">
-          <mat-label>Show</mat-label>
-          <mat-select [value]="showFilter()" (selectionChange)="setShowFilter($event.value)">
-            <mat-option value="all">All patients</mat-option>
-            <mat-optgroup label="Quick views">
-              @for (view of quickViews; track view) {
-                <mat-option [value]="view">{{ quickViewLabels[view] }}</mat-option>
-              }
-            </mat-optgroup>
-            <mat-optgroup label="Compliance status">
-              @for (status of statuses; track status) {
-                <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
-              }
-            </mat-optgroup>
-          </mat-select>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="toolbar__status ma-pill-field">
+        <mat-icon matPrefix aria-hidden="true">filter_list</mat-icon>
+        <mat-select aria-label="Show" [value]="showFilter()" (selectionChange)="setShowFilter($event.value)">
+          <mat-option value="all">All patients</mat-option>
+          <mat-optgroup label="Quick views">
+            @for (view of quickViews; track view) {
+              <mat-option [value]="view">{{ quickViewLabels[view] }}</mat-option>
+            }
+          </mat-optgroup>
+          <mat-optgroup label="Compliance status">
+            @for (status of statuses; track status) {
+              <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+            }
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
-      <button mat-stroked-button type="button" class="toolbar__add" (click)="addPatient()">
-        <mat-icon>person_add</mat-icon>
-        Add Patient
-      </button>
-    </mat-card-content>
-  </mat-card>
+    <button mat-flat-button type="button" class="toolbar__add" (click)="addPatient()">
+      <mat-icon>person_add</mat-icon>
+      Add Patient
+    </button>
+  </div>
 
   <p class="patients__count" aria-live="polite">
     Showing {{ filteredPatients().length }} of {{ totalCount() }} patients

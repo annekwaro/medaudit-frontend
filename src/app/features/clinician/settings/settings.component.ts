@@ -21,6 +21,7 @@ import { MatSlideToggle, MatSlideToggleModule } from '@angular/material/slide-to
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PatientDataService } from '../../../core/services/patient-data.service';
 import { DateFormat, PREFERENCE_DEFAULTS, UserPreferencesService } from '../../../core/services/user-preferences.service';
+import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 
 interface Profile {
   name: string;
@@ -63,6 +64,7 @@ const NOTIFICATION_DEFAULTS = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
+    AvatarComponent,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
@@ -96,6 +98,9 @@ export class SettingsComponent {
     { key: 'site', label: 'Site', editable: false },
     { key: 'email', label: 'Email', editable: true, inputType: 'email', autocomplete: 'email' },
   ];
+
+  /** Fields not already shown in the identity row (read mode only; edit mode lists every field). */
+  readonly profileDetailFields = this.profileFields.filter((field) => !['name', 'role', 'site'].includes(field.key));
 
   readonly editingProfile = signal(false);
   readonly profileDraft = signal<Profile>(this.profile());

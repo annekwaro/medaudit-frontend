@@ -5,7 +5,10 @@
       <div class="patient-list__header-actions">
         <ng-content select="[patientListActions]" />
         @if (viewAllLink(); as link) {
-          <a mat-button [routerLink]="link">View all</a>
+          <a mat-stroked-button class="patient-list__view-all" [routerLink]="link">
+            <mat-icon aria-hidden="true">north_east</mat-icon>
+            View all
+          </a>
         }
       </div>
     </header>
@@ -24,10 +27,15 @@
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let patient" class="patient-list__name">
-            {{ patient.name }}
-            @if (reasons()) {
-              <span class="patient-list__sub patient-list__meta">{{ patient.id }}</span>
-            }
+            <span class="patient-list__person">
+              <app-avatar [name]="patient.name" />
+              <span>
+                {{ patient.name }}
+                @if (reasons()) {
+                  <span class="patient-list__sub patient-list__meta">{{ patient.id }}</span>
+                }
+              </span>
+            </span>
           </td>
         </ng-container>
 

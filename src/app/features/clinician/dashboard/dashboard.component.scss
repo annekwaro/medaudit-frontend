@@ -4,17 +4,24 @@
 }
 
 .shell {
+  // The wash sits on the container, behind both the floating sidebar and the content, and stays
+  // put while the content scrolls over it.
+  --mat-sidenav-content-background-color: transparent;
+
   height: 100%;
+  background: var(--ma-page-wash);
 }
 
-// Dark teal sidebar. Applies in both docked (side) and mobile overlay (over) modes.
+// Floating dark teal panel inset from the window edge (the drawer itself is transparent).
+// Applies in both docked (side) and mobile overlay (over) modes.
 .shell__sidenav {
   --ma-sidenav-fg: rgb(253 249 242 / 0.85);
   --ma-sidenav-fg-strong: var(--mat-sys-surface);
   --ma-sidenav-state-layer: rgb(253 249 242);
 
   --mat-sidenav-container-width: var(--ma-sidenav-width, 240px);
-  --mat-sidenav-container-background-color: var(--mat-sys-primary);
+  --mat-sidenav-container-background-color: transparent;
+  --mat-sidenav-container-elevation-shadow: none;
   --mat-sidenav-container-text-color: var(--ma-sidenav-fg);
   // The solid fill separates it from the content; a light hairline would read as a seam.
   --mat-sidenav-container-divider-color: transparent;
@@ -60,23 +67,40 @@
   }
 }
 
-// M3 rounds the drawer's trailing corners; square them when docked full-height.
-.shell__sidenav.mat-drawer-side {
+// M3 rounds the drawer's trailing corners; the panel inside has its own.
+.shell__sidenav {
   --mat-sidenav-container-shape: 0;
 }
 
-// Fills the drawer so the site card can sit at the bottom.
+// The panel: fills the drawer (less the inset) so the site card can sit at the bottom.
 .shell__nav {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  box-sizing: border-box;
+  min-height: calc(100% - 24px);
+  margin: 12px 0 12px 12px;
+  padding: 4px 8px 8px;
+  border-radius: var(--ma-card-radius);
+  // A faint light-to-dark sweep, so the panel isn't a flat slab.
+  background:
+    radial-gradient(120% 40% at 0% 0%, rgb(255 255 255 / 0.08), transparent 70%),
+    linear-gradient(180deg, var(--mat-sys-primary), #173d3a);
+  box-shadow: 0 12px 32px rgb(23 61 58 / 0.18);
+}
+
+// Nav items: inset pills with a little air between them.
+.shell__nav .mat-mdc-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
 }
 
 .site-card {
-  margin: auto 8px 8px;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(253, 249, 242, 0.06);
+  margin: auto 0 0;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgba(253, 249, 242, 0.07);
 }
 
 .site-card__site {
@@ -127,10 +151,30 @@
 }
 
 .shell__brand {
-  padding: 20px 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px 12px;
   font: var(--ma-type-logo);
   letter-spacing: -0.01em;
   color: var(--ma-sidenav-fg-strong);
+}
+
+// Brand mark: a pale-teal rounded square with the logo glyph.
+.shell__mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
 }
 
 .shell__main {
@@ -141,33 +185,116 @@
 .shell__toolbar {
   // Own view-transition layer, so the fading content can't paint over it.
   view-transition-name: shell-toolbar;
-  --mat-toolbar-container-background-color: var(--mat-sys-surface);
+  // Frosted rather than solid, so the page wash shows through; no hairline.
+  --mat-toolbar-container-background-color: color-mix(in srgb, var(--mat-sys-surface) 72%, transparent);
   --mat-toolbar-container-text-color: var(--mat-sys-on-surface);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 2;
   gap: 8px;
 }
 
-.shell__title {
-  font: var(--mat-sys-title-medium);
-  letter-spacing: var(--mat-sys-title-medium-tracking);
+// Breadcrumb: "Clinician / Patients / Sofia Lindqvist". Earlier steps muted, the current page in ink.
+.crumbs ol {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 500 0.9375rem / 1.375rem var(--ma-font-body);
+  white-space: nowrap;
+}
+
+.crumbs li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  color: var(--ma-ink-soft);
+
+  & + li::before {
+    content: '/';
+    padding: 0 8px;
+    color: var(--ma-ink-faint);
+  }
+
+  &:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.crumbs a {
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ma-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ma-color-brand);
+    outline-offset: 2px;
+  }
+}
+
+.crumbs [aria-current='page'] {
+  color: var(--ma-ink);
+}
+
+// Phones: the section name alone.
+@media (max-width: 599.98px) {
+  .crumbs__root {
+    display: none;
+  }
+
+  .crumbs li:nth-child(2)::before {
+    content: none;
+  }
 }
 
 .shell__spacer {
   flex: 1 1 auto;
 }
 
-.shell__role-badge {
-  padding: 4px 12px;
+.shell__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 14px 4px 4px;
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1.5;
-  background: var(--mat-sys-primary-container);
-  color: var(--mat-sys-on-primary-container);
+  background: #ffffff;
+  box-shadow: var(--ma-card-shadow);
+}
+
+.shell__user-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.shell__user-name {
+  font: 500 0.8125rem / 1.125rem var(--ma-font-body);
+}
+
+.shell__user-role {
+  font: 400 0.6875rem / 1rem var(--ma-font-body);
+  color: var(--ma-ink-soft);
+}
+
+// Narrow toolbar: the avatar alone.
+@media (max-width: 599.98px) {
+  .shell__user {
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .shell__user-text {
+    display: none;
+  }
 }
 
 .shell__content {
