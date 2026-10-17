@@ -152,7 +152,11 @@
   text-decoration: none;
 
   &:hover {
-    background: rgba(31, 78, 74, 0.04);
+    background: var(--ma-row-hover);
+  }
+
+  &:active {
+    background: var(--ma-row-pressed);
   }
 
   &:focus-visible {
@@ -252,5 +256,16 @@
     transition:
       background-color 150ms ease,
       color 150ms ease;
+  }
+}
+
+// Pressed: the next-visit card sinks slightly.
+@media (prefers-reduced-motion: no-preference) {
+  .next-visit {
+    transition: transform 120ms ease;
+  }
+
+  .next-visit:active {
+    transform: scale(var(--ma-press-scale));
   }
 }

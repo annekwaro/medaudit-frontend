@@ -9,6 +9,7 @@ import { PatientDataService } from '../../../core/services/patient-data.service'
 import { AuditEntryComponent } from '../../../shared/components/audit-entry/audit-entry.component';
 import { AUDIT_ACTION_LABELS, AUDIT_ACTIONS, AuditAction } from '../../../shared/models/audit.model';
 import { groupByDay } from '../../../shared/utils/day-groups';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 type DateFilter = '7d' | '30d' | 'all';
 
@@ -20,6 +21,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
   selector: 'app-audit-log',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

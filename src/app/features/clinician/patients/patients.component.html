@@ -53,9 +53,13 @@
   @if (filteredPatients().length) {
     <app-patient-list-table [patients]="filteredPatients()" [staggerRows]="true" />
   } @else {
-    <div class="patients__empty">
-      <p>No patients match your filters</p>
-      <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
-    </div>
+    <app-empty-state
+      class="patients__empty"
+      icon="person_search"
+      title="No patients match your filters"
+      hint="Try a different name or ID, or show all patients."
+    >
+      <button mat-stroked-button type="button" (click)="clearFilters()">Clear filters</button>
+    </app-empty-state>
   }
 </div>

@@ -35,6 +35,12 @@ html {
   --ma-ink-faint: rgb(29 36 34 / 0.45);
   --ma-hairline: rgb(29 36 34 / 0.07);
 
+  // Interaction tints for clickable rows (teal-tinted, so hover reads as "this goes somewhere").
+  --ma-row-hover: rgb(31 78 74 / 0.04);
+  --ma-row-pressed: rgb(31 78 74 / 0.08);
+  // Press feedback for clickable cards and round buttons (transform; motion-guarded where used).
+  --ma-press-scale: 0.98;
+
   // Typography: General Sans for display/headings, DM Sans for body, tables and UI text.
   --ma-font-display: 'General Sans', sans-serif;
   --ma-font-body: 'DM Sans', sans-serif;
@@ -157,6 +163,10 @@ h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large
 
   &:hover {
     border-color: var(--mat-sys-outline);
+  }
+
+  &:active {
+    background: var(--ma-row-pressed);
   }
 
   &:focus-visible {

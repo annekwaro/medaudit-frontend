@@ -251,7 +251,11 @@
   cursor: pointer;
 
   &:hover {
-    background: var(--mat-sys-surface-container-low);
+    background: var(--ma-row-hover);
+  }
+
+  &:active {
+    background: var(--ma-row-pressed);
   }
 
   &:hover .patient-list__review {

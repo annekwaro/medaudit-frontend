@@ -212,7 +212,13 @@
               </section>
             }
           } @else {
-            <p class="audit__empty">No audit entries match these filters.</p>
+            <app-empty-state
+              class="audit__empty"
+              title="No audit entries match these filters"
+              hint="Turn an action type back on or widen the date range."
+            >
+              <button mat-stroked-button type="button" (click)="resetFilters()">Show all entries</button>
+            </app-empty-state>
           }
         </section>
       </div>

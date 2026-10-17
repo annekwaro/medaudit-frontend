@@ -22,11 +22,7 @@
     border-radius: 999px;
     background: var(--audit-entry-accent);
   }
-
-  // The shadow is not motion, so it deepens regardless of reduced-motion.
-  &:hover {
-    box-shadow: var(--ma-card-shadow-raised);
-  }
+  // No hover lift: the card itself isn't clickable (only the patient link inside it is).
 }
 
 :host([data-action='submitted']) {
@@ -53,17 +49,6 @@
   --audit-entry-badge-ink: #881337; // rose-900, 5.1:1 (#9F1239 was 4.2:1)
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  :host {
-    transition:
-      transform 150ms ease,
-      box-shadow 150ms ease;
-  }
-
-  :host(:hover) {
-    transform: translateY(-1px);
-  }
-}
 
 // Row 1: badge | timestamp | user (| patient link on the global log)
 .audit-entry__meta {

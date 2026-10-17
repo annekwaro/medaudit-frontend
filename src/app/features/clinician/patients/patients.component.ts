@@ -11,6 +11,7 @@ import { PatientDataService } from '../../../core/services/patient-data.service'
 import { BackLinkComponent } from '../../../shared/components/back-link/back-link.component';
 import { COMPLIANCE_LABELS, COMPLIANCE_STATUSES, ComplianceStatus, PatientProfile } from '../../../shared/models/patient.model';
 import { PatientListTableComponent } from '../_components/patient-list/patient-list.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 /** Preset views linked from the dashboard stats cards via `?filter=`. */
 export type PatientQuickView = 'unreviewed' | 'alerts' | 'compliance';
@@ -39,6 +40,7 @@ function submissionRate({ submissions30d: { submitted, missed } }: PatientProfil
   selector: 'app-patients',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

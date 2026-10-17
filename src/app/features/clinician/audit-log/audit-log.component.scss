@@ -53,15 +53,6 @@
   list-style: none;
 }
 
-.audit-log__empty {
-  margin: 0;
-  padding: 32px 16px;
-  text-align: center;
-  border: 1px dashed var(--mat-sys-outline-variant);
-  border-radius: var(--mat-sys-corner-medium);
-  font: var(--mat-sys-body-medium);
-  color: var(--mat-sys-on-surface-variant);
-}
 
 .audit-log__footer {
   display: flex;

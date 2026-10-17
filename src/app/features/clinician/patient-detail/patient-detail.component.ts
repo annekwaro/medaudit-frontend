@@ -21,6 +21,7 @@ import { daysBetween } from '../../../shared/utils/dates';
 import { groupByDay } from '../../../shared/utils/day-groups';
 import { COMPLIANCE_TARGET } from '../dashboard/overview/stat-severity';
 import { complianceFactors, PatientAction, patientActions } from './patient-insights';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 type DateRange = '7d' | '30d' | 'all';
 
@@ -43,6 +44,7 @@ function backLabelFor(url: string | null): string {
   selector: 'app-patient-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     DatePipe,
     MatButtonModule,
     MatCardModule,
@@ -184,6 +186,12 @@ export class PatientDetailComponent {
 
   exportCsv(): void {
     this.snackBar.open('Export coming soon', undefined, { duration: 3000 });
+  }
+
+  /** Back to every action type over all time. */
+  resetFilters(): void {
+    this.dateRange.set('all');
+    this.selectedActions.set(new Set(AUDIT_ACTIONS));
   }
 
   toggleAction(action: AuditAction, checked: boolean): void {

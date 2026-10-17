@@ -85,7 +85,11 @@
   text-decoration: none;
 
   &:hover {
-    background: rgba(31, 78, 74, 0.03);
+    background: var(--ma-row-hover);
+  }
+
+  &:active {
+    background: var(--ma-row-pressed);
   }
 
   &:focus-visible {

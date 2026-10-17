@@ -86,6 +86,14 @@ $hover-spring: cubic-bezier(0.34, 1.25, 0.64, 1);
   }
 }
 
+// Pressed (linked cards): settle back below the hover lift.
+@media (prefers-reduced-motion: no-preference) {
+  .stats-card__link:active .stats-card {
+    transform: translateY(0) scale(var(--ma-press-scale));
+    transition-duration: 100ms;
+  }
+}
+
 // Reduced motion: no transforms; the arrow is always shown on linked cards, and hover only deepens the shadow.
 @media (prefers-reduced-motion: reduce) {
   .stats-card .stats-card__arrow {

@@ -72,7 +72,13 @@
       </section>
     }
   } @else {
-    <p class="audit-log__empty">No audit entries match these filters.</p>
+    <app-empty-state
+      class="audit-log__empty"
+      title="No audit entries match these filters"
+      hint="Try another search, patient, action or date range."
+    >
+      <button mat-stroked-button type="button" (click)="clearFilters()">Clear filters</button>
+    </app-empty-state>
   }
 
   <footer class="audit-log__footer">

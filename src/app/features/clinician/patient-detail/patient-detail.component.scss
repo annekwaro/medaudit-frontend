@@ -445,20 +445,12 @@
   border: 0;
 }
 
-.audit__count,
-.audit__empty {
+.audit__count {
   margin: 16px 0 8px;
   font: var(--mat-sys-body-small);
   color: var(--mat-sys-on-surface-variant);
 }
 
-.audit__empty {
-  padding: 32px 16px;
-  text-align: center;
-  border: 1px dashed var(--mat-sys-outline-variant);
-  border-radius: var(--mat-sys-corner-medium);
-  font: var(--mat-sys-body-medium);
-}
 
 .timeline {
   position: relative;

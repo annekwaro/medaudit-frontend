@@ -68,6 +68,10 @@
     background: color-mix(in srgb, var(--ma-color-highlight) 50%, #ffffff);
   }
 
+  &:active {
+    background: var(--ma-color-highlight);
+  }
+
   &:focus-visible {
     outline: 2px solid var(--ma-color-brand);
     outline-offset: 2px;
