@@ -57,12 +57,20 @@
   </p>
 
   @if (filteredEntries().length) {
-    <ol class="audit-log__list">
-      <!-- Keying on the dropdown filters re-creates (and re-animates) the list when they change. -->
-      @for (item of filteredEntries(); track item.entry.id + '|' + listKey(); let i = $index) {
-        <li app-audit-entry class="audit-log__entry" [style.--entry-index]="i" [entry]="item.entry" [patient]="item.patient"></li>
-      }
-    </ol>
+    @for (group of dayGroups(); track group.date) {
+      <section class="ma-day-group" [attr.aria-labelledby]="'day-' + group.date">
+        <h2 class="ma-day-heading" [id]="'day-' + group.date">
+          {{ group.label }}
+          <span class="ma-day-heading__count">{{ group.items.length }} {{ group.items.length === 1 ? 'entry' : 'entries' }}</span>
+        </h2>
+        <ol class="audit-log__list">
+          <!-- Keying on the dropdown filters re-creates (and re-animates) the list when they change. -->
+          @for (item of group.items; track item.entry.id + '|' + listKey()) {
+            <li app-audit-entry class="audit-log__entry" [style.--entry-index]="item.index" [entry]="item.entry" [patient]="item.patient" [timeOnly]="true"></li>
+          }
+        </ol>
+      </section>
+    }
   } @else {
     <p class="audit-log__empty">No audit entries match these filters.</p>
   }

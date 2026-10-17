@@ -30,12 +30,19 @@
       @for (visit of otherVisits(); track visit.id) {
         <li>
           <a class="visits__row" [routerLink]="['/clinician/patient', visit.id]">
+            <!-- Calendar tile: weekday over day number; the full date is in the tile's datetime and label. -->
+            <time
+              class="visits__tile"
+              [class.visits__tile--overdue]="visit.status === 'overdue'"
+              [attr.datetime]="visit.date"
+              [attr.aria-label]="visit.date | date: preferences.weekdayDate()"
+            >
+              <span class="visits__tile-weekday" aria-hidden="true">{{ visit.date | date: 'EEE' }}</span>
+              <span class="visits__tile-day" aria-hidden="true">{{ visit.date | date: 'd' }}</span>
+            </time>
             <span class="visits__who">
               <span class="visits__name">{{ visit.name }}</span>
-              <span class="visits__meta">
-                {{ visit.id }}<span aria-hidden="true"> · </span>
-                <time [attr.datetime]="visit.date">{{ visit.date | date: preferences.weekdayDate() }}</time>
-              </span>
+              <span class="visits__meta">{{ visit.id }}</span>
             </span>
             <!-- Status is spelled out (and has its own icon), so color is never the only cue. -->
             <span class="visits__status" [class]="'visits__status--' + visit.status">

@@ -113,6 +113,12 @@
   margin: 0;
 }
 
+.patient-header__avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 1.125rem;
+}
+
 // Small muted label over each value (D365 record header), on a white card strip with hairline
 // dividers between the facts.
 .patient-facts {
@@ -462,18 +468,6 @@
   margin: 0;
   padding: 0;
   list-style: none;
-
-  // Connector: a 2px line behind the entries, centered on their 4px accent bars, so it shows in the
-  // gaps (and the rounded corners) and visually runs through each bar. Inset to avoid end stubs.
-  &::before {
-    content: '';
-    position: absolute;
-    top: 16px;
-    bottom: 16px;
-    left: 1px;
-    width: 2px;
-    background: rgba(31, 78, 74, 0.08);
-  }
 }
 
 // Last in the file so it overrides the base .patient-facts rule above.

@@ -204,6 +204,31 @@ h4 { font: var(--mat-sys-title-large); letter-spacing: var(--mat-sys-title-large
   }
 }
 
+// Day groups in audit trails: a small heading ("Today", "Sunday, Oct 11") with the entry count, then
+// that day's entries.
+.ma-day-group {
+  margin-top: 16px;
+}
+
+.ma-day-group + .ma-day-group {
+  margin-top: 28px;
+}
+
+.ma-day-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 10px 4px;
+  font: 600 0.8125rem / 1.25rem var(--ma-font-body);
+  letter-spacing: 0;
+  color: var(--ma-ink);
+}
+
+.ma-day-heading__count {
+  font-weight: 400;
+  color: var(--ma-ink-soft);
+}
+
 // Visually hidden but available to screen readers.
 .sr-only {
   position: absolute;

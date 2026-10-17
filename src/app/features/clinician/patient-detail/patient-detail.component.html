@@ -5,6 +5,7 @@
     <!-- Record header (D365 pattern): identity, a row of label-over-value facts, then the journey. -->
     <header class="patient-header">
       <div class="patient-header__identity">
+        <app-avatar class="patient-header__avatar" [name]="patient.name" />
         <h1 class="patient-header__name">{{ patient.name }}</h1>
         <app-compliance-badge [status]="patient.compliance" />
       </div>
@@ -197,11 +198,19 @@
           </p>
 
           @if (filteredEntries().length) {
-            <ol class="timeline">
-              @for (entry of filteredEntries(); track entry.id) {
-                <li app-audit-entry [entry]="entry"></li>
-              }
-            </ol>
+            @for (group of dayGroups(); track group.date) {
+              <section class="ma-day-group" [attr.aria-labelledby]="'day-' + group.date">
+                <h3 class="ma-day-heading" [id]="'day-' + group.date">
+                  {{ group.label }}
+                  <span class="ma-day-heading__count">{{ group.items.length }} {{ group.items.length === 1 ? 'entry' : 'entries' }}</span>
+                </h3>
+                <ol class="timeline">
+                  @for (entry of group.items; track entry.id) {
+                    <li app-audit-entry [entry]="entry" [timeOnly]="true"></li>
+                  }
+                </ol>
+              </section>
+            }
           } @else {
             <p class="audit__empty">No audit entries match these filters.</p>
           }

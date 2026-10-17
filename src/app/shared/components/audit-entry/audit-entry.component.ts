@@ -19,6 +19,8 @@ import { AUDIT_ACTION_LABELS, AuditEntry } from '../../models/audit.model';
 export class AuditEntryComponent {
   readonly entry = input.required<AuditEntry>();
   readonly patient = input<{ id: string; name: string }>();
+  /** Show only the time (e.g. under a day heading that already gives the date). */
+  readonly timeOnly = input(false);
 
   readonly preferences = inject(UserPreferencesService);
 

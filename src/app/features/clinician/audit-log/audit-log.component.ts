@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PatientDataService } from '../../../core/services/patient-data.service';
 import { AuditEntryComponent } from '../../../shared/components/audit-entry/audit-entry.component';
 import { AUDIT_ACTION_LABELS, AUDIT_ACTIONS, AuditAction } from '../../../shared/models/audit.model';
+import { groupByDay } from '../../../shared/utils/day-groups';
 
 type DateFilter = '7d' | '30d' | 'all';
 
@@ -92,6 +93,15 @@ export class AuditLogComponent {
       return [patient.name, entry.patientId, entry.reason].some((text) => text?.toLowerCase().includes(term));
     });
   });
+
+  /** Filtered entries by day, newest first; `index` is the position in the whole list (entrance stagger). */
+  readonly dayGroups = computed(() =>
+    groupByDay(
+      this.filteredEntries().map((item, index) => ({ ...item, index })),
+      (item) => item.entry.timestamp,
+      this.patientData.today,
+    ),
+  );
 
   clearFilters(): void {
     this.searchTerm.set('');

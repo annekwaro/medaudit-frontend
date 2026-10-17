@@ -11,12 +11,14 @@ import { Router } from '@angular/router';
 import { PatientDataService } from '../../../core/services/patient-data.service';
 import { UserPreferencesService } from '../../../core/services/user-preferences.service';
 import { BackLinkComponent, previousAppUrl } from '../../../shared/components/back-link/back-link.component';
+import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { AuditEntryComponent } from '../../../shared/components/audit-entry/audit-entry.component';
 import { ComplianceBadgeComponent } from '../../../shared/components/compliance-badge/compliance-badge.component';
 import { DiaryDotComponent } from '../../../shared/components/diary-dot/diary-dot.component';
 import { AUDIT_ACTION_LABELS, AUDIT_ACTIONS, AuditAction } from '../../../shared/models/audit.model';
 import { TRIAL_STAGE_LABELS, TRIAL_STAGES } from '../../../shared/models/patient.model';
 import { daysBetween } from '../../../shared/utils/dates';
+import { groupByDay } from '../../../shared/utils/day-groups';
 import { COMPLIANCE_TARGET } from '../dashboard/overview/stat-severity';
 import { complianceFactors, PatientAction, patientActions } from './patient-insights';
 
@@ -48,6 +50,7 @@ function backLabelFor(url: string | null): string {
     MatIconModule,
     MatSelectModule,
     MatTooltipModule,
+    AvatarComponent,
     AuditEntryComponent,
     BackLinkComponent,
     ComplianceBadgeComponent,
@@ -99,6 +102,9 @@ export class PatientDetailComponent {
   });
 
   readonly totalEntries = computed(() => this.auditTrail().length);
+  readonly dayGroups = computed(() =>
+    groupByDay(this.filteredEntries(), (entry) => entry.timestamp, this.patientData.today),
+  );
 
   readonly compliancePercent = computed(() => {
     const totals = this.patient()?.submissions30d;
